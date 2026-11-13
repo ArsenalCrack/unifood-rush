@@ -1,0 +1,56 @@
+{
+  "nombre": "Comedor_UniFood_Monitor",
+  "variante": "monitor",
+  "descripcion": "Red de la ficha D.13 con la regla de prevención: lugar monitor Minimo_lavado (ficha) y su simétrico Minimo_linea (extensión del equipo). Invariantes: Personal_linea + Minimo_lavado = 3 y Personal_lavado + Minimo_linea = 3.",
+  "lugares": [
+    { "id": "p1",  "nombre": "En_fila",         "m0": 0,  "k": 16,   "capacidad": "desborde",   "externo": true, "proceso": true, "token": "estudiante",     "pos": [60, 200] },
+    { "id": "p2",  "nombre": "Bandeja_limpia",  "m0": 30, "k": 30,   "capacidad": "estricta",   "token": "bandeja_limpia", "pos": [160, 80] },
+    { "id": "p3",  "nombre": "Personal_linea",  "m0": 2,  "k": 4,    "capacidad": "estricta",   "token": "personal",       "pos": [160, 330] },
+    { "id": "p4",  "nombre": "Con_bandeja",     "m0": 0,  "k": 30,   "capacidad": "estricta",   "proceso": true, "token": "estudiante",     "pos": [260, 200] },
+    { "id": "p5",  "nombre": "Mesa_libre",      "m0": 20, "k": 20,   "capacidad": "estricta",   "token": "mesa",           "pos": [460, 80] },
+    { "id": "p6",  "nombre": "Almorzando",      "m0": 0,  "k": 20,   "capacidad": "estricta",   "proceso": true, "token": "estudiante",     "pos": [460, 200] },
+    { "id": "p7",  "nombre": "Espacio_carro",   "m0": 10, "k": 10,   "capacidad": "estricta",   "token": "espacio",        "pos": [560, 330] },
+    { "id": "p8",  "nombre": "Bandeja_sucia",   "m0": 0,  "k": 10,   "capacidad": "estricta",   "token": "bandeja_sucia",  "pos": [680, 330] },
+    { "id": "p9",  "nombre": "Salida",          "m0": 0,  "k": null, "capacidad": "sin_limite", "token": "estudiante",     "pos": [680, 200] },
+    { "id": "p10", "nombre": "Personal_lavado", "m0": 2,  "k": 4,    "capacidad": "estricta",   "token": "personal",       "pos": [420, 560] },
+    { "id": "p11", "nombre": "Relevo",          "m0": 2,  "k": 2,    "capacidad": "estricta",   "externo": true, "token": "relevo",         "pos": [240, 640] },
+    { "id": "p12", "nombre": "Minimo_lavado",   "m0": 1,  "k": 3,    "capacidad": "estricta",   "monitor": true, "token": "monitor",        "pos": [420, 660] },
+    { "id": "p13", "nombre": "Minimo_linea",    "m0": 1,  "k": 3,    "capacidad": "estricta",   "monitor": true, "token": "monitor",        "pos": [60, 660] }
+  ],
+  "transiciones": [
+    { "id": "t1", "nombre": "t_servir",   "disparo": "jugador",    "evento": "servir",   "pos": [160, 200] },
+    { "id": "t2", "nombre": "t_sentarse", "disparo": "automatica", "evento": "sentarse", "pos": [360, 200] },
+    { "id": "t3", "nombre": "t_terminar", "disparo": "automatica", "evento": "terminar", "pos": [560, 200] },
+    { "id": "t4", "nombre": "t_lavar",    "disparo": "automatica", "pos": [420, 440] },
+    { "id": "t5", "nombre": "t_a_linea",  "disparo": "jugador",    "pos": [320, 520] },
+    { "id": "t6", "nombre": "t_a_lavado", "disparo": "jugador",    "pos": [160, 520] }
+  ],
+  "pre": [
+    [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 5, 0, 1, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0],
+    [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1]
+  ],
+  "post": [
+    [0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0],
+    [0, 5, 0, 0, 0, 0, 5, 0, 0, 1, 0, 0, 0],
+    [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0]
+  ],
+  "invariantes": [
+    { "nombre": "Bandejas", "lugares": { "Bandeja_limpia": 1, "Con_bandeja": 1, "Almorzando": 1, "Bandeja_sucia": 1 }, "valor": 30 },
+    { "nombre": "Mesas",    "lugares": { "Mesa_libre": 1, "Almorzando": 1 }, "valor": 20 },
+    { "nombre": "Carro",    "lugares": { "Espacio_carro": 1, "Bandeja_sucia": 1 }, "valor": 10 },
+    { "nombre": "Personal", "lugares": { "Personal_linea": 1, "Personal_lavado": 1 }, "valor": 4 },
+    { "nombre": "Monitor_lavado", "lugares": { "Personal_linea": 1, "Minimo_lavado": 1 }, "valor": 3 },
+    { "nombre": "Monitor_linea",  "lugares": { "Personal_lavado": 1, "Minimo_linea": 1 }, "valor": 3 }
+  ],
+  "deadlock": {
+    "descripcion": "Con los monitores activos el personal nunca queda 4/0 ni 0/4: los únicos marcados muertos son de reposo (sin estudiantes en proceso).",
+    "prevencion": "Lugares monitor Minimo_lavado (ficha) y Minimo_linea (extensión): siempre queda al menos 1 persona en lavado y 1 en la línea en cada turno."
+  }
+}

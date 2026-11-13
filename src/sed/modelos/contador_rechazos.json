@@ -1,0 +1,27 @@
+{
+  "nombre": "Contador_Rechazos",
+  "descripcion": "Extensión del equipo: cuenta los rechazos del torniquete para que 'bloqueo' ocurra exactamente tras 3 rechazos (ficha: 'bloqueo, uc, tras 3 rechazos'). Se compone con Torniquete por los eventos comunes leer, rechazo y bloqueo.",
+  "estados": ["C0", "C1", "C2", "C3"],
+  "inicial": "C0",
+  "marcados": ["C0", "C1", "C2"],
+  "eventos": [
+    { "id": "leer",    "codigo": "l", "controlable": false, "observable": true },
+    { "id": "rechazo", "codigo": "r", "controlable": false, "observable": true },
+    { "id": "bloqueo", "codigo": "x", "controlable": false, "observable": true }
+  ],
+  "transiciones": [
+    ["C0", "leer", "C0"],
+    ["C1", "leer", "C1"],
+    ["C2", "leer", "C2"],
+    ["C0", "rechazo", "C1"],
+    ["C1", "rechazo", "C2"],
+    ["C2", "rechazo", "C3"],
+    ["C3", "bloqueo", "C0"]
+  ],
+  "posiciones": {
+    "C0": [90, 150],
+    "C1": [240, 150],
+    "C2": [390, 150],
+    "C3": [540, 150]
+  }
+}

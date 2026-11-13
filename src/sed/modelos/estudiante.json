@@ -1,0 +1,29 @@
+{
+  "nombre": "Estudiante",
+  "descripcion": "Recorrido de un estudiante por el comedor (ficha D.13).",
+  "estados": ["En_Fila", "Recibiendo_Bandeja", "Buscando_Mesa", "Almorzando", "Entregando_Menaje", "Salida"],
+  "inicial": "En_Fila",
+  "marcados": ["Salida"],
+  "eventos": [
+    { "id": "servir",      "codigo": "s", "controlable": true,  "observable": true },
+    { "id": "buscar_mesa", "codigo": "b", "controlable": false, "observable": true },
+    { "id": "sentarse",    "codigo": "m", "controlable": false, "observable": true },
+    { "id": "terminar",    "codigo": "t", "controlable": false, "observable": true },
+    { "id": "entregar",    "codigo": "e", "controlable": false, "observable": true }
+  ],
+  "transiciones": [
+    ["En_Fila", "servir", "Recibiendo_Bandeja"],
+    ["Recibiendo_Bandeja", "buscar_mesa", "Buscando_Mesa"],
+    ["Buscando_Mesa", "sentarse", "Almorzando"],
+    ["Almorzando", "terminar", "Entregando_Menaje"],
+    ["Entregando_Menaje", "entregar", "Salida"]
+  ],
+  "posiciones": {
+    "En_Fila": [90, 130],
+    "Recibiendo_Bandeja": [260, 60],
+    "Buscando_Mesa": [430, 130],
+    "Almorzando": [430, 280],
+    "Entregando_Menaje": [260, 350],
+    "Salida": [90, 280]
+  }
+}

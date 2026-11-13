@@ -1,0 +1,30 @@
+{
+  "nombre": "Torniquete",
+  "descripcion": "Lector de carné de una línea de servido (ficha D.13). Hay dos instancias.",
+  "estados": ["Listo", "Leyendo", "Acceso", "Rechazo", "Bloqueado"],
+  "inicial": "Listo",
+  "marcados": ["Listo", "Acceso"],
+  "eventos": [
+    { "id": "leer",      "codigo": "l", "controlable": false, "observable": true },
+    { "id": "acceso_ok", "codigo": "a", "controlable": false, "observable": true },
+    { "id": "rechazo",   "codigo": "r", "controlable": false, "observable": true },
+    { "id": "bloqueo",   "codigo": "x", "controlable": false, "observable": true },
+    { "id": "reiniciar", "codigo": "i", "controlable": true,  "observable": true }
+  ],
+  "transiciones": [
+    ["Listo", "leer", "Leyendo"],
+    ["Leyendo", "acceso_ok", "Acceso"],
+    ["Leyendo", "rechazo", "Rechazo"],
+    ["Acceso", "leer", "Leyendo"],
+    ["Rechazo", "leer", "Leyendo"],
+    ["Rechazo", "bloqueo", "Bloqueado"],
+    ["Bloqueado", "reiniciar", "Listo"]
+  ],
+  "posiciones": {
+    "Listo": [90, 110],
+    "Leyendo": [270, 110],
+    "Acceso": [450, 60],
+    "Rechazo": [450, 250],
+    "Bloqueado": [180, 320]
+  }
+}

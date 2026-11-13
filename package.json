@@ -1,0 +1,19 @@
+{
+  "name": "unifood-rush",
+  "version": "1.0.0",
+  "description": "UniFood Rush: simulador isometrico 2.5D de un comedor universitario (automatas y redes de Petri)",
+  "main": "index.js",
+  "scripts": {
+    "test": "node --test",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "devDependencies": {
+    "vite": "^8.3.8"
+  }
+}

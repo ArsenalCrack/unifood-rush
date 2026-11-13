@@ -1,0 +1,25 @@
+{
+  "nombre": "Registro_Acceso",
+  "descripcion": "Especificación del supervisor (ficha D.13): 'servir' solo después de que el torniquete registró 'acceso_ok' para ese estudiante. Hay una instancia por estudiante. Violacion es el estado prohibido.",
+  "estados": ["Sin_acceso", "Con_acceso", "Violacion"],
+  "inicial": "Sin_acceso",
+  "marcados": ["Sin_acceso", "Con_acceso"],
+  "prohibidos": ["Violacion"],
+  "eventos": [
+    { "id": "acceso_ok", "codigo": "a", "controlable": false, "observable": true },
+    { "id": "servir",    "codigo": "s", "controlable": true,  "observable": true }
+  ],
+  "transiciones": [
+    ["Sin_acceso", "acceso_ok", "Con_acceso"],
+    ["Sin_acceso", "servir", "Violacion"],
+    ["Con_acceso", "acceso_ok", "Con_acceso"],
+    ["Con_acceso", "servir", "Con_acceso"],
+    ["Violacion", "acceso_ok", "Violacion"],
+    ["Violacion", "servir", "Violacion"]
+  ],
+  "posiciones": {
+    "Sin_acceso": [110, 110],
+    "Con_acceso": [380, 110],
+    "Violacion": [110, 290]
+  }
+}

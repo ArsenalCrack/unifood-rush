@@ -1,0 +1,42 @@
+{
+  "nombre": "Reparacion_Torniquete",
+  "descripcion": "Lenguaje de reinicio del torniquete bloqueado (ficha D.13): R reset, al menos dos pruebas de sensor S1 a S3, K confirmar.",
+  "expresion": "^R(S[1-3]){2,}K$",
+  "expresionJflap": "RS(1+2+3)S(1+2+3)(S(1+2+3))*K",
+  "eventoReparacion": "reiniciar",
+  "comandos": [
+    { "id": "R",  "nombre": "Reset del lector" },
+    { "id": "S1", "nombre": "Prueba del sensor 1" },
+    { "id": "S2", "nombre": "Prueba del sensor 2" },
+    { "id": "S3", "nombre": "Prueba del sensor 3" },
+    { "id": "K",  "nombre": "Confirmar" }
+  ],
+  "dfa": {
+    "nombre": "DFA_Reparacion",
+    "descripcion": "DFA mínimo de ^R(S[1-3]){2,}K$ (sin estado trampa: δ es parcial).",
+    "estados": ["q0", "q1", "q2", "q3", "q4", "q5", "q6"],
+    "inicial": "q0",
+    "marcados": ["q6"],
+    "eventos": [
+      { "id": "R", "codigo": "R", "controlable": true, "observable": true },
+      { "id": "S", "codigo": "S", "controlable": true, "observable": true },
+      { "id": "1", "codigo": "1", "controlable": true, "observable": true },
+      { "id": "2", "codigo": "2", "controlable": true, "observable": true },
+      { "id": "3", "codigo": "3", "controlable": true, "observable": true },
+      { "id": "K", "codigo": "K", "controlable": true, "observable": true }
+    ],
+    "transiciones": [
+      ["q0", "R", "q1"],
+      ["q1", "S", "q2"],
+      ["q2", "1", "q3"], ["q2", "2", "q3"], ["q2", "3", "q3"],
+      ["q3", "S", "q4"],
+      ["q4", "1", "q5"], ["q4", "2", "q5"], ["q4", "3", "q5"],
+      ["q5", "S", "q4"],
+      ["q5", "K", "q6"]
+    ],
+    "posiciones": {
+      "q0": [60, 150], "q1": [160, 150], "q2": [260, 150], "q3": [360, 150],
+      "q4": [460, 150], "q5": [560, 150], "q6": [660, 150]
+    }
+  }
+}
