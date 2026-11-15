@@ -157,6 +157,7 @@ export class FlujoComedor {
     this.reloj.programar(llegadas + TIEMPOS.margenFinal, { tipo: 'fin_turno' });
     this.trasCambioRed({ tipo: 'inicio', etiqueta: 'M0' });
     this.guardarVerde();
+    this.instantaneaInicio = this.instantaneaVerde; // comienzo del turno, antes de toda decisión
     this.cerrarAccion();
     this.emitir('inicio', {});
   }

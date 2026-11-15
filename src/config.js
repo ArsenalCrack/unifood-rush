@@ -77,15 +77,14 @@ export const MAPA = {
   ],
   cabezaFila: 5,                 // x de la primera posición de cada fila
   posicionesFila: 8,             // posiciones dibujadas por fila (2 x 8 = k de En_fila)
-  barra: [{ x: 7, y: 2 }, { x: 8, y: 2 }, { x: 9, y: 2 }], // barra de servicio entre las dos líneas
-  pilaLimpias: { x: 7, y: 2 },   // lugar Bandeja_limpia
-  personalLinea: [{ x: 8, y: 2 }, { x: 9, y: 2 }, { x: 8.5, y: 2.45 }, { x: 9.5, y: 2.45 }],
+  pilaLimpias: { x: 8.6, y: -0.5, z: 0.9 }, // estante de Bandeja_limpia en el muro del fondo
+  personalLinea: [{ x: 8.0, y: 2 }, { x: 9.0, y: 2 }, { x: 8.5, y: 2.02 }, { x: 9.5, y: 1.98 }], // pasillo entre los dos mostradores
   espera: { x: 9.6, y: 4.6 },    // zona de Buscando_Mesa cuando no hay mesa libre
   mesas: { xs: [10, 11, 13, 14], ys: [1, 3, 5, 7, 9] }, // 4 x 5 = 20 mesas
   carro: { x: 6, y: 8 },         // lugares Espacio_carro y Bandeja_sucia
   lavado: { x: 3, y: 9 },        // estación t_lavar
   personalLavado: [{ x: 2, y: 8.4 }, { x: 4, y: 8.4 }, { x: 2, y: 10 }, { x: 4, y: 10 }],
-  relevo: { x: 4, y: 5.5 },      // tablero de relevo (lugar Relevo)
+  relevo: { x: 5.2, y: 5.7 },    // tablero de relevo (lugar Relevo)
   entrada: { x: -1, y: 2 },
   salida: { x: 0, y: 6.5 }
 };

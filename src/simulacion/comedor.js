@@ -243,9 +243,11 @@ export class Comedor extends FlujoComedor {
   // ---------- fin del turno ----------
 
   // Vuelve al último marcado verde guardado (inicio del turno o último relevo).
-  reintentar() {
-    if (!this.instantaneaVerde) return { ok: false };
-    this.restaurar(this.instantaneaVerde);
+  // Con desdeInicio = true vuelve al comienzo del turno.
+  reintentar(desdeInicio = false) {
+    const instantanea = desdeInicio ? this.instantaneaInicio : this.instantaneaVerde;
+    if (!instantanea) return { ok: false };
+    this.restaurar(instantanea);
     return { ok: true };
   }
 

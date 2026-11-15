@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--UniFood Rush: red de la ficha con el M0 del juego. Generado desde src/sed/modelos/.-->
+<pnml xmlns="http://www.pnml.org/version-2009/grammar/pnml">
+  <net id="Comedor_UniFood" type="http://www.pnml.org/version-2009/grammar/ptnet">
+    <name><text>Comedor_UniFood</text></name>
+    <page id="pagina1">
+      <place id="En_fila">
+        <name><text>En_fila</text></name>
+        <graphics><position x="60" y="200"/></graphics>
+      </place>
+      <place id="Bandeja_limpia">
+        <name><text>Bandeja_limpia</text></name>
+        <initialMarking><text>30</text></initialMarking>
+        <graphics><position x="160" y="80"/></graphics>
+      </place>
+      <place id="Personal_linea">
+        <name><text>Personal_linea</text></name>
+        <initialMarking><text>2</text></initialMarking>
+        <graphics><position x="160" y="330"/></graphics>
+      </place>
+      <place id="Con_bandeja">
+        <name><text>Con_bandeja</text></name>
+        <graphics><position x="260" y="200"/></graphics>
+      </place>
+      <place id="Mesa_libre">
+        <name><text>Mesa_libre</text></name>
+        <initialMarking><text>20</text></initialMarking>
+        <graphics><position x="460" y="80"/></graphics>
+      </place>
+      <place id="Almorzando">
+        <name><text>Almorzando</text></name>
+        <graphics><position x="460" y="200"/></graphics>
+      </place>
+      <place id="Espacio_carro">
+        <name><text>Espacio_carro</text></name>
+        <initialMarking><text>10</text></initialMarking>
+        <graphics><position x="560" y="330"/></graphics>
+      </place>
+      <place id="Bandeja_sucia">
+        <name><text>Bandeja_sucia</text></name>
+        <graphics><position x="680" y="330"/></graphics>
+      </place>
+      <place id="Salida">
+        <name><text>Salida</text></name>
+        <graphics><position x="680" y="200"/></graphics>
+      </place>
+      <place id="Personal_lavado">
+        <name><text>Personal_lavado</text></name>
+        <initialMarking><text>2</text></initialMarking>
+        <graphics><position x="420" y="560"/></graphics>
+      </place>
+      <place id="Relevo">
+        <name><text>Relevo</text></name>
+        <initialMarking><text>2</text></initialMarking>
+        <graphics><position x="240" y="640"/></graphics>
+      </place>
+      <transition id="t_servir">
+        <name><text>t_servir</text></name>
+        <graphics><position x="160" y="200"/></graphics>
+      </transition>
+      <transition id="t_sentarse">
+        <name><text>t_sentarse</text></name>
+        <graphics><position x="360" y="200"/></graphics>
+      </transition>
+      <transition id="t_terminar">
+        <name><text>t_terminar</text></name>
+        <graphics><position x="560" y="200"/></graphics>
+      </transition>
+      <transition id="t_lavar">
+        <name><text>t_lavar</text></name>
+        <graphics><position x="420" y="440"/></graphics>
+      </transition>
+      <transition id="t_a_linea">
+        <name><text>t_a_linea</text></name>
+        <graphics><position x="320" y="520"/></graphics>
+      </transition>
+      <transition id="t_a_lavado">
+        <name><text>t_a_lavado</text></name>
+        <graphics><position x="160" y="520"/></graphics>
+      </transition>
+      <arc id="a1" source="En_fila" target="t_servir"><inscription><text>1</text></inscription></arc>
+      <arc id="a2" source="Bandeja_limpia" target="t_servir"><inscription><text>1</text></inscription></arc>
+      <arc id="a3" source="Personal_linea" target="t_servir"><inscription><text>1</text></inscription></arc>
+      <arc id="a4" source="t_servir" target="Personal_linea"><inscription><text>1</text></inscription></arc>
+      <arc id="a5" source="t_servir" target="Con_bandeja"><inscription><text>1</text></inscription></arc>
+      <arc id="a6" source="Con_bandeja" target="t_sentarse"><inscription><text>1</text></inscription></arc>
+      <arc id="a7" source="Mesa_libre" target="t_sentarse"><inscription><text>1</text></inscription></arc>
+      <arc id="a8" source="t_sentarse" target="Almorzando"><inscription><text>1</text></inscription></arc>
+      <arc id="a9" source="t_terminar" target="Mesa_libre"><inscription><text>1</text></inscription></arc>
+      <arc id="a10" source="Almorzando" target="t_terminar"><inscription><text>1</text></inscription></arc>
+      <arc id="a11" source="Espacio_carro" target="t_terminar"><inscription><text>1</text></inscription></arc>
+      <arc id="a12" source="t_terminar" target="Bandeja_sucia"><inscription><text>1</text></inscription></arc>
+      <arc id="a13" source="t_terminar" target="Salida"><inscription><text>1</text></inscription></arc>
+      <arc id="a14" source="t_lavar" target="Bandeja_limpia"><inscription><text>5</text></inscription></arc>
+      <arc id="a15" source="t_lavar" target="Espacio_carro"><inscription><text>5</text></inscription></arc>
+      <arc id="a16" source="Bandeja_sucia" target="t_lavar"><inscription><text>5</text></inscription></arc>
+      <arc id="a17" source="Personal_lavado" target="t_lavar"><inscription><text>1</text></inscription></arc>
+      <arc id="a18" source="t_lavar" target="Personal_lavado"><inscription><text>1</text></inscription></arc>
+      <arc id="a19" source="t_a_linea" target="Personal_linea"><inscription><text>1</text></inscription></arc>
+      <arc id="a20" source="Personal_lavado" target="t_a_linea"><inscription><text>1</text></inscription></arc>
+      <arc id="a21" source="Relevo" target="t_a_linea"><inscription><text>1</text></inscription></arc>
+      <arc id="a22" source="Personal_linea" target="t_a_lavado"><inscription><text>1</text></inscription></arc>
+      <arc id="a23" source="t_a_lavado" target="Personal_lavado"><inscription><text>1</text></inscription></arc>
+      <arc id="a24" source="Relevo" target="t_a_lavado"><inscription><text>1</text></inscription></arc>
+    </page>
+  </net>
+</pnml>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--UniFood Rush: ^R(S[1-3]){2,}K$ en la notación de JFLAP (unión con +).-->
+<structure>
+	<type>re</type>
+	<!--There is only one expression in a regular expression file.-->
+	<expression>RS(1+2+3)S(1+2+3)(S(1+2+3))*K</expression>
+</structure>

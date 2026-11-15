@@ -5,11 +5,36 @@
   "inicial": "Listo",
   "marcados": ["Listo", "Acceso"],
   "eventos": [
-    { "id": "leer",      "codigo": "l", "controlable": false, "observable": true },
-    { "id": "acceso_ok", "codigo": "a", "controlable": false, "observable": true },
-    { "id": "rechazo",   "codigo": "r", "controlable": false, "observable": true },
-    { "id": "bloqueo",   "codigo": "x", "controlable": false, "observable": true },
-    { "id": "reiniciar", "codigo": "i", "controlable": true,  "observable": true }
+    {
+      "id": "leer",
+      "codigo": "l",
+      "controlable": false,
+      "observable": true
+    },
+    {
+      "id": "acceso_ok",
+      "codigo": "a",
+      "controlable": false,
+      "observable": true
+    },
+    {
+      "id": "rechazo",
+      "codigo": "r",
+      "controlable": false,
+      "observable": true
+    },
+    {
+      "id": "bloqueo",
+      "codigo": "x",
+      "controlable": false,
+      "observable": true
+    },
+    {
+      "id": "reiniciar",
+      "codigo": "i",
+      "controlable": true,
+      "observable": true
+    }
   ],
   "transiciones": [
     ["Listo", "leer", "Leyendo"],
@@ -21,10 +46,10 @@
     ["Bloqueado", "reiniciar", "Listo"]
   ],
   "posiciones": {
-    "Listo": [90, 110],
-    "Leyendo": [270, 110],
-    "Acceso": [450, 60],
-    "Rechazo": [450, 250],
-    "Bloqueado": [180, 320]
+    "Listo": [70, 60],
+    "Leyendo": [260, 60],
+    "Acceso": [470, 60],
+    "Rechazo": [470, 190],
+    "Bloqueado": [165, 190]
   }
 }

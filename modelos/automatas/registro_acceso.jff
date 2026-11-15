@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--UniFood Rush: Registro_Acceso. Generado desde src/sed/modelos/.-->
+<structure>
+	<type>fa</type>
+	<automaton>
+		<!--The list of states.-->
+		<state id="0" name="Sin_acceso">
+			<x>110.0</x>
+			<y>110.0</y>
+			<initial/>
+			<final/>
+		</state>
+		<state id="1" name="Con_acceso">
+			<x>380.0</x>
+			<y>110.0</y>
+			<final/>
+		</state>
+		<state id="2" name="Violacion">
+			<x>110.0</x>
+			<y>290.0</y>
+		</state>
+		<!--The list of transitions.-->
+		<transition>
+			<from>0</from>
+			<to>1</to>
+			<read>a</read>
+		</transition>
+		<transition>
+			<from>0</from>
+			<to>2</to>
+			<read>s</read>
+		</transition>
+		<transition>
+			<from>1</from>
+			<to>1</to>
+			<read>a</read>
+		</transition>
+		<transition>
+			<from>1</from>
+			<to>1</to>
+			<read>s</read>
+		</transition>
+		<transition>
+			<from>2</from>
+			<to>2</to>
+			<read>a</read>
+		</transition>
+		<transition>
+			<from>2</from>
+			<to>2</to>
+			<read>s</read>
+		</transition>
+	</automaton>
+</structure>

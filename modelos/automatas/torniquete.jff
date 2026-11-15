@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--UniFood Rush: Torniquete. Generado desde src/sed/modelos/.-->
+<structure>
+	<type>fa</type>
+	<automaton>
+		<!--The list of states.-->
+		<state id="0" name="Listo">
+			<x>70.0</x>
+			<y>60.0</y>
+			<initial/>
+			<final/>
+		</state>
+		<state id="1" name="Leyendo">
+			<x>260.0</x>
+			<y>60.0</y>
+		</state>
+		<state id="2" name="Acceso">
+			<x>470.0</x>
+			<y>60.0</y>
+			<final/>
+		</state>
+		<state id="3" name="Rechazo">
+			<x>470.0</x>
+			<y>190.0</y>
+		</state>
+		<state id="4" name="Bloqueado">
+			<x>165.0</x>
+			<y>190.0</y>
+		</state>
+		<!--The list of transitions.-->
+		<transition>
+			<from>0</from>
+			<to>1</to>
+			<read>l</read>
+		</transition>
+		<transition>
+			<from>1</from>
+			<to>2</to>
+			<read>a</read>
+		</transition>
+		<transition>
+			<from>1</from>
+			<to>3</to>
+			<read>r</read>
+		</transition>
+		<transition>
+			<from>2</from>
+			<to>1</to>
+			<read>l</read>
+		</transition>
+		<transition>
+			<from>3</from>
+			<to>1</to>
+			<read>l</read>
+		</transition>
+		<transition>
+			<from>3</from>
+			<to>4</to>
+			<read>x</read>
+		</transition>
+		<transition>
+			<from>4</from>
+			<to>0</to>
+			<read>i</read>
+		</transition>
+	</automaton>
+</structure>

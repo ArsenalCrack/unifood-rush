@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--UniFood Rush: Contador_Rechazos. Generado desde src/sed/modelos/.-->
+<structure>
+	<type>fa</type>
+	<automaton>
+		<!--The list of states.-->
+		<state id="0" name="C0">
+			<x>90.0</x>
+			<y>150.0</y>
+			<initial/>
+			<final/>
+		</state>
+		<state id="1" name="C1">
+			<x>240.0</x>
+			<y>150.0</y>
+			<final/>
+		</state>
+		<state id="2" name="C2">
+			<x>390.0</x>
+			<y>150.0</y>
+			<final/>
+		</state>
+		<state id="3" name="C3">
+			<x>540.0</x>
+			<y>150.0</y>
+		</state>
+		<!--The list of transitions.-->
+		<transition>
+			<from>0</from>
+			<to>0</to>
+			<read>l</read>
+		</transition>
+		<transition>
+			<from>1</from>
+			<to>1</to>
+			<read>l</read>
+		</transition>
+		<transition>
+			<from>2</from>
+			<to>2</to>
+			<read>l</read>
+		</transition>
+		<transition>
+			<from>0</from>
+			<to>1</to>
+			<read>r</read>
+		</transition>
+		<transition>
+			<from>1</from>
+			<to>2</to>
+			<read>r</read>
+		</transition>
+		<transition>
+			<from>2</from>
+			<to>3</to>
+			<read>r</read>
+		</transition>
+		<transition>
+			<from>3</from>
+			<to>0</to>
+			<read>x</read>
+		</transition>
+	</automaton>
+</structure>

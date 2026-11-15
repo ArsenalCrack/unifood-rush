@@ -5,11 +5,36 @@
   "inicial": "En_Fila",
   "marcados": ["Salida"],
   "eventos": [
-    { "id": "servir",      "codigo": "s", "controlable": true,  "observable": true },
-    { "id": "buscar_mesa", "codigo": "b", "controlable": false, "observable": true },
-    { "id": "sentarse",    "codigo": "m", "controlable": false, "observable": true },
-    { "id": "terminar",    "codigo": "t", "controlable": false, "observable": true },
-    { "id": "entregar",    "codigo": "e", "controlable": false, "observable": true }
+    {
+      "id": "servir",
+      "codigo": "s",
+      "controlable": true,
+      "observable": true
+    },
+    {
+      "id": "buscar_mesa",
+      "codigo": "b",
+      "controlable": false,
+      "observable": true
+    },
+    {
+      "id": "sentarse",
+      "codigo": "m",
+      "controlable": false,
+      "observable": true
+    },
+    {
+      "id": "terminar",
+      "codigo": "t",
+      "controlable": false,
+      "observable": true
+    },
+    {
+      "id": "entregar",
+      "codigo": "e",
+      "controlable": false,
+      "observable": true
+    }
   ],
   "transiciones": [
     ["En_Fila", "servir", "Recibiendo_Bandeja"],
@@ -19,11 +44,11 @@
     ["Entregando_Menaje", "entregar", "Salida"]
   ],
   "posiciones": {
-    "En_Fila": [90, 130],
-    "Recibiendo_Bandeja": [260, 60],
-    "Buscando_Mesa": [430, 130],
-    "Almorzando": [430, 280],
-    "Entregando_Menaje": [260, 350],
-    "Salida": [90, 280]
+    "En_Fila": [70, 120],
+    "Recibiendo_Bandeja": [200, 120],
+    "Buscando_Mesa": [330, 120],
+    "Almorzando": [460, 120],
+    "Entregando_Menaje": [590, 120],
+    "Salida": [720, 120]
   }
 }
