@@ -5,6 +5,8 @@ Simulador interactivo isométrico 2.5D de un comedor universitario, guiado por u
 Proyecto 13 del Laboratorio 1 de Modelado y Simulación de Sistemas de Eventos Discretos (167413), Universidad de Pamplona.
 Equipo: José Alejandro Morales, Amir Sarmiento, Carlos Antolinez.
 
+Simulador en línea: **https://dinamyt.org/unifood/** · Código: https://github.com/ArsenalCrack/unifood-rush
+
 ## Requisitos
 
 - Node.js 24 LTS o 22 LTS (incluye npm)
@@ -76,6 +78,7 @@ El comando ejecuta las pruebas, compila y copia los archivos por SSH. La configu
 |---|---|
 | Servicio usado | Servidor propio (VPS) con Caddy y HTTPS |
 | Dirección pública del simulador | https://dinamyt.org/unifood/ (activa desde el 16 de noviembre de 2026) |
+| Repositorio | https://github.com/ArsenalCrack/unifood-rush |
 
 El juego ocupa toda la ventana del navegador: su resolución es 960 × 540 con escala FIT y Phaser lo agranda sin deformarlo. El `index.html` de la guía lo limitaba a 960 × 540 píxeles; el cambio se explica en `docs/despliegue.md`.
 
