@@ -7,7 +7,7 @@ Todo el arte se dibuja en código (`src/arte/`); no hay archivos de imagen. Se r
 
 | Dato | Valor |
 |---|---|
-| Juego | 960 × 540 px, escala FIT, renderer WebGL |
+| Juego | 960 × 540 px, escala FIT, renderer WebGL; el lienzo se agranda hasta llenar la ventana sin deformarse |
 | Rejilla | Isométrica 2:1, celdas de 64 × 32 px |
 | Proyección | pantallaX = (x − y) · 32, pantallaY = (x + y) · 16 − z · 32, más el origen (416, 62) |
 | Planta | 16 × 12 celdas |

@@ -16,6 +16,9 @@ El agente recibió la guía completa del laboratorio en PDF y siguió sus 17 pro
 | 2 | «continua» | Pasos 13 a 15 de la sección B y pruebas en el navegador |
 | 3 | «continua» | Paso 16, hoja de arte, compilación, ZIP y documentos |
 | 4 | «continua, pero ten en cuenta que mi profe ha enviado el siguiente mensaje: […] Ahora deben realizar el despliegue en internet (obligatorio) […] como yo tengo VPS […] quiero subirlo allí» | Paso 17 en un servidor propio: `scripts/desplegar.mjs` y `docs/despliegue.md` |
+| 5 | Indicó el usuario SSH del servidor | El agente entró con la clave SSH del equipo, subió los archivos y simuló el cambio de Caddy. No usó contraseñas |
+| 6 | El mismo mensaje del docente, más: «revisa en dónde quedaste, al finalizar dame la guía de cómo funciona el juego para estudiarla, no sé ni siquiera si se subió al repositorio» | El integrante ejecutó el paso con `sudo` en su terminal y el simulador quedó en https://dinamyt.org/unifood/. Guía de estudio para la sustentación y repositorio en GitHub |
+| 7 | «¿Por qué UniFood no agarra la pantalla de todo el navegador?» | El contenedor pasó de 960 × 540 fijo a toda la ventana; se publicó de nuevo |
 
 ## B. Los 17 prompts de la guía con los datos de la ficha D.13
 
@@ -39,7 +42,7 @@ Estado: **Funcionó** (a la primera) o **Corregido** (hubo que ajustar; se expli
 | 14 | Implementa el Inspector (Pre, Post, A, ecuación de estado, probar disparo, árbol de cobertura) y el Radar con `explorar(red, M, 3)`. Game over por interbloqueo con reintento desde el último marcado verde. | Escena Inspector, radar y pantalla de interbloqueo | Corregido: las alertas del radar se repetían en cada marcado; el destello se quedaba encendido en pausa; «reintentar con monitores» ahora vuelve al inicio del turno si los monitores no caben |
 | 15 | Agrega el HUD del GDD, puntaje, fin de turno, Resultados, 6 logros con aviso animado, controles táctiles y sonidos con Web Audio. | HUDPartida, Resultados, logros y `sonido.js` | Funcionó. Se añadió «Reiniciar logros» en el título |
 | 16 | Pulido con Phaser 4: glow, bloom en eventos críticos, partículas, arrastre y zoom de cámara, temblor, transiciones. Juega 3 turnos a ×4, revisa los criterios y ejecuta npm test. | Efectos en `src/arte/efectos.js` | Corregido: Phaser 4.2.1 no tiene `addBloom`; el bloom se arma con filtros en paralelo (umbral, desenfoque y suma) |
-| 17 | Publicar en Internet. La guía lo traía como opcional con Netlify o Vercel; el docente lo volvió obligatorio. El equipo eligió su propio servidor (VPS). | `npm run desplegar`, `despliegue/instalar-en-caddy.sh` y `docs/despliegue.md`. Archivos subidos y cambio de Caddy simulado y validado en el servidor | Corregido: se cambió Netlify o Vercel por un servidor propio con Caddy. Pendiente: el paso con sudo lo ejecuta el equipo; dirección https://dinamyt.org/unifood/ |
+| 17 | Publicar en Internet. La guía lo traía como opcional con Netlify o Vercel; el docente lo volvió obligatorio. El equipo eligió su propio servidor (VPS). | `npm run desplegar`, `despliegue/instalar-en-caddy.sh` y `docs/despliegue.md`. Simulador publicado en https://dinamyt.org/unifood/ el 16 de noviembre de 2026 | Corregido: se cambió Netlify o Vercel por un servidor propio con Caddy. La primera conexión SSH se cortó mientras esperaba la contraseña de `sudo`; se repitió con `ServerAliveInterval` |
 | – | Prompt de verificación de la sección 5.10: `index.html` con Phaser por CDN, `base: './'`, sin `import Phaser`, rutas relativas, `npm test`, `npm run build`, `dist/` menor de 25 MB, preview sin 404. | 50 pruebas, `dist/` de 120 KB y preview sin errores | Funcionó |
 
 ## C. Decisiones que no estaban en la ficha
@@ -58,10 +61,11 @@ La guía pide aceptar o rechazar de forma explícita lo que el agente proponga. 
 | Tiempos, puntajes, 3 turnos y 6 logros del GDD | La ficha solo fija 5 min y 120 estudiantes | ☐ |
 | Semilla 96 | Da un primer bloqueo de torniquete a los 39 s del turno 1 | ☐ |
 | Piloto automático de servir (tecla A) | Permite cumplir «sin intervenir» y las pruebas a ×4 | ☐ |
+| El contenedor del juego ocupa toda la ventana (`100vw` × `100dvh`) en lugar de 960 × 540 fijo | El `index.html` de la guía nunca agranda el juego; la resolución de 960 × 540 y la escala FIT no cambian | ☐ |
 
 ## D. Lo que el agente no hizo
 
 - Verificar los modelos en JFLAP y PIPE2: los archivos de `modelos/` se generaron desde los JSON y hay que abrirlos y capturar los análisis (`modelos/README.md`).
 - Probar el juego en un celular real y con otro equipo (playtest).
-- Subir el ZIP al aula virtual, grabar el video y publicar el repositorio en GitHub.
-- Ejecutar en el servidor el paso que pide contraseña de administrador (`sudo bash ~/instalar-en-caddy.sh dinamyt.org`): el agente no escribe contraseñas.
+- Subir el ZIP al aula virtual y grabar el video.
+- Escribir la contraseña de administrador del servidor: el paso `sudo bash ~/instalar-en-caddy.sh dinamyt.org` lo ejecutó el integrante en su terminal, porque el agente no escribe contraseñas.

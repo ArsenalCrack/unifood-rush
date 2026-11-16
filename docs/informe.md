@@ -3,7 +3,7 @@
 Equipo: José Alejandro Morales, Amir Sarmiento, Carlos Antolinez.
 Asignatura: Modelado y Simulación de Sistemas de Eventos Discretos (167413). Fase 1, Laboratorio 1.
 
-**Cómo leer este informe.** La columna "Núcleo / desarrollo" trae lo que ya se comprobó con `npm test` (50 pruebas) y jugando en el navegador durante el desarrollo, el 15 de noviembre de 2026. Las casillas ☐ son del equipo: resultados de JFLAP y PIPE2, celular real, medición de fps, playtest, capturas y el enlace público. No están hechas.
+**Cómo leer este informe.** La columna "Núcleo / desarrollo" trae lo que ya se comprobó con `npm test` (50 pruebas) y jugando en el navegador durante el desarrollo, el 15 de noviembre de 2026. Las casillas ☐ son del equipo: resultados de JFLAP y PIPE2, celular real, medición de fps, playtest y capturas. No están hechas. El enlace público está activo desde el 16 de noviembre de 2026.
 
 ---
 
@@ -156,8 +156,9 @@ Asignatura: Modelado y Simulación de Sistemas de Eventos Discretos (167413). Fa
 | Dato | Valor |
 |---|---|
 | Servicio usado | Servidor propio (VPS) con Caddy y HTTPS; pasos en `docs/despliegue.md` |
-| Dirección pública del simulador | https://dinamyt.org/unifood/ ☐ pendiente de activar |
-| Probado en computador y en celular | ☐ |
+| Dirección pública del simulador | https://dinamyt.org/unifood/ (activa desde el 16 de noviembre de 2026) |
+| Probado en computador | Sí: turno 1 jugado en el enlace público sin errores en la consola; el juego llena la ventana en 1600 × 900, 1280 × 1000 y 812 × 375 |
+| Probado en celular | ☐ |
 
 ---
 

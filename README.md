@@ -62,7 +62,9 @@ Cambia la N por el número del grupo. El ZIP pesa unos 40 KB.
 
 ## Despliegue en Internet (obligatorio)
 
-El docente pidió un enlace público para que los compañeros prueben el simulador y para su revisión. El simulador es estático, así que se publica copiando `dist/` a un servidor con HTTPS:
+**Juega aquí: https://dinamyt.org/unifood/**
+
+El docente pidió un enlace público para que los compañeros prueben el simulador y para su revisión del simulador (SimJam): es este mismo enlace. El simulador es estático, así que se publica copiando `dist/` a un servidor con HTTPS:
 
 ```bash
 npm run desplegar -- usuario@servidor /var/www/unifood-rush
@@ -73,7 +75,9 @@ El comando ejecuta las pruebas, compila y copia los archivos por SSH. La configu
 | Dato | Valor |
 |---|---|
 | Servicio usado | Servidor propio (VPS) con Caddy y HTTPS |
-| Dirección pública del simulador | https://dinamyt.org/unifood/ (pendiente de activar en el servidor) |
+| Dirección pública del simulador | https://dinamyt.org/unifood/ (activa desde el 16 de noviembre de 2026) |
+
+El juego ocupa toda la ventana del navegador: su resolución es 960 × 540 con escala FIT y Phaser lo agranda sin deformarlo. El `index.html` de la guía lo limitaba a 960 × 540 píxeles; el cambio se explica en `docs/despliegue.md`.
 
 ## Otros comandos
 
