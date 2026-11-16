@@ -39,7 +39,7 @@ Estado: **Funcionó** (a la primera) o **Corregido** (hubo que ajustar; se expli
 | 14 | Implementa el Inspector (Pre, Post, A, ecuación de estado, probar disparo, árbol de cobertura) y el Radar con `explorar(red, M, 3)`. Game over por interbloqueo con reintento desde el último marcado verde. | Escena Inspector, radar y pantalla de interbloqueo | Corregido: las alertas del radar se repetían en cada marcado; el destello se quedaba encendido en pausa; «reintentar con monitores» ahora vuelve al inicio del turno si los monitores no caben |
 | 15 | Agrega el HUD del GDD, puntaje, fin de turno, Resultados, 6 logros con aviso animado, controles táctiles y sonidos con Web Audio. | HUDPartida, Resultados, logros y `sonido.js` | Funcionó. Se añadió «Reiniciar logros» en el título |
 | 16 | Pulido con Phaser 4: glow, bloom en eventos críticos, partículas, arrastre y zoom de cámara, temblor, transiciones. Juega 3 turnos a ×4, revisa los criterios y ejecuta npm test. | Efectos en `src/arte/efectos.js` | Corregido: Phaser 4.2.1 no tiene `addBloom`; el bloom se arma con filtros en paralelo (umbral, desenfoque y suma) |
-| 17 | Publicar en Internet. La guía lo traía como opcional con Netlify o Vercel; el docente lo volvió obligatorio. El equipo eligió su propio servidor (VPS). | `npm run desplegar` y configuración de nginx o Caddy en `docs/despliegue.md` | Corregido: se cambió Netlify o Vercel por un servidor propio. Pendiente anotar la dirección pública |
+| 17 | Publicar en Internet. La guía lo traía como opcional con Netlify o Vercel; el docente lo volvió obligatorio. El equipo eligió su propio servidor (VPS). | `npm run desplegar`, `despliegue/instalar-en-caddy.sh` y `docs/despliegue.md`. Archivos subidos y cambio de Caddy simulado y validado en el servidor | Corregido: se cambió Netlify o Vercel por un servidor propio con Caddy. Pendiente: el paso con sudo lo ejecuta el equipo; dirección https://dinamyt.org/unifood/ |
 | – | Prompt de verificación de la sección 5.10: `index.html` con Phaser por CDN, `base: './'`, sin `import Phaser`, rutas relativas, `npm test`, `npm run build`, `dist/` menor de 25 MB, preview sin 404. | 50 pruebas, `dist/` de 120 KB y preview sin errores | Funcionó |
 
 ## C. Decisiones que no estaban en la ficha
@@ -64,4 +64,4 @@ La guía pide aceptar o rechazar de forma explícita lo que el agente proponga. 
 - Verificar los modelos en JFLAP y PIPE2: los archivos de `modelos/` se generaron desde los JSON y hay que abrirlos y capturar los análisis (`modelos/README.md`).
 - Probar el juego en un celular real y con otro equipo (playtest).
 - Subir el ZIP al aula virtual, grabar el video y publicar el repositorio en GitHub.
-- Publicar en Internet sin los datos del servidor: quedó listo el comando y falta ejecutarlo y anotar el enlace.
+- Ejecutar en el servidor el paso que pide contraseña de administrador (`sudo bash ~/instalar-en-caddy.sh dinamyt.org`): el agente no escribe contraseñas.

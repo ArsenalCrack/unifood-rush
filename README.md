@@ -68,12 +68,12 @@ El docente pidió un enlace público para que los compañeros prueben el simulad
 npm run desplegar -- usuario@servidor /var/www/unifood-rush
 ```
 
-El comando ejecuta las pruebas, compila y copia los archivos por SSH. La configuración del servidor web se hace una sola vez; los pasos para nginx y Caddy están en `docs/despliegue.md`.
+El comando ejecuta las pruebas, compila y copia los archivos por SSH. La configuración del servidor web se hace una sola vez con `despliegue/instalar-en-caddy.sh`; los pasos están en `docs/despliegue.md`.
 
 | Dato | Valor |
 |---|---|
-| Servicio usado | Servidor propio (VPS) |
-| Dirección pública del simulador | pendiente de publicar |
+| Servicio usado | Servidor propio (VPS) con Caddy y HTTPS |
+| Dirección pública del simulador | https://dinamyt.org/unifood/ (pendiente de activar en el servidor) |
 
 ## Otros comandos
 
@@ -92,7 +92,8 @@ docs/GDD.md            Documento de diseño
 docs/arte.md           Guía de estilo
 docs/modelo/           automatas.md y petri.md: el modelo formal en tablas
 docs/informe.md        Tablas de las secciones 5.2 y 5.9 y postmortem
-docs/despliegue.md     Publicación en Internet: servidor propio con nginx o Caddy
+docs/despliegue.md     Publicación en Internet en un servidor propio con Caddy
+despliegue/            Script que activa la subcarpeta /unifood/ en Caddy
 src/sed/               NÚCLEO FORMAL, sin motor de juego ni DOM
   automata.js          δ(q, σ): ejecutar(σ) es el único cambio de estado
   composicion.js       Producto síncrono y supervisor por estados prohibidos

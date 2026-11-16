@@ -155,8 +155,8 @@ Asignatura: Modelado y Simulación de Sistemas de Eventos Discretos (167413). Fa
 
 | Dato | Valor |
 |---|---|
-| Servicio usado | Servidor propio (VPS) con HTTPS; pasos en `docs/despliegue.md` |
-| Dirección pública del simulador | ☐ https:// |
+| Servicio usado | Servidor propio (VPS) con Caddy y HTTPS; pasos en `docs/despliegue.md` |
+| Dirección pública del simulador | https://dinamyt.org/unifood/ ☐ pendiente de activar |
 | Probado en computador y en celular | ☐ |
 
 ---
