@@ -47,6 +47,7 @@
   ],
   "deadlock": {
     "descripcion": "Todo el personal pasa a la línea: nadie lava, el carro se llena, los que almuerzan no pueden entregar ni liberar la mesa y no quedan bandejas limpias para servir.",
+    "simetrico": "Todo el personal pasa al lavado: nadie sirve y los estudiantes de la fila no pueden avanzar (bloqueo simétrico hallado con el árbol de cobertura).",
     "prevencion": "Lugares monitor Minimo_lavado (ficha) y Minimo_linea (extensión): siempre queda al menos 1 persona en lavado y 1 en la línea en cada turno."
   }
 }

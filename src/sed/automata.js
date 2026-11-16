@@ -1,7 +1,7 @@
 // Autómata de estado finito determinista G = (Q, Σ, δ, q0, Qm).
 // Cada máquina o entidad del juego tiene su propia instancia y SOLO cambia
 // de estado con ejecutar(σ), que consulta la tabla δ.
-// Núcleo formal: sin Phaser ni DOM.
+// Núcleo formal: no depende del motor de juego ni del DOM.
 
 export class Automata {
   constructor(json, id = json.nombre) {

@@ -3,7 +3,7 @@
 // En UniFood Rush todos los eventos son observables (Σuo = ∅), así que el
 // observador coincide con el autómata: se incluye para completar el núcleo y
 // se prueba con esa propiedad.
-// Núcleo formal: sin Phaser ni DOM.
+// Núcleo formal: no depende del motor de juego ni del DOM.
 
 export class Observador {
   constructor(json) {

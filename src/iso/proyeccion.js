@@ -1,4 +1,4 @@
-// Proyección isométrica 2:1 (pseudo-3D). Sin Phaser: solo aritmética.
+// Proyección isométrica 2:1 (pseudo-3D). Solo aritmética: no depende del motor de juego.
 // Una celda (x, y) a altura z se dibuja en:
 //   pantallaX = (x − y) · TILE_W / 2
 //   pantallaY = (x + y) · TILE_H / 2 − z · TILE_H

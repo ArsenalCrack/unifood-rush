@@ -2,7 +2,7 @@
 // L se comprueba de dos formas que deben coincidir (teorema de Kleene):
 //   1) con la expresión regular anclada (^...$) de la ficha, y
 //   2) con el DFA mínimo equivalente (el mismo que se verifica en JFLAP).
-// Núcleo formal: sin Phaser ni DOM.
+// Núcleo formal: no depende del motor de juego ni del DOM.
 
 import { Automata } from './automata.js';
 

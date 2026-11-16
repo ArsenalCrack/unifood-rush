@@ -1,0 +1,67 @@
+# PROMPTS.md · Registro de prompts de UniFood Rush
+
+Proyecto 13 · José Alejandro Morales, Amir Sarmiento, Carlos Antolinez.
+
+## Agente usado
+
+El código se generó con **Claude Code** (Anthropic), no con Antigravity. Las tres habilidades de `.agents/skills/` tienen el contenido exacto de la guía; la guía indica que ese formato también sirve en Claude Code. Si el docente exige Antigravity, los prompts de la sección B se pueden volver a ejecutar allí sobre esta misma carpeta.
+
+El agente recibió la guía completa del laboratorio en PDF y siguió sus 17 prompts en orden, con los datos de la ficha D.13.
+
+## A. Mensajes escritos por el equipo
+
+| N.º | Mensaje | Qué produjo |
+|---|---|---|
+| 1 | «Proyecto 13, Unifood Rush · José Alejandro Morales, Amir Sarmiento, Carlos Antolinez. De la anterior información necesito realizar el proyecto #13 con las especificaciones que da el profesor», con la guía en PDF adjunta | Lectura de la guía y de la ficha D.13; plan de trabajo; pasos 1 a 13 de la sección B |
+| 2 | «continua» | Pasos 13 a 15 de la sección B y pruebas en el navegador |
+| 3 | «continua» | Paso 16, hoja de arte, compilación, ZIP y documentos |
+| 4 | «continua, pero ten en cuenta que mi profe ha enviado el siguiente mensaje: […] Ahora deben realizar el despliegue en internet (obligatorio) […] como yo tengo VPS […] quiero subirlo allí» | Paso 17 en un servidor propio: `scripts/desplegar.mjs` y `docs/despliegue.md` |
+
+## B. Los 17 prompts de la guía con los datos de la ficha D.13
+
+Estado: **Funcionó** (a la primera) o **Corregido** (hubo que ajustar; se explica qué).
+
+| N.º | Prompt (versión técnica, resumida) | Resultado | Estado |
+|---|---|---|---|
+| 1 | Crea la carpeta `unifood-rush`, inicia git y deja lista `modelos/`. Sin código todavía. | Carpeta, repositorio y estructura de carpetas | Funcionó |
+| 2 | Crea la habilidad `.agents/skills/disenador-simuladores-sed/SKILL.md` con el contenido exacto de la guía. | Habilidad creada | Funcionó |
+| 3 | Crea la habilidad `.agents/skills/ingeniero-sed/SKILL.md` con el contenido exacto de la guía. | Habilidad creada | Funcionó |
+| 4 | Crea la habilidad `.agents/skills/director-arte-isometrico/SKILL.md` con el contenido exacto de la guía. | Habilidad creada | Funcionó |
+| 5 | Lee las tres habilidades, crea `docs/`, `docs/modelo/` y `referencias/`. Regla: lo que digan `modelos/` y el GDD no se cambia. | Carpetas creadas y regla fijada | Funcionó |
+| 6 | Usa ingeniero-sed para escribir `docs/modelo/automatas.md` y `petri.md`; luego disenador-simuladores-sed para `docs/GDD.md` y director-arte-isometrico para el arte. Autómatas: Estudiante (En_Fila … Salida) y Torniquete (Listo, Leyendo, Acceso, Rechazo, Bloqueado). Lenguaje: `^R(S[1-3]){2,}K$`, válida `RS1S2K`. Red: Bandeja_limpia 30, Mesa_libre 20, Espacio_carro 10, Bandeja_sucia 0, Personal_linea 2, Personal_lavado 2; t_servir, t_sentarse, t_terminar, t_lavar. Deadlock: todo el personal a la línea. Prevención: monitor Minimo_lavado. Alcance: 2 torniquetes, 2 líneas, 20 mesas, 1 lavado, 5 min con 120 estudiantes. | Modelo en Markdown, GDD y guía de arte | Corregido: la ficha no definía varios datos y el agente los propuso (ver sección C) |
+| 7 | Construye la BASE: Vite, Phaser 4.2.1 por CDN, `src/config.js`, `src/sed/aleatorio.js` y `reloj.js`, `src/iso/proyeccion.js`, `src/entrada/gestorEntrada.js`, escenas Arranque, Titulo, Planta, HUDMaquina, Inspector y Resultados. Prueba `test/reloj.test.js`. | Proyecto base y 6 pruebas del reloj | Funcionó |
+| 8 | Usa ingeniero-sed. Implementa el NÚCLEO en `src/sed/`: JSON de los modelos, `automata.js`, `composicion.js`, `observador.js`, `lenguaje.js`, `redPetri.js`, `cobertura.js` y pruebas contra las palabras y marcados del modelo. | Núcleo, motor de simulación y 38 pruebas | Corregido: `faltantes(t)` mezclaba tokens que faltan con capacidad llena; ahora informa primero los tokens (AND-join) |
+| 9 | Construye la planta del GDD: rejilla isométrica, 2 torniquetes, 2 líneas, 20 mesas, lavado, carro; cada entidad con su Automata; tokens como objetos; eventos no controlables por el reloj con semilla. | Escena Planta, `Escenario`, `Multitud`, `Personal`, `Torniquetes` | Corregido: la pila de bandejas tapaba el torniquete 1 y pasó a un estante en el muro; el rótulo del tablero se partió en dos líneas |
+| 10 | Implementa HUDMaquina: grafo del autómata desde su JSON, estado actual con glow, última transición parpadeando 0,5 s, botones de Γ(q) en verde, gris o rojo, últimos 10 eventos. | Escena HUDMaquina y `src/arte/grafo.js` | Corregido: el grafo del torniquete quedaba aplastado y se cambió su distribución (también en el `.jff`); las etiquetas de ida y vuelta chocaban; la `l` se confundía con un 1 |
+| 11 | Implementa la consola de reparación en el HUD: campo de texto, botones R, S1, S2, S3, K, avance del DFA símbolo a símbolo, validación con RegExp y DFA, ayuda que cuesta puntos. | Consola dentro de HUDMaquina | Corregido: con varias teclas en el mismo cuadro Phaser volvía a despachar las anteriores y la palabra salía duplicada; ahora cada evento se atiende una vez |
+| 12 | Implementa el supervisor con `composicion.js`: planta Estudiante ‖ Torniquete, especificación Registro_Acceso, estado prohibido Violacion. Botón rojo con la razón formal, intento registrado, pestaña Composición. Prueba de 10 000 eventos. | Supervisor, pestaña Composición y pruebas | Funcionó. Nota: el torniquete es compartido por la fila, así que el supervisor se calcula sobre el producto completo (90 tuplas) |
+| 13 | Conecta la red con la planta: lugares como objetos con contador m/k, transiciones de jugador y automáticas, AND-join con aviso del token que falta, tweens de tokens, conflictos, desborde de En_fila, sincronización transición-evento. | Tokens físicos, avisos y desborde | Corregido: el relevo por clic sobre el personal chocaba con la zona de servir; pasó a dos flechas en el tablero, teclas L y V y botones del HUD |
+| 14 | Implementa el Inspector (Pre, Post, A, ecuación de estado, probar disparo, árbol de cobertura) y el Radar con `explorar(red, M, 3)`. Game over por interbloqueo con reintento desde el último marcado verde. | Escena Inspector, radar y pantalla de interbloqueo | Corregido: las alertas del radar se repetían en cada marcado; el destello se quedaba encendido en pausa; «reintentar con monitores» ahora vuelve al inicio del turno si los monitores no caben |
+| 15 | Agrega el HUD del GDD, puntaje, fin de turno, Resultados, 6 logros con aviso animado, controles táctiles y sonidos con Web Audio. | HUDPartida, Resultados, logros y `sonido.js` | Funcionó. Se añadió «Reiniciar logros» en el título |
+| 16 | Pulido con Phaser 4: glow, bloom en eventos críticos, partículas, arrastre y zoom de cámara, temblor, transiciones. Juega 3 turnos a ×4, revisa los criterios y ejecuta npm test. | Efectos en `src/arte/efectos.js` | Corregido: Phaser 4.2.1 no tiene `addBloom`; el bloom se arma con filtros en paralelo (umbral, desenfoque y suma) |
+| 17 | Publicar en Internet. La guía lo traía como opcional con Netlify o Vercel; el docente lo volvió obligatorio. El equipo eligió su propio servidor (VPS). | `npm run desplegar` y configuración de nginx o Caddy en `docs/despliegue.md` | Corregido: se cambió Netlify o Vercel por un servidor propio. Pendiente anotar la dirección pública |
+| – | Prompt de verificación de la sección 5.10: `index.html` con Phaser por CDN, `base: './'`, sin `import Phaser`, rutas relativas, `npm test`, `npm run build`, `dist/` menor de 25 MB, preview sin 404. | 50 pruebas, `dist/` de 120 KB y preview sin errores | Funcionó |
+
+## C. Decisiones que no estaban en la ficha
+
+La guía pide aceptar o rechazar de forma explícita lo que el agente proponga. Esto fue lo que propuso. **Pendiente: el equipo debe revisarlo y marcar su decisión.**
+
+| Decisión del agente | Motivo | ¿Aceptada por el equipo? |
+|---|---|---|
+| Torniquete: `leer` también sale de Acceso y de Rechazo; Qm = {Listo, Acceso} | La ficha da 5 eventos y ninguno de «paso» | ☐ |
+| Autómata Contador_Rechazos compuesto con el torniquete | «Bloqueo tras 3 rechazos» sin usar un `if` | ☐ |
+| Especificación Registro_Acceso con estado prohibido Violacion, una por estudiante | Formaliza «servir se deshabilita si no hubo acceso_ok para ese estudiante» | ☐ |
+| Lugar Relevo (M0 = 2, k = 2) y transiciones t_a_linea y t_a_lavado | «El personal solo se reasigna en el cambio de turno» | ☐ |
+| En_fila con k = 16 y capacidad desborde | La guía exige demostrar un desborde y la ficha no fija k | ☐ |
+| Reposo distinto de interbloqueo | Las llegadas son externas: sin estudiantes ninguna transición está habilitada y eso no es un bloqueo | ☐ |
+| Segundo monitor Minimo_linea | El árbol de cobertura mostró el bloqueo simétrico (todo el personal al lavado) | ☐ |
+| Tiempos, puntajes, 3 turnos y 6 logros del GDD | La ficha solo fija 5 min y 120 estudiantes | ☐ |
+| Semilla 96 | Da un primer bloqueo de torniquete a los 39 s del turno 1 | ☐ |
+| Piloto automático de servir (tecla A) | Permite cumplir «sin intervenir» y las pruebas a ×4 | ☐ |
+
+## D. Lo que el agente no hizo
+
+- Verificar los modelos en JFLAP y PIPE2: los archivos de `modelos/` se generaron desde los JSON y hay que abrirlos y capturar los análisis (`modelos/README.md`).
+- Probar el juego en un celular real y con otro equipo (playtest).
+- Subir el ZIP al aula virtual, grabar el video y publicar el repositorio en GitHub.
+- Publicar en Internet sin los datos del servidor: quedó listo el comando y falta ejecutarlo y anotar el enlace.

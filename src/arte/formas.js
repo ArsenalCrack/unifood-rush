@@ -141,14 +141,6 @@ export function torniquete(g, cx, cy, estado) {
   icono(g, ico, cx, cy - 42, sombra(color, 0.3));
 }
 
-// Barra de servicio (mostrador con comida).
-export function barra(g, cx, cy) {
-  caja(g, cx, cy, 31, 15.5, 20, PALETA.acero);
-  losa(g, cx - 8, cy - 22, PALETA.relevo, 9, 4.5);
-  losa(g, cx + 8, cy - 18, PALETA.operacion, 9, 4.5);
-  losa(g, cx + 2, cy - 25, PALETA.espera, 7, 3.5);
-}
-
 // Carro de menaje: lugares Espacio_carro (huecos) y Bandeja_sucia.
 export function carro(g, cx, cy) {
   sombraSuelo(g, cx, cy + 6, 26, 10);

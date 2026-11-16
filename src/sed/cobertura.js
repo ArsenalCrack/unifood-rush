@@ -1,7 +1,7 @@
 // Árbol de cobertura de Karp y Miller y exploración acotada para el radar.
 // ω se representa con Infinity: un lugar marcado con ω puede crecer sin límite.
 // Si la red es acotada, el árbol coincide con el árbol de alcanzabilidad.
-// Núcleo formal: sin Phaser ni DOM.
+// Núcleo formal: no depende del motor de juego ni del DOM.
 
 export const OMEGA = Infinity;
 

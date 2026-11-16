@@ -110,9 +110,10 @@ Balance. Con 2 y 2 nunca hay interbloqueo, pero en la hora pico la fila se desbo
 | Abrir el HUD de un torniquete o de un estudiante | Clic sobre él | – | Tocarlo |
 | Disparar un evento desde el HUD | Clic en el botón | – | Tocar el botón |
 | Escribir en la consola de reparación | Clic en los comandos | R, S, 1, 2, 3, K, Retroceso, Enter | Botones de comandos |
-| Relevo a la línea (t_a_linea) | Clic en una persona de lavado | L | Tocarla |
-| Relevo al lavado (t_a_lavado) | Clic en una persona de línea | V | Tocarla |
-| Ver qué token le falta a una estación | Clic en lavado, carro o pila | – | Tocar |
+| Relevo a la línea (t_a_linea) | Clic en la flecha LÍNEA → del tablero de relevo | L | Flecha del tablero o botón →LÍN |
+| Relevo al lavado (t_a_lavado) | Clic en la flecha ← LAVADO del tablero de relevo | V | Flecha del tablero o botón →LAV |
+| Ver qué token le falta a una estación | Clic en el lavado, el carro o el estante de bandejas | – | Tocar |
+| Ver los conflictos (choice) del marcado | Clic en el tablero de relevo | – | Tocar |
 | Pausa | Botón ⏸ | P | Botón ⏸ |
 | Inspector de la red | Botón I | I | Botón I |
 | Velocidad ×1, ×2, ×4 | Botón de velocidad | 1, 2, 4 | Botón de velocidad |
@@ -148,7 +149,7 @@ Sin textos de ayuda fijos durante la partida. Los controles se explican en la pa
 
 ## 13. Pantalla de resultados
 
-Producción (estudiantes en Salida sobre el total y servidos), fallos reparados, intentos bloqueados, desbordes, deadlocks evitados (veces que una acción del jugador llevó el radar de amarillo a verde), lavados, puntaje, bono de riesgo y logros.
+Producción (estudiantes en Salida sobre el total y servidos), fallos reparados, intentos bloqueados, desbordes, deadlocks evitados (veces que, tras un relevo decidido con el radar en amarillo, el radar volvió a verde), lavados, puntaje, bono de riesgo y logros.
 
 ## 14. Arte
 

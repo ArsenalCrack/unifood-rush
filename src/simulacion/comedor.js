@@ -2,7 +2,7 @@
 // Eventos controlables (servir, reiniciar) y transiciones de disparo "jugador"
 // (t_servir, t_a_linea, t_a_lavado). Cada solicitud pasa por el supervisor, por
 // δ y por la red de Petri; si alguno no la permite, no se ejecuta.
-// Sin Phaser ni DOM: se prueba en Node.
+// No depende del motor de juego ni del DOM: se prueba en Node.
 
 import { FlujoComedor } from './flujo.js';
 import { nombreCompuesto, componer, componerVarios, ejecutarConjunto } from '../sed/composicion.js';

@@ -10,7 +10,7 @@ import { sonido } from '../audio/sonido.js';
 const CONTROLES = [
   ['Clic en un mostrador · Q / W', 'servir al primero de la fila 1 / 2'],
   ['Clic en torniquete o estudiante', 'abre su autómata en vivo (HUD)'],
-  ['Clic en una persona · L / V', 'relevo a la línea / al lavado'],
+  ['Flechas del tablero · L / V', 'relevo a la línea / al lavado'],
   ['P · I · 1 2 4', 'pausa · inspector de la red · velocidad'],
   ['A · M · F1', 'piloto de servir · monitores · fps'],
   ['Arrastre y rueda · Esc', 'mover y acercar la cámara · cerrar panel']

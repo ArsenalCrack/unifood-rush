@@ -34,7 +34,6 @@ export function pasosDeTexturas(escena) {
   }
   pasos.push(() => crear(escena, 'mesa_libre', 56, 44, 28, 26, (g, x, y) => F.mesa(g, x, y, true)));
   pasos.push(() => crear(escena, 'mesa_ocupada', 56, 44, 28, 26, (g, x, y) => F.mesa(g, x, y, false)));
-  pasos.push(() => crear(escena, 'barra', 72, 64, 36, 44, F.barra));
   pasos.push(() => crear(escena, 'carro', 64, 48, 32, 24, F.carro));
   pasos.push(() => crear(escena, 'fregadero', 72, 68, 36, 48, F.fregadero));
   pasos.push(() => crear(escena, 'tablero', 48, 60, 24, 54, F.tablero));

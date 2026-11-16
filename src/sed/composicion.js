@@ -2,7 +2,7 @@
 // G1 ‖ G2: los eventos comunes ocurren a la vez en ambos autómatas y los
 // privados en cada uno. Sobre el producto se calcula qué eventos controlables
 // hay que deshabilitar para no entrar nunca a un estado prohibido.
-// Núcleo formal: sin Phaser ni DOM.
+// Núcleo formal: no depende del motor de juego ni del DOM.
 
 const SEPARADOR = '|';
 

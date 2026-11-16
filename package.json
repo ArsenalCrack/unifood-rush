@@ -9,7 +9,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "modelos": "node scripts/exportar-modelos.mjs",
-    "simular": "node scripts/simular.mjs"
+    "simular": "node scripts/simular.mjs",
+    "desplegar": "node scripts/desplegar.mjs"
   },
   "keywords": [],
   "author": "",

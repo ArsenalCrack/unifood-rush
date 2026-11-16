@@ -1,6 +1,6 @@
 // Motor de simulación del comedor, parte 1: lo que ocurre solo.
 // Eventos NO controlables y transiciones automáticas, programados en el reloj
-// con el generador con semilla. Sin Phaser ni DOM: se prueba en Node.
+// con el generador con semilla. No depende del motor de juego ni del DOM: se prueba en Node.
 // Regla: los estados cambian solo con Automata.ejecutar (δ) y los recursos
 // solo con RedPetri.disparar o con eventos externos del reloj (agregarTokens).
 
@@ -64,6 +64,7 @@ export class FlujoComedor {
     };
     this.radar = { estado: 'verde', bloqueos: [], historial: [] };
     this.radarEmitido = null;
+    this.decisionEnAmarillo = false; // hubo un relevo con el radar en amarillo
     this.logros = new Set(logros);
     this.oyentes = new Map();
     this.terminado = false;
@@ -114,8 +115,14 @@ export class FlujoComedor {
     const etiqueta = cambio.etiqueta ?? (cambio.tipo === 'disparo' ? cambio.nombre : `+${cambio.lugar}`);
     const historial = [...this.radar.historial, { etiqueta, estado: r.estado, marcado: this.red.marcado() }].slice(-6);
     this.radar = { estado: r.estado, bloqueos: r.bloqueos, historial };
-    const porJugador = cambio.tipo === 'disparo' && this.red.transiciones[cambio.t].disparo === 'jugador';
-    if (previo === 'amarillo' && r.estado === 'verde' && porJugador) this.stats.deadlocksEvitados++;
+    // Deadlock evitado: el jugador tomó una decisión de relevo con el radar en
+    // amarillo y después el radar volvió a verde.
+    const info = cambio.tipo === 'disparo' ? this.red.transiciones[cambio.t] : null;
+    if (info && info.disparo === 'jugador' && !info.evento && previo === 'amarillo') this.decisionEnAmarillo = true;
+    if (r.estado === 'verde') {
+      if (previo === 'amarillo' && this.decisionEnAmarillo) this.stats.deadlocksEvitados++;
+      this.decisionEnAmarillo = false;
+    }
     this.emitir('red', cambio);
   }
 
@@ -130,11 +137,13 @@ export class FlujoComedor {
 
   // Interbloqueo: marcado muerto con estudiantes en proceso. Termina la partida.
   terminarPorBloqueo() {
+    // El texto explica cuál de los dos interbloqueos documentados ocurrió.
+    const sinServidores = this.red.tokens('Personal_linea') === 0;
     this.gameOver = {
       tiempo: this.reloj.tiempo,
       marcado: this.red.comoObjeto(),
       secuencia: [...this.red.secuencia],
-      descripcion: MODELOS.comedor.deadlock.descripcion,
+      descripcion: sinServidores ? MODELOS.comedor.deadlock.simetrico : MODELOS.comedor.deadlock.descripcion,
       prevencion: this.red.json.deadlock.prevencion
     };
     this.reloj.pausar();
@@ -395,7 +404,8 @@ export class FlujoComedor {
       })),
       siguienteId: this.siguienteId, mesas: this.mesas, esperandoMesa: this.esperandoMesa,
       quierenTerminar: this.quierenTerminar, lavados: this.lavados, puntaje: this.puntaje,
-      rachaServir: this.rachaServir, stats: this.stats, radar: this.radar
+      rachaServir: this.rachaServir, stats: this.stats, radar: this.radar,
+      decisionEnAmarillo: this.decisionEnAmarillo
     });
   }
 
@@ -428,6 +438,7 @@ export class FlujoComedor {
       siguienteId: d.siguienteId, mesas: d.mesas, esperandoMesa: d.esperandoMesa,
       quierenTerminar: d.quierenTerminar, lavados: d.lavados, puntaje: d.puntaje,
       rachaServir: d.rachaServir, stats: d.stats, radar: d.radar,
+      decisionEnAmarillo: d.decisionEnAmarillo,
       gameOver: null, terminado: false, radarEmitido: null
     });
     this.emitir('restaurado', {});

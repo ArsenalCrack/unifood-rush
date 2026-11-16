@@ -1,7 +1,7 @@
 // Reloj de simulación por eventos discretos.
 // Guarda un calendario de eventos futuros (cola de prioridad por tiempo) y
 // avanza de evento en evento. Entre eventos el estado del sistema no cambia.
-// Núcleo formal: sin Phaser ni DOM.
+// Núcleo formal: no depende del motor de juego ni del DOM.
 
 export class Reloj {
   // manejador(evento, reloj): función que recibe los eventos que son objetos.

@@ -99,6 +99,30 @@ test('reintentar vuelve al último marcado verde y la partida sigue igual que si
   assert.equal(conError.puntaje, limpio.puntaje);
 });
 
+test('de amarillo a verde con una buena decisión: devolver una persona al lavado', () => {
+  // Sin monitores: todo el personal a la línea y el torniquete 1 sin reparar.
+  const comedor = new Comedor({ turno: TURNOS[0], monitor: false, piloto: true });
+  const colores = [];
+  comedor.on('radar', (r) => { if (colores.at(-1) !== r.estado) colores.push(r.estado); });
+  comedor.iniciar();
+  comedor.solicitarDisparo('t_a_linea');
+  comedor.solicitarDisparo('t_a_linea');
+  let decidido = false;
+  while (!comedor.terminado && !comedor.gameOver) {
+    comedor.avanzar(0.1);
+    // Tras el cambio de turno de los 120 s hay permisos: una persona vuelve al lavado.
+    if (!decidido && comedor.reloj.tiempo >= 125) {
+      assert.equal(comedor.radar.estado, 'amarillo');
+      assert.equal(comedor.solicitarDisparo('t_a_lavado').ok, true);
+      decidido = true;
+    }
+  }
+  assert.equal(comedor.gameOver, null);              // no hubo interbloqueo
+  assert.equal(comedor.radar.estado, 'verde');
+  assert.equal(comedor.stats.deadlocksEvitados, 1);  // decisión en amarillo y vuelta a verde
+  assert.deepEqual(colores.slice(-2), ['amarillo', 'verde']);
+});
+
 test('AND-join en el juego: sin bandejas limpias servir no se ejecuta y avisa qué falta', () => {
   const comedor = new Comedor({ turno: TURNOS[0], monitor: true, piloto: false });
   comedor.iniciar();

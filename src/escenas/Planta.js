@@ -35,6 +35,7 @@ export class Planta extends Phaser.Scene {
       piloto: sesion.piloto, logros: [...sesion.logros]
     });
     this.alertas = [];          // últimas alertas para el HUD
+    this.radarAvisado = 'verde'; // último color del radar que se anunció
     this.seleccion = null;      // id de la entidad con el HUD de máquina abierto
     this.quitarResalte = null;
     this.inspectorAbierto = false;

@@ -3,7 +3,7 @@
 // A = Post − Pre y la ecuación de estado es M_k = M_{k−1} + A^T · u_k.
 // Ningún recurso del juego cambia si no es por disparar(t) o por un evento
 // externo del reloj (agregarTokens), como indica la ficha.
-// Núcleo formal: sin Phaser ni DOM.
+// Núcleo formal: no depende del motor de juego ni del DOM.
 
 export class RedPetri {
   constructor(json) {

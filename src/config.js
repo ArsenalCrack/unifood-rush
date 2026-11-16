@@ -1,4 +1,4 @@
-// Constantes del GDD de UniFood Rush. Sin Phaser ni DOM: también las usan
+// Constantes del GDD de UniFood Rush. No dependen del motor de juego ni del DOM: también las usan
 // el motor de simulación y las pruebas de Node.
 
 // --- Pantalla y rejilla isométrica 2:1 ---

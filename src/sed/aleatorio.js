@@ -1,7 +1,7 @@
 // Generador pseudoaleatorio con semilla (algoritmo mulberry32).
 // Con la misma semilla la partida es reproducible: mismas llegadas,
 // mismos rechazos y mismos tiempos de almuerzo.
-// Núcleo formal: sin Phaser ni DOM.
+// Núcleo formal: no depende del motor de juego ni del DOM.
 
 export class Aleatorio {
   constructor(semilla = 1) {
