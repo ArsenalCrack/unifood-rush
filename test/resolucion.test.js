@@ -14,6 +14,7 @@ test('el factor de resolución sigue los píxeles reales de la pantalla, con top
   assert.equal(factorPara({ anchoPx: 800, altoPx: 450 }), 1);                     // pantalla pequeña
   assert.equal(factorPara({ anchoPx: 1920, altoPx: 1080, forzado: 1 }), 1);       // ?resolucion=1
   assert.equal(factorPara({ anchoPx: 1920, altoPx: 1080, forzado: 9 }), 2);       // fuera de rango: se ignora
+  assert.equal(factorPara({ anchoPx: 0, altoPx: 0 }), 2);                         // navegador sin datos de pantalla
 });
 
 test('sin navegador (Node) el factor es 1 y la cámara no se desplaza', () => {

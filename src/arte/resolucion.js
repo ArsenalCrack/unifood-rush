@@ -12,6 +12,9 @@ import { ANCHO, ALTO } from '../config.js';
 // Celulares y tabletas tienen tope 2 para cuidar la batería; los computadores, tope 3.
 export function factorPara({ anchoPx, altoPx, dpr = 1, tactil = false, forzado = null }) {
   if (Number.isInteger(forzado) && forzado >= 1 && forzado <= 4) return forzado;
+  // Algunos navegadores embebidos o en segundo plano informan una pantalla de 0 x 0:
+  // se usa el factor de una pantalla Full HD.
+  if (!(anchoPx > 0 && altoPx > 0)) return 2;
   const largo = Math.max(anchoPx, altoPx) * dpr;
   const corto = Math.min(anchoPx, altoPx) * dpr;
   const necesario = Math.min(largo / ANCHO, corto / ALTO);
