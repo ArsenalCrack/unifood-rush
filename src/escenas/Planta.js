@@ -42,6 +42,7 @@ export class Planta extends Phaser.Scene {
     this.quitarResalte = null;
     this.inspectorAbierto = false;
     this.pausaPrevia = false;
+    this.efectosActivos = true;
 
     // La vista: escenario, multitud, torniquetes y personal.
     this.escenario = new Escenario(this, this.comedor);
@@ -184,6 +185,12 @@ export class Planta extends Phaser.Scene {
       const r = c.fijarMonitor(!c.monitor);
       if (r.ok) this.alertar(c.monitor ? 'Monitores activos: Minimo_lavado y Minimo_linea' : 'Monitores desactivados: red de la ficha', c.monitor ? 'info' : 'aviso');
       else { sonido.error(); this.alertar(`No se pueden activar los monitores. ${r.detalle}`, 'fallo'); }
+    });
+    entrada.on('efectos', () => {
+      this.efectosActivos = !this.efectosActivos;
+      this.particulas.fijarActivo(this.efectosActivos);
+      this.bloom.fijarActivo(this.efectosActivos);
+      this.alertar(this.efectosActivos ? 'Efectos visuales activados (F2)' : 'Efectos visuales desactivados (F2)');
     });
   }
 

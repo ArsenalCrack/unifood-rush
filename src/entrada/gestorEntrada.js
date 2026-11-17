@@ -28,6 +28,7 @@ class GestorEntrada extends Phaser.Events.EventEmitter {
       if (atendidas.has(tecla)) return;
       atendidas.add(tecla);
       if (tecla.key === 'F1') { tecla.preventDefault(); this.emit('fps'); return; }
+      if (tecla.key === 'F2') { tecla.preventDefault(); this.emit('efectos'); return; }
       if (tecla.key === 'Escape') { this.cerrar(); return; }
       if (this.capturaTexto) { this.capturaTexto(tecla); return; } // la consola de reparación escribe
       if (tecla.repeat) return; // mantener pulsada una tecla no repite la acción

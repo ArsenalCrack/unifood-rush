@@ -40,15 +40,24 @@ export function crearBloom(escena) {
   let pico = 0;      // intensidad inicial del pulso
   let total = 1;     // duración del pulso en ms
   let restante = 0;  // ms que le quedan
+  let activo = true;
   return {
     // Inicia un destello que se apaga solo.
     pulso(intensidad = 0.6, duracion = 700) {
-      if (!paralelo) return;
+      if (!paralelo || !activo) return;
       pico = intensidad;
       total = duracion;
       restante = duracion;
       paralelo.active = true;
       paralelo.blend.amount = intensidad;
+    },
+    fijarActivo(valor) {
+      activo = Boolean(valor);
+      if (!activo && paralelo) {
+        restante = 0;
+        paralelo.blend.amount = 0;
+        paralelo.active = false;
+      }
     },
     // Se llama en cada cuadro con el tiempo real: el destello se apaga aunque
     // la simulación esté en pausa.
@@ -95,9 +104,15 @@ export function crearParticulas(escena, puntos) {
     scale: { start: 0.6 * e, end: 0 }, tint: PALETA.fallo, lifespan: 600, emitting: false
   }).setDepth(7000);
 
+  let activo = true;
   return {
     vapor, chispas, rafaga, desborde,
+    fijarActivo(valor) {
+      activo = Boolean(valor);
+      for (const emisor of [vapor, ...chispas, rafaga, desborde]) emisor.setVisible(activo);
+    },
     estallar(x, y, color, cantidad = 8) {
+      if (!activo) return;
       rafaga.setParticleTint(color);
       rafaga.explode(cantidad, x, y);
     }

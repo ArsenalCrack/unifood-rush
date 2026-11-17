@@ -106,7 +106,10 @@ export class HUDPartida extends Phaser.Scene {
     if (this.tokensSucios) this.pintarTokens();
     if (this.radarPintado !== c.radar) this.pintarRadar();
     if (this.textoFps.visible) {
-      this.textoFps.setText(`fps ${this.game.loop.actualFps.toFixed(0)} · t sim ${reloj.tiempo.toFixed(1)} s · estudiantes ${c.estudiantes.size} · eventos en cola ${reloj.cola.length}`);
+      const fps = this.game.loop.actualFps;
+      const ms = (fps > 0 ? 1000 / fps : this.game.loop.delta).toFixed(1);
+      const fx = this.planta.efectosActivos !== false ? 'ON' : 'OFF';
+      this.textoFps.setText(`fps ${fps.toFixed(0)} (${ms} ms/cuadro) · efectos ${fx} [F2] · t sim ${reloj.tiempo.toFixed(1)} s · estudiantes ${c.estudiantes.size} · eventos en cola ${reloj.cola.length}`);
     }
   }
 

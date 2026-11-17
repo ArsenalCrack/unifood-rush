@@ -134,7 +134,7 @@ Regla del proyecto: ninguna máquina cambia de estado si no es por δ (`Automata
 | Relevo a la línea o al lavado | Flechas del tablero de relevo o botones →LÍN y →LAV | L y V |
 | Pausa, inspector, velocidad | Botones PAUSA, INSP y ×1 | P, I, 1 2 4 |
 | Piloto de servir, monitores | Botones AUTO y MON | A, M |
-| Cerrar panel, fps | Botón X | Esc, F1 |
+| Cerrar panel, fps/ms, efectos | Botón X | Esc, F1, F2 |
 | Cámara | Arrastre y rueda o pellizco | – |
 
 ## Guion para la sustentación

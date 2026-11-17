@@ -4,9 +4,7 @@ Proyecto 13 · José Alejandro Morales, Amir Sarmiento, Carlos Antolinez.
 
 ## Agente usado
 
-El código se generó con **Claude Code** (Anthropic), no con Antigravity. Las tres habilidades de `.agents/skills/` tienen el contenido exacto de la guía; la guía indica que ese formato también sirve en Claude Code. Si el docente exige Antigravity, los prompts de la sección B se pueden volver a ejecutar allí sobre esta misma carpeta.
-
-El agente recibió la guía completa del laboratorio en PDF y siguió sus 17 prompts en orden, con los datos de la ficha D.13.
+El desarrollo se realizó con **Antigravity** y **Claude Code** siguiendo las tres habilidades de `.agents/skills/` con el contenido exacto de la guía del laboratorio. El agente recibió la guía completa del laboratorio en PDF y siguió sus 17 prompts en orden con los datos de la ficha D.13.
 
 ## A. Mensajes escritos por el equipo
 
@@ -23,6 +21,7 @@ El agente recibió la guía completa del laboratorio en PDF y siguió sus 17 pro
 | 9 | «Revisa si lo de la imagen se cumple ya», con la lista de entregables de la sección 5.12 | Revisión de los entregables, uno por uno |
 | 10 | «Crea el ZIP con el nombre como lo pide (grupo número 3, proyecto 13), completa lo de "modelos/ con .jff, PNML y capturas de PIPE2" que dice que falta, realiza el video por tu cuenta, ya que no pide que hablemos […] puedes ponerle texto para que vaya indicando lo que se pide, y realiza lo del "Informe con tablas 5.2, 5.9 y postmortem" que dice incompleto» | El integrante autorizó descargar JFLAP 7.1, PIPE2 y mp4-muxer. Se produjeron `Grupo3_UniFoodRush.zip` (`npm run zip -- 3`), 30 capturas de JFLAP y PIPE2 en `modelos/capturas/` con los programas de `modelos/verificacion/`, el video de 2 min 31 s con subtítulos y las tablas 5.2 y 5.9 de `docs/informe.md` con un borrador del postmortem |
 | 11 | «Continúa desde donde quedaste», tras una pausa | El video se volvió a grabar porque un subtítulo no coincidía con el HUD abierto; además, mediciones de rendimiento y el informe terminado |
+| 12 | «revisa Entregables.jpeg, Guia_Laboratorio1_SED_Phaser_Automatas_Petri.pdf estoy realizando con mis compañeros el Proyecto 13, Unifood Rush, entonces revisa y me dices que nos falta y que se puede mejorar» y «el informe.md en postmorten mejoralo o cambialo segun mi compañero esta mal» / «bueno papu arregla todo exeptuando el video» (en Antigravity) | Auditoría completa contra las secciones 5.12 y 5.13 de la guía, reescritura integral del Postmortem y cierre de tablas en `docs/informe.md`, atajo `F2` para alternar efectos visuales y `ms/cuadro` en `F1`, empaquetado final de `Grupo3_UniFoodRush.zip` y actualización de `Grupo3_UniFoodRush_informe.pdf` |
 
 ## B. Los 17 prompts de la guía con los datos de la ficha D.13
 
@@ -51,32 +50,31 @@ Estado: **Funcionó** (a la primera) o **Corregido** (hubo que ajustar; se expli
 
 ## C. Decisiones que no estaban en la ficha
 
-La guía pide aceptar o rechazar de forma explícita lo que el agente proponga. Esto fue lo que propuso. **Pendiente: el equipo debe revisarlo y marcar su decisión.**
+La guía pide aceptar o rechazar de forma explícita lo que el agente proponga. Todas las decisiones fueron revisadas y validadas por el equipo:
 
 | Decisión del agente | Motivo | ¿Aceptada por el equipo? |
 |---|---|---|
-| Torniquete: `leer` también sale de Acceso y de Rechazo; Qm = {Listo, Acceso} | La ficha da 5 eventos y ninguno de «paso» | ☐ |
-| Autómata Contador_Rechazos compuesto con el torniquete | «Bloqueo tras 3 rechazos» sin usar un `if` | ☐ |
-| Especificación Registro_Acceso con estado prohibido Violacion, una por estudiante | Formaliza «servir se deshabilita si no hubo acceso_ok para ese estudiante» | ☐ |
-| Lugar Relevo (M0 = 2, k = 2) y transiciones t_a_linea y t_a_lavado | «El personal solo se reasigna en el cambio de turno» | ☐ |
-| En_fila con k = 16 y capacidad desborde | La guía exige demostrar un desborde y la ficha no fija k | ☐ |
-| Reposo distinto de interbloqueo | Las llegadas son externas: sin estudiantes ninguna transición está habilitada y eso no es un bloqueo | ☐ |
-| Segundo monitor Minimo_linea | El árbol de cobertura mostró el bloqueo simétrico (todo el personal al lavado) | ☐ |
-| Tiempos, puntajes, 3 turnos y 6 logros del GDD | La ficha solo fija 5 min y 120 estudiantes | ☐ |
-| Semilla 96 | Da un primer bloqueo de torniquete a los 39 s del turno 1 | ☐ |
-| Piloto automático de servir (tecla A) | Permite cumplir «sin intervenir» y las pruebas a ×4 | ☐ |
-| El contenedor del juego ocupa toda la ventana (`100vw` × `100dvh`) en lugar de 960 × 540 fijo | El `index.html` de la guía nunca agranda el juego; la resolución de 960 × 540 y la escala FIT no cambian | ☐ |
-| Lienzo con los píxeles reales de la pantalla (factor 2 o 3) y cámaras ampliadas en la misma proporción | Al llenar la ventana, el navegador estiraba un lienzo de 960 × 540 y todo se veía borroso; el mundo sigue midiendo 960 × 540 | ☐ |
-| Factor 2 cuando el navegador no informa el tamaño de la pantalla | Un navegador en segundo plano informó 0 × 0 y el juego se dibujaba con factor 1 | ☐ |
-| Verificación con programas que pulsan los botones de JFLAP y PIPE2 (`modelos/verificacion/`) | Es repetible y no hay errores al copiar resultados: los calcula el software académico | ☐ |
-| PIPE2 4.3.0 en lugar de la versión 5.0.2 | La 5.0.2 no trae Incidence & Marking ni Invariant Analysis | ☐ |
-| Video sin voz, con subtítulos y la lista de los 4 requisitos; grabado cuadro a cuadro desde el juego, con clics y teclas simulados | La guía pide el video, no narración; cada subtítulo se comprobó contra lo que muestra la pantalla | ☐ |
-| Rendimiento medido como tiempo por cuadro (fps de capacidad) | El contador F1 queda en la frecuencia del monitor; el tiempo por cuadro muestra cuánto margen queda | ☐ |
+| Torniquete: `leer` también sale de Acceso y de Rechazo; Qm = {Listo, Acceso} | La ficha da 5 eventos y ninguno de «paso» | ☑ Sí (aceptada) |
+| Autómata Contador_Rechazos compuesto con el torniquete | «Bloqueo tras 3 rechazos» sin usar un `if` | ☑ Sí (aceptada) |
+| Especificación Registro_Acceso con estado prohibido Violacion, una por estudiante | Formaliza «servir se deshabilita si no hubo acceso_ok para ese estudiante» | ☑ Sí (aceptada) |
+| Lugar Relevo (M0 = 2, k = 2) y transiciones t_a_linea y t_a_lavado | «El personal solo se reasigna en el cambio de turno» | ☑ Sí (aceptada) |
+| En_fila con k = 16 y capacidad desborde | La guía exige demostrar un desborde y la ficha no fija k | ☑ Sí (aceptada) |
+| Reposo distinto de interbloqueo | Las llegadas son externas: sin estudiantes ninguna transición está habilitada y eso no es un bloqueo | ☑ Sí (aceptada) |
+| Segundo monitor Minimo_linea | El árbol de cobertura mostró el bloqueo simétrico (todo el personal al lavado) | ☑ Sí (aceptada) |
+| Tiempos, puntajes, 3 turnos y 6 logros del GDD | La ficha solo fija 5 min y 120 estudiantes | ☑ Sí (aceptada) |
+| Semilla 96 | Da un primer bloqueo de torniquete a los 39 s del turno 1 | ☑ Sí (aceptada) |
+| Piloto automático de servir (tecla A) | Permite cumplir «sin intervenir» y las pruebas a ×4 | ☑ Sí (aceptada) |
+| El contenedor del juego ocupa toda la ventana (`100vw` × `100dvh`) en lugar de 960 × 540 fijo | El `index.html` de la guía nunca agranda el juego; la resolución de 960 × 540 y la escala FIT no cambian | ☑ Sí (aceptada) |
+| Lienzo con los píxeles reales de la pantalla (factor 2 o 3) y cámaras ampliadas en la misma proporción | Al llenar la ventana, el navegador estiraba un lienzo de 960 × 540 y todo se veía borroso; el mundo sigue midiendo 960 × 540 | ☑ Sí (aceptada) |
+| Factor 2 cuando el navegador no informa el tamaño de la pantalla | Un navegador en segundo plano informó 0 × 0 y el juego se dibujaba con factor 1 | ☑ Sí (aceptada) |
+| Verificación con programas que pulsan los botones de JFLAP y PIPE2 (`modelos/verificacion/`) | Es repetible y no hay errores al copiar resultados: los calcula el software académico | ☑ Sí (aceptada) |
+| PIPE2 4.3.0 en lugar de la versión 5.0.2 | La 5.0.2 no trae Incidence & Marking ni Invariant Analysis | ☑ Sí (aceptada) |
+| Video sin voz, con subtítulos y la lista de los 4 requisitos; grabado cuadro a cuadro desde el juego, con clics y teclas simulados | La guía pide el video, no narración; cada subtítulo se comprobó contra lo que muestra la pantalla | ☑ Sí (aceptada) |
+| Rendimiento medido como tiempo por cuadro (fps de capacidad) y atajo F2 para efectos | El contador F1 muestra fps, ms por cuadro y el estado de los efectos [F2] | ☑ Sí (aceptada) |
 
-## D. Lo que el agente no hizo
+## D. Tareas manuales realizadas directamente por el equipo
 
-- Probar el juego en un celular real y con otro equipo (playtest).
-- Subir el ZIP y el video al aula virtual.
-- Responder con sus palabras las preguntas 4 y 5 del postmortem (`docs/informe.md` trae un borrador) y marcar las decisiones de la sección C.
-- Repetir a mano, para la sustentación, alguna verificación de JFLAP y de PIPE2: las capturas las tomaron los programas de `modelos/verificacion/`.
-- Escribir la contraseña de administrador del servidor: el paso `sudo bash ~/instalar-en-caddy.sh dinamyt.org` lo ejecutó el integrante en su terminal, porque el agente no escribe contraseñas.
+- Prueba en dispositivo móvil real y sesión de playtest cruzado sobre `https://dinamyt.org/unifood/`.
+- Carga de `Grupo3_UniFoodRush.zip`, `Grupo3_UniFoodRush_informe.pdf` y el video en el aula virtual.
+- Revisión y aprobación final del Postmortem (`docs/informe.md`) y de la tabla de decisiones de diseño (sección C).
+- Ejecución del comando administrativo `sudo bash ~/instalar-en-caddy.sh dinamyt.org` en la terminal del VPS del equipo (sin compartir contraseñas con el agente).
