@@ -19,6 +19,8 @@ El agente recibió la guía completa del laboratorio en PDF y siguió sus 17 pro
 | 5 | Indicó el usuario SSH del servidor | El agente entró con la clave SSH del equipo, subió los archivos y simuló el cambio de Caddy. No usó contraseñas |
 | 6 | El mismo mensaje del docente, más: «revisa en dónde quedaste, al finalizar dame la guía de cómo funciona el juego para estudiarla, no sé ni siquiera si se subió al repositorio» | El integrante ejecutó el paso con `sudo` en su terminal y el simulador quedó en https://dinamyt.org/unifood/. Guía de estudio para la sustentación y repositorio en GitHub |
 | 7 | «¿Por qué UniFood no agarra la pantalla de todo el navegador?» | El contenedor pasó de 960 × 540 fijo a toda la ventana; se publicó de nuevo |
+| 8 | «Al ampliarlo, todo pierde mucha calidad: textos, animaciones, todo el juego […] ¿hay manera de que se vea bien sin importar cuánto se amplíe?» | Lienzo con los píxeles reales de la pantalla y cámaras ampliadas (`src/arte/resolucion.js`), texturas y textos con más resolución y la prueba `test/resolucion.test.js`; se publicó de nuevo |
+| 9 | «Revisa si lo de la imagen se cumple ya», con la lista de entregables de la sección 5.12 | Revisión de los entregables, uno por uno |
 
 ## B. Los 17 prompts de la guía con los datos de la ficha D.13
 
@@ -62,6 +64,7 @@ La guía pide aceptar o rechazar de forma explícita lo que el agente proponga. 
 | Semilla 96 | Da un primer bloqueo de torniquete a los 39 s del turno 1 | ☐ |
 | Piloto automático de servir (tecla A) | Permite cumplir «sin intervenir» y las pruebas a ×4 | ☐ |
 | El contenedor del juego ocupa toda la ventana (`100vw` × `100dvh`) en lugar de 960 × 540 fijo | El `index.html` de la guía nunca agranda el juego; la resolución de 960 × 540 y la escala FIT no cambian | ☐ |
+| Lienzo con los píxeles reales de la pantalla (factor 2 o 3) y cámaras ampliadas en la misma proporción | Al llenar la ventana, el navegador estiraba un lienzo de 960 × 540 y todo se veía borroso; el mundo sigue midiendo 960 × 540 | ☐ |
 
 ## D. Lo que el agente no hizo
 

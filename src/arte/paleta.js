@@ -1,6 +1,8 @@
 // Paleta y estilos de UniFood Rush (docs/arte.md). 14 colores base.
 // Las caras laterales de los objetos usan el mismo color oscurecido.
 
+import { RES_TEXTO } from './resolucion.js';
+
 export const PALETA = {
   fondo: 0x1d2433,
   suelo: 0xd8d0bd,
@@ -68,11 +70,11 @@ export function sombra(color, f) {
   return (r << 16) | (g << 8) | b;
 }
 
-// Estilo de texto de Phaser con nitidez doble (el juego escala con FIT).
+// Estilo de texto de Phaser con la resolución del lienzo (src/arte/resolucion.js).
 export function estilo(tamano = 12, color = TEXTO.claro, extra = {}) {
-  return { fontFamily: TEXTO.fuente, fontSize: `${tamano}px`, color, resolution: 2, ...extra };
+  return { fontFamily: TEXTO.fuente, fontSize: `${tamano}px`, color, resolution: RES_TEXTO, ...extra };
 }
 
 export function estiloMono(tamano = 11, color = TEXTO.claro, extra = {}) {
-  return { fontFamily: TEXTO.mono, fontSize: `${tamano}px`, color, resolution: 2, ...extra };
+  return { fontFamily: TEXTO.mono, fontSize: `${tamano}px`, color, resolution: RES_TEXTO, ...extra };
 }

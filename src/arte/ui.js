@@ -14,8 +14,9 @@ export function panel(escena, x, y, ancho, alto, { alfa = 0.9, borde = 0xffffff,
 
 // Botón con texto. alPulsar se llama con el propio botón.
 // Métodos extra: fijarTexto, fijarColor, activar(false) para dejarlo inactivo.
+// opciones.resolucion: para botones que viven en la planta, cuya cámara se acerca.
 export function boton(escena, x, y, etiqueta, opciones = {}, alPulsar = null) {
-  const { ancho = 120, alto = 28, tam = 13, colorTexto = TEXTO.claro } = opciones;
+  const { ancho = 120, alto = 28, tam = 13, colorTexto = TEXTO.claro, resolucion = null } = opciones;
   let color = opciones.color ?? PALETA.mantenimiento;
   let activo = true;
   const fondo = escena.add.graphics();
@@ -27,7 +28,8 @@ export function boton(escena, x, y, etiqueta, opciones = {}, alPulsar = null) {
     fondo.strokeRoundedRect(-ancho / 2, -alto / 2, ancho, alto, 6);
   };
   pintar(color);
-  const texto = escena.add.text(0, 0, etiqueta, estilo(tam, colorTexto, { fontStyle: 'bold' })).setOrigin(0.5);
+  const extra = resolucion ? { fontStyle: 'bold', resolution: resolucion } : { fontStyle: 'bold' };
+  const texto = escena.add.text(0, 0, etiqueta, estilo(tam, colorTexto, extra)).setOrigin(0.5);
   const b = escena.add.container(x, y, [fondo, texto]);
   b.setSize(ancho, alto);
   b.setInteractive({ useHandCursor: true });

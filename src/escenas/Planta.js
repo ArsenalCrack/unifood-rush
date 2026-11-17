@@ -12,6 +12,7 @@ import { Torniquetes } from '../entidades/Torniquetes.js';
 import { volar } from '../entidades/movimiento.js';
 import { resaltar, crearBloom, crearParticulas } from '../arte/efectos.js';
 import { PALETA, TEXTO, estilo } from '../arte/paleta.js';
+import { FACTOR, DESFASE, RES_TEXTO_MUNDO, prepararCamara } from '../arte/resolucion.js';
 import { boton } from '../arte/ui.js';
 import { entrada } from '../entrada/gestorEntrada.js';
 import { sonido } from '../audio/sonido.js';
@@ -25,6 +26,7 @@ export class Planta extends Phaser.Scene {
   }
 
   create() {
+    prepararCamara(this);
     this.cameras.main.setBackgroundColor(PALETA.fondo);
     this.cameras.main.fadeIn(300, 29, 36, 51);
     entrada.reiniciar();
@@ -105,7 +107,7 @@ export class Planta extends Phaser.Scene {
     }
     // Flechas de relevo junto al tablero: transiciones t_a_lavado y t_a_linea.
     const t = aPantalla(MAPA.relevo.x, MAPA.relevo.y);
-    const opciones = { ancho: 70, alto: 20, tam: 9.5, color: PALETA.relevo };
+    const opciones = { ancho: 70, alto: 20, tam: 9.5, color: PALETA.relevo, resolucion: RES_TEXTO_MUNDO };
     this.flechaLavado = boton(this, t.x - 38, t.y + 16, '← LAVADO', opciones, () => entrada.solicitarDisparo('t_a_lavado')).setDepth(8600);
     this.flechaLinea = boton(this, t.x + 38, t.y + 16, 'LÍNEA →', opciones, () => entrada.solicitarDisparo('t_a_linea')).setDepth(8600);
     // Estaciones: informan si su transición está habilitada o qué token falta (AND-join).
@@ -141,7 +143,7 @@ export class Planta extends Phaser.Scene {
   aviso(texto, celda, color = TEXTO.claro, duracion = 1900) {
     const p = aPantalla(celda.x, celda.y);
     const t = this.add.text(p.x, p.y - 70, texto, estilo(11, color, {
-      fontStyle: 'bold', backgroundColor: '#0f1524ee', padding: { x: 6, y: 4 }, align: 'center'
+      fontStyle: 'bold', backgroundColor: '#0f1524ee', padding: { x: 6, y: 4 }, align: 'center', resolution: RES_TEXTO_MUNDO
     })).setOrigin(0.5).setDepth(9500);
     // Se anima con el reloj del juego (no con los tweens de la simulación, que se pausan).
     this.time.addEvent({
@@ -376,13 +378,19 @@ export class Planta extends Phaser.Scene {
   }
 
   // ---------- cámara: arrastre, rueda y pellizco ----------
+  // La cámara ya está ampliada FACTOR veces (src/arte/resolucion.js). El jugador
+  // acerca entre 0,75 y 2,4 veces y arrastra hasta 360 y 240 unidades del mundo;
+  // DESFASE convierte ese desplazamiento al de la cámara ampliada.
 
   configurarCamara() {
     const camara = this.cameras.main;
     const limitar = (v, min, max) => Phaser.Math.Clamp(v, min, max);
+    const acercar = (factor) => camara.setZoom(limitar(camara.zoom * factor, 0.75 * FACTOR, 2.4 * FACTOR));
     this.input.addPointer(1); // segundo dedo para el pellizco
     this.input.on('pointerdown', (puntero, objetos) => {
-      this.arrastre = objetos.length === 0 ? { x: puntero.x, y: puntero.y, sx: camara.scrollX, sy: camara.scrollY } : null;
+      this.arrastre = objetos.length === 0
+        ? { x: puntero.x, y: puntero.y, sx: camara.scrollX - DESFASE.x, sy: camara.scrollY - DESFASE.y }
+        : null;
       this.pellizco = null;
     });
     this.input.on('pointermove', (puntero) => {
@@ -390,17 +398,15 @@ export class Planta extends Phaser.Scene {
       const p2 = this.input.pointer2;
       if (p1.isDown && p2.isDown) {
         const d = Phaser.Math.Distance.Between(p1.x, p1.y, p2.x, p2.y);
-        if (this.pellizco) camara.setZoom(limitar(camara.zoom * (d / this.pellizco), 0.75, 2.4));
+        if (this.pellizco) acercar(d / this.pellizco);
         this.pellizco = d;
         this.arrastre = null;
       } else if (puntero.isDown && this.arrastre) {
-        camara.scrollX = limitar(this.arrastre.sx - (puntero.x - this.arrastre.x) / camara.zoom, -360, 360);
-        camara.scrollY = limitar(this.arrastre.sy - (puntero.y - this.arrastre.y) / camara.zoom, -240, 240);
+        camara.scrollX = DESFASE.x + limitar(this.arrastre.sx - (puntero.x - this.arrastre.x) / camara.zoom, -360, 360);
+        camara.scrollY = DESFASE.y + limitar(this.arrastre.sy - (puntero.y - this.arrastre.y) / camara.zoom, -240, 240);
       }
     });
     this.input.on('pointerup', () => { this.arrastre = null; this.pellizco = null; });
-    this.input.on('wheel', (puntero, objetos, dx, dy) => {
-      camara.setZoom(limitar(camara.zoom * (dy > 0 ? 0.9 : 1.1), 0.75, 2.4));
-    });
+    this.input.on('wheel', (puntero, objetos, dx, dy) => acercar(dy > 0 ? 0.9 : 1.1));
   }
 }

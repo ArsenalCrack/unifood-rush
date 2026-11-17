@@ -6,12 +6,16 @@
 import * as F from './formas.js';
 import { PALETA, ESTADOS, RADAR, TEXTO, estilo, css, sombra } from './paleta.js';
 import { pasosDeTexturas, poner } from './texturas.js';
+import { FACTOR } from './resolucion.js';
 import { crearGrafo } from './grafo.js';
 import { boton, panel } from './ui.js';
 import { MODELOS } from '../sed/modelos/index.js';
 
 const ANCHO = 1100;
 const ALTO = 1710;
+// Igual que el juego: lienzo con más píxeles y cámara ampliada (src/arte/resolucion.js).
+// Tope 2 porque la hoja es muy alta y algunas tarjetas gráficas no admiten lienzos mayores.
+const FACTOR_HOJA = Math.min(FACTOR, 2);
 
 class HojaArte extends Phaser.Scene {
   constructor() {
@@ -19,6 +23,7 @@ class HojaArte extends Phaser.Scene {
   }
 
   create() {
+    this.cameras.main.setZoom(FACTOR_HOJA).centerOn(ANCHO / 2, ALTO / 2);
     for (const paso of pasosDeTexturas(this)) paso();
     const titulo = (texto, y) => this.add.text(30, y, texto, estilo(15, TEXTO.amarillo, { fontStyle: 'bold' }));
     const nota = (texto, x, y) => this.add.text(x, y, texto, estilo(10, TEXTO.claro, { align: 'center' })).setOrigin(0.5, 0);
@@ -148,9 +153,9 @@ class HojaArte extends Phaser.Scene {
 new Phaser.Game({
   type: Phaser.WEBGL,
   parent: 'hoja',
-  width: ANCHO,
-  height: ALTO,
+  width: ANCHO * FACTOR_HOJA,
+  height: ALTO * FACTOR_HOJA,
   backgroundColor: '#1d2433',
-  scale: { mode: Phaser.Scale.NONE },
+  scale: { mode: Phaser.Scale.NONE, zoom: 1 / FACTOR_HOJA },
   scene: [HojaArte]
 });

@@ -7,6 +7,7 @@ import { aPantalla, profundidad } from '../iso/proyeccion.js';
 import * as F from '../arte/formas.js';
 import { PALETA, TEXTO, estilo, sombra } from '../arte/paleta.js';
 import { poner, cambiar } from '../arte/texturas.js';
+import { RES_TEXTO_MUNDO } from '../arte/resolucion.js';
 import { celdaMesa } from './Multitud.js';
 
 const centro = (x, y) => aPantalla(x, y);
@@ -70,7 +71,7 @@ export class Escenario {
     }
     const letrero = (texto, x, y, color) => {
       const p = centro(x, y);
-      this.escena.add.text(p.x, p.y - 58, texto, estilo(9, color, { fontStyle: 'bold', backgroundColor: '#0f1524', padding: { x: 4, y: 2 } }))
+      this.escena.add.text(p.x, p.y - 58, texto, estilo(9, color, { fontStyle: 'bold', backgroundColor: '#0f1524', padding: { x: 4, y: 2 }, resolution: RES_TEXTO_MUNDO }))
         .setOrigin(0.5).setDepth(-890);
     };
     letrero('ENTRADA', -0.5, 2, TEXTO.amarillo);
@@ -135,7 +136,7 @@ export class Escenario {
     const rotulo = (clave, x, y, dy, color) => {
       const p = centro(x, y);
       this.rotulos[clave] = this.escena.add.text(p.x, p.y + dy, '', estilo(9, color, {
-        fontStyle: 'bold', backgroundColor: '#0f1524cc', padding: { x: 4, y: 2 }, align: 'center'
+        fontStyle: 'bold', backgroundColor: '#0f1524cc', padding: { x: 4, y: 2 }, align: 'center', resolution: RES_TEXTO_MUNDO
       })).setOrigin(0.5).setDepth(9000);
     };
     rotulo('En_fila', 2.2, 2, 0, TEXTO.amarillo);

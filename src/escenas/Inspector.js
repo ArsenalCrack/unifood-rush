@@ -5,6 +5,7 @@
 
 import { ARBOL_PROFUNDIDAD, ARBOL_MAX_NODOS } from '../config.js';
 import { PALETA, TEXTO, RADAR, estilo, estiloMono } from '../arte/paleta.js';
+import { prepararCamara } from '../arte/resolucion.js';
 import { panel, boton } from '../arte/ui.js';
 import { entrada } from '../entrada/gestorEntrada.js';
 import { RedPetri } from '../sed/redPetri.js';
@@ -23,6 +24,7 @@ export class Inspector extends Phaser.Scene {
   }
 
   create() {
+    prepararCamara(this);
     this.planta = this.scene.get('Planta');
     this.comedor = this.planta.comedor;
     this.red = this.comedor.red;

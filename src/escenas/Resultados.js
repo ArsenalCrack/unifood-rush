@@ -3,6 +3,7 @@
 
 import { ANCHO, TURNOS, LOGROS } from '../config.js';
 import { PALETA, TEXTO, estilo, estiloMono } from '../arte/paleta.js';
+import { prepararCamara } from '../arte/resolucion.js';
 import { panel, boton } from '../arte/ui.js';
 import { sesion } from '../sesion.js';
 import { sonido } from '../audio/sonido.js';
@@ -15,6 +16,7 @@ export class Resultados extends Phaser.Scene {
   create(datos) {
     const r = datos.resumen;
     const s = r.stats;
+    prepararCamara(this);
     this.cameras.main.fadeIn(350, 29, 36, 51);
 
     const veredicto = r.interbloqueo ? ['GAME OVER POR INTERBLOQUEO', TEXTO.rojo]

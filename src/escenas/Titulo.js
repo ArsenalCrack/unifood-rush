@@ -2,6 +2,7 @@
 
 import { ANCHO, ALTO, TURNOS, LOGROS } from '../config.js';
 import { PALETA, TEXTO, ESTADOS, estilo } from '../arte/paleta.js';
+import { prepararCamara } from '../arte/resolucion.js';
 import { panel, boton } from '../arte/ui.js';
 import { poner } from '../arte/texturas.js';
 import { sesion } from '../sesion.js';
@@ -22,6 +23,7 @@ export class Titulo extends Phaser.Scene {
   }
 
   create() {
+    prepararCamara(this);
     this.cameras.main.fadeIn(350, 29, 36, 51);
     this.add.text(40, 26, 'UniFood Rush', estilo(40, TEXTO.claro, { fontStyle: 'bold' }));
     this.add.text(42, 76, 'Comedor universitario · autómatas y redes de Petri en vivo · proyecto 13', estilo(13, TEXTO.tenue));

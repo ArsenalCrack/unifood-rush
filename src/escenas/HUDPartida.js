@@ -6,6 +6,7 @@
 
 import { ANCHO, ALTO, LOGROS, TIEMPOS } from '../config.js';
 import { PALETA, TEXTO, RADAR, estilo, estiloMono, css } from '../arte/paleta.js';
+import { prepararCamara } from '../arte/resolucion.js';
 import { panel, boton } from '../arte/ui.js';
 import { entrada } from '../entrada/gestorEntrada.js';
 
@@ -19,6 +20,7 @@ export class HUDPartida extends Phaser.Scene {
   }
 
   create() {
+    prepararCamara(this);
     this.planta = this.scene.get('Planta');
     this.comedor = this.planta.comedor;
     const c = this.comedor;

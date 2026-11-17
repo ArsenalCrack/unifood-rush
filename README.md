@@ -33,7 +33,7 @@ Abre la dirección que muestra la terminal, normalmente http://localhost:5173.
 npm test
 ```
 
-50 pruebas con el ejecutor de Node (`node --test`), sin librerías extra:
+52 pruebas con el ejecutor de Node (`node --test`), sin librerías extra:
 
 | Archivo | Qué comprueba |
 |---|---|
@@ -43,6 +43,7 @@ npm test
 | `test/redPetri.test.js` | Pre, Post, A, AND-join, ecuación de estado, deadlock de la ficha en 72 disparos, monitores, invariantes P en 1000 disparos, árbol de cobertura y ω |
 | `test/comedor.test.js` | Turno completo, deadlock en el juego, reintento, salida de amarillo a verde, consola de reparación, monitores, 2 minutos a ×4 |
 | `test/arquitectura.test.js` | El núcleo no menciona el motor de juego, Phaser solo por CDN, la vista no cambia estados, `.jff` y PNML iguales a los JSON |
+| `test/resolucion.test.js` | Factor de resolución del lienzo según la pantalla (Full HD, portátil, QHD, 4K, celular) y su tope |
 
 ## Compilar y entregar
 
@@ -54,13 +55,13 @@ npm run build
 npm run preview
 ```
 
-Comprueba el juego en http://localhost:4173. Para el ZIP del aula virtual, comprime el **contenido** de `dist/` con `index.html` en la raíz. En PowerShell:
+Comprueba el juego en http://localhost:4173. Para el ZIP del aula virtual (el contenido de `dist/`, con `index.html` en la raíz), escribe el número del grupo en lugar del 7:
 
-```powershell
-Compress-Archive -Path dist\* -DestinationPath GrupoN_UniFoodRush.zip -Force
+```bash
+npm run zip -- 7
 ```
 
-Cambia la N por el número del grupo. El ZIP pesa unos 40 KB.
+Compila y crea `Grupo7_UniFoodRush.zip`, de unos 40 KB. No uses `Compress-Archive` de Windows PowerShell 5.1: guarda las rutas como `assets\…` y, al descomprimirlo en el aula virtual, el juego no encuentra su carpeta `assets/`.
 
 ## Despliegue en Internet (obligatorio)
 
@@ -80,7 +81,7 @@ El comando ejecuta las pruebas, compila y copia los archivos por SSH. La configu
 | Dirección pública del simulador | https://dinamyt.org/unifood/ (activa desde el 16 de noviembre de 2026) |
 | Repositorio | https://github.com/ArsenalCrack/unifood-rush |
 
-El juego ocupa toda la ventana del navegador: su resolución es 960 × 540 con escala FIT y Phaser lo agranda sin deformarlo. El `index.html` de la guía lo limitaba a 960 × 540 píxeles; el cambio se explica en `docs/despliegue.md`.
+El juego ocupa toda la ventana del navegador y se ve nítido a cualquier tamaño. El mundo sigue midiendo 960 × 540 con escala FIT, pero el lienzo tiene los píxeles reales de la pantalla (1920 × 1080 en una pantalla Full HD) y las cámaras amplían en la misma proporción (`src/arte/resolucion.js`). En un computador lento se puede abrir con `?resolucion=1` al final de la dirección. Los detalles están en `docs/despliegue.md`.
 
 ## Otros comandos
 

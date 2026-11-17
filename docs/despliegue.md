@@ -73,11 +73,23 @@ Para deshacerlo: restaurar el respaldo `/etc/caddy/Caddyfile.antes-unifood-2026-
 | Los demás sitios del dominio siguen respondiendo igual | Sí |
 | Probado en un celular real | ☐ |
 
-## 4. El juego ocupa toda la ventana
+## 4. El juego ocupa toda la ventana y se ve nítido
 
-El `index.html` de la guía fija el contenedor en 960 × 540 píxeles como máximo. Con eso Phaser achica el juego en pantallas pequeñas, pero nunca lo agranda: en un monitor grande quedaba un recuadro con bordes negros.
+El `index.html` de la guía fija el contenedor en 960 × 540 píxeles como máximo: en un monitor grande el juego quedaba en un recuadro con bordes negros. El contenedor ahora mide lo mismo que la ventana (`100vw` × `100dvh`), y Phaser, con escala FIT, agranda el juego sin deformarlo (16:9) y lo centra.
 
-El contenedor ahora mide lo mismo que la ventana (`100vw` × `100dvh`). El juego sigue teniendo una resolución de 960 × 540 con escala FIT, como pide la guía: Phaser lo agranda o lo achica sin deformarlo, en proporción 16:9, y lo centra. En una ventana con otra proporción quedan bandas negras a los lados o arriba y abajo.
+Agrandar un lienzo de 960 × 540 lo deja borroso, porque el navegador estira la imagen. Por eso el lienzo se crea con los píxeles reales de la pantalla y cada cámara amplía en la misma proporción (`src/arte/resolucion.js`):
+
+| Pantalla | Lienzo |
+|---|---|
+| Portátil de 1366 × 768 o Full HD de 1920 × 1080 | 1920 × 1080 (factor 2) |
+| QHD de 2560 × 1440 o mayor | 2880 × 1620 (factor 3, el tope en computador) |
+| Celular o tableta | Factor 2 como máximo |
+
+El mundo del juego sigue midiendo 960 × 540: posiciones, clics y pruebas no cambian. Los textos se dibujan con la resolución del lienzo y las texturas hechas en código con el doble, para que sigan nítidas al acercar la cámara de la planta. En una GeForce GTX 1650, a 1920 × 1080, cada cuadro tarda unos 4 ms.
+
+En un computador lento se puede bajar la resolución con `?resolucion=1` al final de la dirección: https://dinamyt.org/unifood/?resolucion=1. También se acepta 2, 3 o 4.
+
+Si después de publicar una versión nueva el navegador sigue mostrando la anterior, se recarga con Ctrl + F5.
 
 ## 5. Otros servidores
 

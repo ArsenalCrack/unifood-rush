@@ -4,6 +4,7 @@
 
 import { MAPA } from '../config.js';
 import { poner, cambiar } from '../arte/texturas.js';
+import { ESCALA_TEXTURA } from '../arte/resolucion.js';
 import { colocar, caminar, duracionRuta, volar } from './movimiento.js';
 
 const PUESTOS = {
@@ -67,7 +68,7 @@ export class Personal {
     // El permiso de Relevo consumido viaja del tablero a la persona.
     volar(this.escena, 'ficha_relevo', { ...MAPA.relevo, z: 1.1 }, { ...sprite.celda, z: 0.9 }, 350);
     this.escena.tweens.killTweensOf(sprite);
-    sprite.setScale(1);
+    sprite.setScale(ESCALA_TEXTURA);
     caminar(this.escena, sprite, ruta, duracionRuta(sprite.celda, ruta, 6), () => {
       cambiar(sprite, PUESTOS[destino].textura);
       this.animarLavado();
@@ -80,15 +81,15 @@ export class Personal {
     this.enPuesto('lavado').forEach((sprite, i) => {
       const lavando = i < enCurso && !sprite.caminata;
       if (lavando && !sprite.vaiven) {
-        sprite.vaiven = this.escena.tweens.add({ targets: sprite, scaleY: 0.9, duration: 260, yoyo: true, repeat: -1 });
+        sprite.vaiven = this.escena.tweens.add({ targets: sprite, scaleY: 0.9 * ESCALA_TEXTURA, duration: 260, yoyo: true, repeat: -1 });
       } else if (!lavando && sprite.vaiven) {
         sprite.vaiven.stop();
         sprite.vaiven = null;
-        sprite.setScale(1);
+        sprite.setScale(ESCALA_TEXTURA);
       }
     });
     this.enPuesto('linea').forEach((sprite) => {
-      if (sprite.vaiven) { sprite.vaiven.stop(); sprite.vaiven = null; sprite.setScale(1); }
+      if (sprite.vaiven) { sprite.vaiven.stop(); sprite.vaiven = null; sprite.setScale(ESCALA_TEXTURA); }
     });
   }
 }

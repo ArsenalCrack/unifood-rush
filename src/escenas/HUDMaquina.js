@@ -5,6 +5,7 @@
 // palabra observada, la pestaña Composición y la consola de reparación.
 
 import { PALETA, TEXTO, ESTADOS, estilo, estiloMono, css } from '../arte/paleta.js';
+import { prepararCamara } from '../arte/resolucion.js';
 import { panel, boton } from '../arte/ui.js';
 import { crearGrafo, leyendaEventos } from '../arte/grafo.js';
 import { entrada } from '../entrada/gestorEntrada.js';
@@ -27,6 +28,7 @@ export class HUDMaquina extends Phaser.Scene {
   }
 
   create() {
+    prepararCamara(this);
     this.planta = this.scene.get('Planta');
     this.comedor = this.planta.comedor;
     this.esTorniquete = this.id.startsWith('T');

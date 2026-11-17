@@ -4,14 +4,18 @@
 
 import * as F from './formas.js';
 import { ESTADOS, PALETA, sombra } from './paleta.js';
+import { RES_TEXTURA, ESCALA_TEXTURA } from './resolucion.js';
 
-// clave -> { w, h, origenX, origenY }: tamaño y punto base de cada textura.
+// clave -> { w, h, origenX, origenY }: tamaño (en unidades del mundo) y punto base de cada textura.
 export const TEXTURAS = {};
 
+// Dibuja RES_TEXTURA veces más grande y la imagen se muestra a escala ESCALA_TEXTURA:
+// ocupa lo mismo en el mundo, pero con más detalle (src/arte/resolucion.js).
 function crear(escena, clave, w, h, bx, by, dibujar) {
   const g = escena.make.graphics({ x: 0, y: 0 }, false);
+  g.scaleCanvas(RES_TEXTURA, RES_TEXTURA);
   dibujar(g, bx, by);
-  g.generateTexture(clave, w, h);
+  g.generateTexture(clave, Math.ceil(w * RES_TEXTURA), Math.ceil(h * RES_TEXTURA));
   g.destroy();
   TEXTURAS[clave] = { w, h, origenX: bx / w, origenY: by / h };
 }
@@ -56,7 +60,7 @@ export function pasosDeTexturas(escena) {
 // Crea una imagen con el punto base de su textura sobre (px, py).
 export function poner(escena, clave, px, py) {
   const t = TEXTURAS[clave];
-  return escena.add.image(px, py, clave).setOrigin(t.origenX, t.origenY);
+  return escena.add.image(px, py, clave).setOrigin(t.origenX, t.origenY).setScale(ESCALA_TEXTURA);
 }
 
 // Cambia la textura de una imagen conservando su punto base.

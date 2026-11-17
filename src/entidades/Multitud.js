@@ -4,6 +4,7 @@
 
 import { MAPA, TIEMPOS } from '../config.js';
 import { poner, cambiar } from '../arte/texturas.js';
+import { ESCALA_TEXTURA } from '../arte/resolucion.js';
 import { colocar, caminar, duracionRuta, volar } from './movimiento.js';
 
 const VELOCIDAD = 5; // celdas por segundo de simulación
@@ -44,7 +45,7 @@ export class Multitud {
   crear(id, celda, textura) {
     let sprite = this.grupo.getFirstDead(false);
     if (sprite) {
-      cambiar(sprite, textura).setActive(true).setVisible(true).setAlpha(1);
+      cambiar(sprite, textura).setActive(true).setVisible(true).setAlpha(1).setScale(ESCALA_TEXTURA);
     } else {
       sprite = poner(this.escena, textura, 0, 0);
       sprite.setInteractive({ useHandCursor: true });
@@ -89,7 +90,7 @@ export class Multitud {
     const sprite = this.sprites.get(estudiante);
     if (!sprite) return;
     this.escena.tweens.add({
-      targets: sprite, scaleY: evento === 'acceso_ok' ? 1.12 : 0.9, duration: 90, yoyo: true
+      targets: sprite, scaleY: (evento === 'acceso_ok' ? 1.12 : 0.9) * ESCALA_TEXTURA, duration: 90, yoyo: true
     });
   }
 

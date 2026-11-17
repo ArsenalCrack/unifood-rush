@@ -3,7 +3,7 @@
 Equipo: José Alejandro Morales, Amir Sarmiento, Carlos Antolinez.
 Asignatura: Modelado y Simulación de Sistemas de Eventos Discretos (167413). Fase 1, Laboratorio 1.
 
-**Cómo leer este informe.** La columna "Núcleo / desarrollo" trae lo que ya se comprobó con `npm test` (50 pruebas) y jugando en el navegador durante el desarrollo, el 15 de noviembre de 2026. Las casillas ☐ son del equipo: resultados de JFLAP y PIPE2, celular real, medición de fps, playtest y capturas. No están hechas. El enlace público está activo desde el 16 de noviembre de 2026.
+**Cómo leer este informe.** La columna "Núcleo / desarrollo" trae lo que ya se comprobó con `npm test` (52 pruebas) y jugando en el navegador durante el desarrollo, el 15 de noviembre de 2026. Las casillas ☐ son del equipo: resultados de JFLAP y PIPE2, celular real, medición de fps, playtest y capturas. No están hechas. El enlace público está activo desde el 16 de noviembre de 2026.
 
 ---
 
@@ -146,10 +146,10 @@ Asignatura: Modelado y Simulación de Sistemas de Eventos Discretos (167413). Fa
 
 | Dato | Valor |
 |---|---|
-| Nombre del archivo ZIP | `GrupoN_UniFoodRush.zip` (cambiar N por el número del grupo) |
+| Nombre del archivo ZIP | `GrupoN_UniFoodRush.zip`, creado con `npm run zip -- N` (N = número del grupo) |
 | Tamaño del archivo ZIP | 0,04 MB (37 KB) |
 | Enlace de previsualización del aula virtual | ☐ |
-| Resultado de `npm test` | 50 de 50 |
+| Resultado de `npm test` | 52 de 52 |
 
 ### Sección 5.11 Despliegue en Internet (obligatorio por indicación del docente)
 

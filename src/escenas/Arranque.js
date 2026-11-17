@@ -3,6 +3,7 @@
 
 import { ANCHO, ALTO } from '../config.js';
 import { PALETA, TEXTO, estilo } from '../arte/paleta.js';
+import { prepararCamara } from '../arte/resolucion.js';
 import { pasosDeTexturas } from '../arte/texturas.js';
 
 export class Arranque extends Phaser.Scene {
@@ -11,6 +12,7 @@ export class Arranque extends Phaser.Scene {
   }
 
   create() {
+    prepararCamara(this);
     this.add.text(ANCHO / 2, ALTO / 2 - 46, 'UniFood Rush', estilo(34, TEXTO.claro, { fontStyle: 'bold' })).setOrigin(0.5);
     this.add.text(ANCHO / 2, ALTO / 2 + 34, 'Preparando el comedor…', estilo(13, TEXTO.tenue)).setOrigin(0.5);
     const barra = this.add.graphics();
