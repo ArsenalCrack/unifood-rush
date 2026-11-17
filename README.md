@@ -55,13 +55,13 @@ npm run build
 npm run preview
 ```
 
-Comprueba el juego en http://localhost:4173. Para el ZIP del aula virtual (el contenido de `dist/`, con `index.html` en la raíz), escribe el número del grupo en lugar del 7:
+Comprueba el juego en http://localhost:4173. Para el ZIP del aula virtual (el contenido de `dist/`, con `index.html` en la raíz), escribe el número del grupo; este equipo es el grupo 3:
 
 ```bash
-npm run zip -- 7
+npm run zip -- 3
 ```
 
-Compila y crea `Grupo7_UniFoodRush.zip`, de unos 40 KB. No uses `Compress-Archive` de Windows PowerShell 5.1: guarda las rutas como `assets\…` y, al descomprimirlo en el aula virtual, el juego no encuentra su carpeta `assets/`.
+Compila y crea `Grupo3_UniFoodRush.zip`, de unos 40 KB. El video de la entrega se sube aparte al aula virtual; no está en el repositorio. No uses `Compress-Archive` de Windows PowerShell 5.1: guarda las rutas como `assets\…` y, al descomprimirlo en el aula virtual, el juego no encuentra su carpeta `assets/`.
 
 ## Despliegue en Internet (obligatorio)
 
@@ -95,7 +95,8 @@ El juego ocupa toda la ventana del navegador y se ve nítido a cualquier tamaño
 
 ```
 .agents/skills/        Tres habilidades: diseñador, ingeniero SED y director de arte
-modelos/               Archivos para JFLAP (.jff) y PIPE2 (.xml y .pnml) y capturas
+modelos/               Archivos para JFLAP (.jff) y PIPE2 (.xml y .pnml), capturas de la verificación
+                       y los programas que las tomaron (verificacion/)
 docs/GDD.md            Documento de diseño
 docs/arte.md           Guía de estilo
 docs/modelo/           automatas.md y petri.md: el modelo formal en tablas
@@ -151,7 +152,7 @@ La semilla es fija (96), así que estos pasos se repiten igual en cada partida d
 ## Modelo formal
 
 - Autómatas: `docs/modelo/automatas.md`. Red de Petri: `docs/modelo/petri.md`.
-- Pasos de verificación en JFLAP y PIPE2: `modelos/README.md`.
+- Verificación en JFLAP 7.1 y PIPE2 4.3.0, con resultados y capturas: `modelos/README.md`. Las tablas están en `docs/informe.md`.
 
 ## Herramientas
 

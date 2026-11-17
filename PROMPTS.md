@@ -21,6 +21,8 @@ El agente recibió la guía completa del laboratorio en PDF y siguió sus 17 pro
 | 7 | «¿Por qué UniFood no agarra la pantalla de todo el navegador?» | El contenedor pasó de 960 × 540 fijo a toda la ventana; se publicó de nuevo |
 | 8 | «Al ampliarlo, todo pierde mucha calidad: textos, animaciones, todo el juego […] ¿hay manera de que se vea bien sin importar cuánto se amplíe?» | Lienzo con los píxeles reales de la pantalla y cámaras ampliadas (`src/arte/resolucion.js`), texturas y textos con más resolución y la prueba `test/resolucion.test.js`; se publicó de nuevo |
 | 9 | «Revisa si lo de la imagen se cumple ya», con la lista de entregables de la sección 5.12 | Revisión de los entregables, uno por uno |
+| 10 | «Crea el ZIP con el nombre como lo pide (grupo número 3, proyecto 13), completa lo de "modelos/ con .jff, PNML y capturas de PIPE2" que dice que falta, realiza el video por tu cuenta, ya que no pide que hablemos […] puedes ponerle texto para que vaya indicando lo que se pide, y realiza lo del "Informe con tablas 5.2, 5.9 y postmortem" que dice incompleto» | El integrante autorizó descargar JFLAP 7.1, PIPE2 y mp4-muxer. Se produjeron `Grupo3_UniFoodRush.zip` (`npm run zip -- 3`), 30 capturas de JFLAP y PIPE2 en `modelos/capturas/` con los programas de `modelos/verificacion/`, el video de 2 min 31 s con subtítulos y las tablas 5.2 y 5.9 de `docs/informe.md` con un borrador del postmortem |
+| 11 | «Continúa desde donde quedaste», tras una pausa | El video se volvió a grabar porque un subtítulo no coincidía con el HUD abierto; además, mediciones de rendimiento y el informe terminado |
 
 ## B. Los 17 prompts de la guía con los datos de la ficha D.13
 
@@ -65,10 +67,16 @@ La guía pide aceptar o rechazar de forma explícita lo que el agente proponga. 
 | Piloto automático de servir (tecla A) | Permite cumplir «sin intervenir» y las pruebas a ×4 | ☐ |
 | El contenedor del juego ocupa toda la ventana (`100vw` × `100dvh`) en lugar de 960 × 540 fijo | El `index.html` de la guía nunca agranda el juego; la resolución de 960 × 540 y la escala FIT no cambian | ☐ |
 | Lienzo con los píxeles reales de la pantalla (factor 2 o 3) y cámaras ampliadas en la misma proporción | Al llenar la ventana, el navegador estiraba un lienzo de 960 × 540 y todo se veía borroso; el mundo sigue midiendo 960 × 540 | ☐ |
+| Factor 2 cuando el navegador no informa el tamaño de la pantalla | Un navegador en segundo plano informó 0 × 0 y el juego se dibujaba con factor 1 | ☐ |
+| Verificación con programas que pulsan los botones de JFLAP y PIPE2 (`modelos/verificacion/`) | Es repetible y no hay errores al copiar resultados: los calcula el software académico | ☐ |
+| PIPE2 4.3.0 en lugar de la versión 5.0.2 | La 5.0.2 no trae Incidence & Marking ni Invariant Analysis | ☐ |
+| Video sin voz, con subtítulos y la lista de los 4 requisitos; grabado cuadro a cuadro desde el juego, con clics y teclas simulados | La guía pide el video, no narración; cada subtítulo se comprobó contra lo que muestra la pantalla | ☐ |
+| Rendimiento medido como tiempo por cuadro (fps de capacidad) | El contador F1 queda en la frecuencia del monitor; el tiempo por cuadro muestra cuánto margen queda | ☐ |
 
 ## D. Lo que el agente no hizo
 
-- Verificar los modelos en JFLAP y PIPE2: los archivos de `modelos/` se generaron desde los JSON y hay que abrirlos y capturar los análisis (`modelos/README.md`).
 - Probar el juego en un celular real y con otro equipo (playtest).
-- Subir el ZIP al aula virtual y grabar el video.
+- Subir el ZIP y el video al aula virtual.
+- Responder con sus palabras las preguntas 4 y 5 del postmortem (`docs/informe.md` trae un borrador) y marcar las decisiones de la sección C.
+- Repetir a mano, para la sustentación, alguna verificación de JFLAP y de PIPE2: las capturas las tomaron los programas de `modelos/verificacion/`.
 - Escribir la contraseña de administrador del servidor: el paso `sudo bash ~/instalar-en-caddy.sh dinamyt.org` lo ejecutó el integrante en su terminal, porque el agente no escribe contraseñas.
