@@ -145,7 +145,11 @@ def con_pm4py(df, carpeta):
 
     # 3. Conformidad contra el modelo normativo (Workflow Net de docs/log.md)
     net_n, im_n, fm_n = pm4py.read_pnml(str(NORMATIVO))
-    tbr = pm4py.fitness_token_based_replay(log, net_n, im_n, fm_n)
+    try:  # la red normativa es la misma para todos los logs: una sola figura en salidas/
+        pm4py.save_vis_petri_net(net_n, im_n, fm_n, str(SALIDAS / "modelo_normativo.png"))
+    except Exception as error:
+        print(f"   (sin figura modelo_normativo.png: {error.__class__.__name__})")
+    tbr =pm4py.fitness_token_based_replay(log, net_n, im_n, fm_n)
     ali = pm4py.fitness_alignments(log, net_n, im_n, fm_n)
     prec = pm4py.precision_token_based_replay(log, net_n, im_n, fm_n)
     diag = pm4py.conformance_diagnostics_alignments(log, net_n, im_n, fm_n)
