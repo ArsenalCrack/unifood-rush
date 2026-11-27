@@ -8,6 +8,7 @@ import * as F from '../arte/formas.js';
 import { PALETA, TEXTO, estilo, sombra } from '../arte/paleta.js';
 import { poner, cambiar } from '../arte/texturas.js';
 import { RES_TEXTO_MUNDO } from '../arte/resolucion.js';
+import { chipEstado, estiloEstado, tweenColor } from '../arte/markov.js';
 import { celdaMesa } from './Multitud.js';
 
 const centro = (x, y) => aPantalla(x, y);
@@ -22,29 +23,37 @@ export class Escenario {
     this.dibujarMuros();
     this.dibujarMobiliario();
     this.crearRotulos();
+    this.crearIndicadoresMarkov();
     this.sucio = true;
     for (const tipo of ['red', 'torniquete', 'estudiante']) comedor.on(tipo, () => { this.sucio = true; });
     comedor.on('red_cambiada', () => { this.sucio = true; });
-    comedor.on('restaurado', () => { this.sucio = true; });
+    comedor.on('restaurado', () => { this.sucio = true; this.pintarLinea3(false); this.pintarMarkov(false); });
+    comedor.on('linea3', () => this.pintarLinea3(true));
+    comedor.on('markov', () => this.pintarMarkov(true));
+    this.pintarLinea3(false);
   }
 
   dibujarSuelo() {
     const g = this.escena.add.graphics().setDepth(-1000);
     // Acera exterior frente a la entrada y a la salida.
     for (let x = -9; x <= -1; x++) {
-      for (const y of [0, 1, 2, 3, 4, 6, 7]) {
+      for (const y of [0, 1, 2, 3, 4, 5, 6, 7]) {
         const c = centro(x, y);
         F.losa(g, c.x, c.y, sombra(PALETA.acero, (x + y) % 2 === 0 ? -0.5 : -0.56));
       }
     }
     F.suelo(g, PLANTA.columnas, PLANTA.filas, centro);
-    // Carriles de las dos filas (color de espera) y zona de lavado (color de mantenimiento).
+    // Carriles de las filas (color de espera) y zona de lavado (color de mantenimiento).
+    // La línea 3 (Fase 2) tiene su propio dibujo para atenuarlo mientras está cerrada.
+    this.carril3 = this.escena.add.graphics().setDepth(-999.5);
     for (const linea of MAPA.lineas) {
       for (let x = -2; x <= MAPA.cabezaFila; x++) {
         const c = centro(x, linea.y);
-        F.losa(g, c.x, c.y, PALETA.espera, 27, 13.5, 0.3);
+        F.losa(linea.id === 3 ? this.carril3 : g, c.x, c.y, PALETA.espera, 27, 13.5, 0.3);
       }
     }
+    // Tapete de la entrada: toma el color del estado de la cadena Oleada.
+    this.tapeteOleada = this.escena.add.graphics().setDepth(-999.4).setAlpha(0.6);
     for (let x = 1; x <= 5; x++) {
       for (let y = 8; y <= 10; y++) {
         const c = centro(x, y);
@@ -65,8 +74,8 @@ export class Escenario {
     const g = this.escena.add.graphics().setDepth(-900);
     // Muro del fondo a la derecha (y = -0.5): recibe la luz.
     F.muro(g, centro(-0.5, -0.5), centro(15.5, -0.5), 46, sombra(PALETA.muro, 0.1));
-    // Muro del fondo a la izquierda (x = -0.5): en sombra, con la entrada y la salida.
-    for (const [y0, y1] of [[-0.5, 0.35], [3.65, 5.85], [7.15, 11.5]]) {
+    // Muro del fondo a la izquierda (x = -0.5): en sombra, con la entrada (3 filas) y la salida.
+    for (const [y0, y1] of [[-0.5, 0.35], [5.62, 5.85], [7.15, 11.5]]) {
       F.muro(g, centro(-0.5, y1), centro(-0.5, y0), 46, sombra(PALETA.muro, -0.14));
     }
     const letrero = (texto, x, y, color) => {
@@ -80,15 +89,25 @@ export class Escenario {
 
   dibujarMobiliario() {
     const escena = this.escena;
-    // Dos mostradores delgados: el personal de línea trabaja en el pasillo del medio (y = 2).
+    // Mostradores delgados: el personal de las líneas 1 y 2 trabaja en el pasillo del medio
+    // (y = 2); el de la línea 3 (Fase 2), en el pasillo y = 4.
+    this.mostrador3 = [];
     for (const cx of [8, 9]) {
-      for (const [y0, y1] of [[1.42, 1.6], [2.4, 2.58]]) {
+      for (const [y0, y1] of [[1.42, 1.6], [2.4, 2.58], [4.42, 4.6]]) {
         const g = escena.add.graphics().setDepth(prof(cx, (y0 + y1) / 2));
         F.prisma(g, centro, cx - 0.5, y0, cx + 0.5, y1, 18, PALETA.acero);
         const comida = centro(cx, (y0 + y1) / 2);
         F.losa(g, comida.x, comida.y - 18, cx === 8 ? PALETA.relevo : PALETA.operacion, 9, 2.6);
+        if (y0 > 4) this.mostrador3.push(g);
       }
     }
+    // Persona de refuerzo de la línea 3: aparece cuando el jugador la abre.
+    const ref = centro(MAPA.refuerzoLinea3.x, MAPA.refuerzoLinea3.y);
+    this.refuerzo = poner(escena, 'personal_linea', ref.x, ref.y).setDepth(prof(MAPA.refuerzoLinea3.x, MAPA.refuerzoLinea3.y) + 1);
+    const l3 = centro(4.6, 5.6);
+    this.letreroLinea3 = escena.add.text(l3.x, l3.y - 22, 'LÍNEA 3 CERRADA · tecla 3', estilo(9, TEXTO.tenue, {
+      fontStyle: 'bold', backgroundColor: '#0f1524cc', padding: { x: 4, y: 2 }, resolution: RES_TEXTO_MUNDO
+    })).setOrigin(0.5).setDepth(8800);
     // Estante de bandejas limpias en el muro del fondo (lugar Bandeja_limpia, k = 30):
     // 3 repisas de 10 casillas. Va en el muro para que nada lo tape.
     const gEstante = escena.add.graphics().setDepth(-880);
@@ -129,6 +148,60 @@ export class Escenario {
       escena.tweens.add({ targets: g, alpha: { from: 1, to: 0.35 }, duration: 420, yoyo: true, repeat: -1 });
       return g.setVisible(false);
     });
+  }
+
+  // ---------- Fase 2: entidades estocásticas en el mapa ----------
+
+  // Indicador de la cadena Oleada junto a la entrada (con el tapete de la entrada) e
+  // indicador de la ocupación observada de las mesas (cadena Mesas) junto a su rótulo.
+  crearIndicadoresMarkov() {
+    if (!this.comedor.markov) return;
+    const escena = this.escena;
+    const opciones = { ancho: 92, alto: 20, tam: 10, resolucion: RES_TEXTO_MUNDO };
+    const o = centro(MAPA.oleada.x, MAPA.oleada.y);
+    this.chipOleada = chipEstado(escena, o.x, o.y - 30, 'Oleada', null, opciones).setDepth(8700);
+    this.etiquetaOleada = escena.add.text(o.x, o.y - 46, 'OLEADA', estilo(8, TEXTO.tenue, { fontStyle: 'bold', resolution: RES_TEXTO_MUNDO }))
+      .setOrigin(0.5).setDepth(8700);
+    const m = centro(12, -0.5);
+    this.chipMesas = chipEstado(escena, m.x, m.y - 6, 'Mesas', null, { ...opciones, ancho: 86 }).setDepth(9000);
+    this.pintarMarkov(false);
+  }
+
+  pintarMarkov(animar) {
+    if (!this.chipOleada) return;
+    const { oleada, mesas } = this.comedor.markov;
+    const previo = this.chipOleada.estadoActual();
+    this.chipOleada.fijar(oleada.estado, animar);
+    this.chipMesas.fijar(mesas.estado, animar);
+    const color = estiloEstado('Oleada', oleada.estado).color;
+    tweenColor(this.escena, this.colorTapete ?? color, color, animar ? 300 : 0, (c) => {
+      this.colorTapete = c;
+      this.tapeteOleada.clear();
+      for (let y = 0.5; y <= 5.5; y += 1) {
+        const p = centro(-0.2, y);
+        F.losa(this.tapeteOleada, p.x, p.y, c, 18, 9, 1);
+      }
+    });
+    if (animar && previo && previo !== oleada.estado) {
+      // Etiqueta flotante con el estado nuevo y un pulso breve del indicador.
+      const texto = `Oleada ${previo} → ${oleada.estado}`;
+      this.escena.aviso?.(texto, { x: MAPA.oleada.x, y: MAPA.oleada.y - 0.6 }, oleada.estado === 'Alta' ? TEXTO.rojo : TEXTO.claro, 1700);
+      this.escena.tweens.add({ targets: this.chipOleada, scale: { from: 1.25, to: 1 }, duration: 300, ease: 'Back.easeOut' });
+    }
+  }
+
+  // La línea 3 se ve atenuada mientras está cerrada; abierta, con su persona de refuerzo.
+  pintarLinea3(animar) {
+    const visible = Boolean(this.comedor.markov);
+    const abierta = this.comedor.lineas[2].abierta;
+    const alfa = (objeto, valor) => (animar ? this.escena.tweens.add({ targets: objeto, alpha: valor, duration: 300 }) : objeto.setAlpha(valor));
+    this.carril3.setVisible(visible);
+    for (const g of this.mostrador3) { g.setVisible(visible); alfa(g, abierta ? 1 : 0.4); }
+    alfa(this.carril3, abierta ? 1 : 0.25);
+    this.refuerzo.setVisible(visible && abierta);
+    this.letreroLinea3.setVisible(visible)
+      .setText(abierta ? 'LÍNEA 3 ABIERTA' : 'LÍNEA 3 CERRADA · tecla 3')
+      .setColor(abierta ? TEXTO.verde : TEXTO.tenue);
   }
 
   // Un rótulo por lugar: nombre corto y contador m/k.

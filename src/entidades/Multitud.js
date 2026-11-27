@@ -51,7 +51,7 @@ export class Multitud {
       sprite.setInteractive({ useHandCursor: true });
       sprite.on('pointerdown', (puntero, lx, ly, evento) => {
         evento.stopPropagation();
-        if (this.alSeleccionar && sprite.active) this.alSeleccionar(sprite.idEntidad, sprite);
+        if (this.alSeleccionar && sprite.active) this.alSeleccionar(sprite.idEntidad, sprite, puntero);
       });
       this.grupo.add(sprite);
     }

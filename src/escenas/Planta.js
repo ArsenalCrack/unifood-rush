@@ -2,9 +2,14 @@
 // REGLA: update solo avanza el reloj del núcleo y dibuja. La escena nunca
 // cambia estados ni recursos: lee el modelo y le envía solicitudes.
 
-import { MAPA } from '../config.js';
+import { MAPA, PASO_K_MS, UMBRAL_RIESGO, PASOS_RIESGO, COSTOS } from '../config.js';
 import { Comedor } from '../simulacion/comedor.js';
-import { aPantalla } from '../iso/proyeccion.js';
+import { PASO_K_S } from '../simulacion/flujo.js';
+import { POLITICA_TURNO_CONTINUO } from '../simulacion/politica.js';
+import { Registrador } from '../telemetria/registrador.js';
+import { aPantalla, aCelda } from '../iso/proyeccion.js';
+import * as F from '../arte/formas.js';
+import { colorCalor } from '../arte/markov.js';
 import { Escenario } from '../entidades/Escenario.js';
 import { Multitud } from '../entidades/Multitud.js';
 import { Personal } from '../entidades/Personal.js';
@@ -31,11 +36,19 @@ export class Planta extends Phaser.Scene {
     this.cameras.main.fadeIn(300, 29, 36, 51);
     entrada.reiniciar();
 
-    // El modelo: motor de simulación con sus autómatas y su red de Petri.
+    // El modelo: motor de simulación con sus autómatas, su red de Petri y, en la
+    // Fase 2, las cadenas de Markov. El paso k lo da el TimerEvent de esta escena.
+    const turno = sesion.turno();
     this.comedor = new Comedor({
-      turno: sesion.turno(), semilla: sesion.semilla, monitor: sesion.monitor,
-      piloto: sesion.piloto, logros: [...sesion.logros]
+      turno, semilla: sesion.semilla, monitor: sesion.monitor,
+      piloto: sesion.piloto, logros: [...sesion.logros],
+      llegadas: turno.continuo ? 'markov' : sesion.llegadas, relojExterno: true,
+      politica: turno.continuo ? POLITICA_TURNO_CONTINUO : null
     });
+    // El registrador escucha al núcleo desde antes de empezar (docs/log.md).
+    this.registrador = new Registrador(this.comedor);
+    this.input.mouse?.disableContextMenu(); // el clic derecho abre el panel de Markov
+    this.riesgoAvisado = false;
     this.alertas = [];          // últimas alertas para el HUD
     this.radarAvisado = 'verde'; // último color del radar que se anunció
     this.seleccion = null;      // id de la entidad con el HUD de máquina abierto
@@ -48,8 +61,10 @@ export class Planta extends Phaser.Scene {
     this.multitud = new Multitud(this, this.comedor);
     this.torniquetes = new Torniquetes(this, this.comedor);
     this.personal = new Personal(this, this.comedor);
-    this.multitud.alSeleccionar = (id) => entrada.seleccionar(id);
-    this.torniquetes.alSeleccionar = (id) => entrada.seleccionar(id);
+    // Clic: HUD de máquina. Clic derecho: panel de Markov (cadena Oleada).
+    const alSeleccionar = (id, sprite, puntero) => (puntero?.rightButtonDown() ? entrada.markov('oleada') : entrada.seleccionar(id));
+    this.multitud.alSeleccionar = alSeleccionar;
+    this.torniquetes.alSeleccionar = alSeleccionar;
 
     this.crearZonas();
     this.particulas = crearParticulas(this, {
@@ -62,15 +77,19 @@ export class Planta extends Phaser.Scene {
     this.conectarNucleo();
     this.configurarCamara();
 
+    this.crearCapaCalor();
+
     this.scene.launch('HUDPartida');
     this.events.once('shutdown', () => {
-      for (const clave of ['HUDPartida', 'HUDMaquina', 'Inspector']) this.scene.stop(clave);
+      for (const clave of ['HUDPartida', 'HUDMaquina', 'Inspector', 'PanelMarkov']) this.scene.stop(clave);
     });
     this.comedor.iniciar();
+    this.crearRelojDiscreto();
     this.sincronizarTiempo();
   }
 
   // Único avance del modelo: el reloj de simulación. Lo demás es dibujo.
+  // Con Markov, el reloj espera en el borde del paso k hasta que el TimerEvent lo da.
   update(tiempo, delta) {
     this.comedor.avanzar(delta / 1000);
     this.escenario.actualizar();
@@ -80,6 +99,36 @@ export class Planta extends Phaser.Scene {
     if (lavando !== this.particulas.vapor.emitting) {
       if (lavando) this.particulas.vapor.start(); else this.particulas.vapor.stop();
     }
+    if (this.capaCalor.visible && tiempo - (this.calorPintado ?? 0) > 500) this.pintarCalor(tiempo);
+  }
+
+  // ---------- Fase 2: reloj discreto (Phaser.Time.TimerEvent) ----------
+
+  // TimerEvent con delay = PASO_K_MS / velocidad y loop: true que llama a
+  // comedor.pasoMarkov(). Se vuelve a crear al cambiar la velocidad o al restaurar,
+  // conservando lo que ya avanzó el paso actual.
+  crearRelojDiscreto() {
+    const c = this.comedor;
+    if (this.temporizador) { this.temporizador.remove(false); this.temporizador = null; }
+    if (!c.modoMarkov || c.k >= c.pasosTurno) return;
+    const velocidad = c.reloj.velocidad;
+    const delay = PASO_K_MS / velocidad;
+    const recorrido = ((c.reloj.tiempo - c.k * PASO_K_S) * 1000) / velocidad;
+    this.temporizador = this.time.addEvent({
+      delay,
+      loop: true,
+      startAt: Math.max(0, Math.min(recorrido, delay - 1)),
+      paused: this.debePausarse(),
+      callback: () => {
+        c.pasoMarkov();
+        if (c.k >= c.pasosTurno) this.crearRelojDiscreto();
+      }
+    });
+  }
+
+  debePausarse() {
+    const c = this.comedor;
+    return c.reloj.pausado || c.terminado || Boolean(c.gameOver);
   }
 
   // Las flechas de relevo están en naranja si su transición está habilitada.
@@ -173,7 +222,25 @@ export class Planta extends Phaser.Scene {
     entrada.on('servirLinea', (idLinea) => { sonido.activar(); c.servirLinea(idLinea); });
     entrada.on('solicitarDisparo', (transicion) => { sonido.activar(); c.solicitarDisparo(transicion); });
     entrada.on('pausa', () => this.alternarPausa());
-    entrada.on('velocidad', (v) => { c.reloj.cambiarVelocidad(v); this.sincronizarTiempo(); });
+    entrada.on('velocidad', (v) => { c.reloj.cambiarVelocidad(v); this.crearRelojDiscreto(); this.sincronizarTiempo(); });
+    // Fase 2
+    entrada.on('markov', (cadena) => this.alternarPanelMarkov(cadena));
+    entrada.on('calor', () => this.alternarCalor());
+    entrada.on('fin', () => { if (c.turno.continuo && !c.terminado) c.finTurno(); });
+    entrada.on('linea3', () => {
+      sonido.activar();
+      const r = c.alternarLinea3();
+      if (r.ok) {
+        sonido.disparo();
+        this.alertar(r.abierta ? `Línea 3 abierta (−${COSTOS.linea3Apertura}, −${COSTOS.linea3Paso} por paso)` : 'Línea 3 cerrada: atiende a los que ya están en su fila', r.abierta ? 'aviso' : 'info');
+      } else if (r.detalle) { sonido.error(); this.alertar(r.detalle, 'aviso'); }
+    });
+    entrada.on('comprarRelevo', () => {
+      sonido.activar();
+      const r = c.comprarRelevo();
+      if (r.ok) { sonido.relevo(); this.alertar(`Permiso de relevo comprado (−${COSTOS.relevoExtra}): Relevo ${r.disponibles}/2`, 'aviso'); }
+      else { sonido.error(); this.alertar(r.detalle ?? 'No se puede comprar ahora', 'fallo'); }
+    });
     entrada.on('inspector', () => this.alternarInspector());
     entrada.on('cerrar', () => this.cerrarPaneles());
     entrada.on('piloto', () => {
@@ -191,10 +258,67 @@ export class Planta extends Phaser.Scene {
     return this.comedor.pedirAyuda(idLinea);
   }
 
-  // Los tweens de la planta siguen la velocidad del reloj de simulación.
+  // Los tweens de la planta y el TimerEvent del paso k siguen al reloj de simulación.
   sincronizarTiempo() {
     const reloj = this.comedor.reloj;
     this.tweens.timeScale = reloj.pausado ? 0 : reloj.velocidad;
+    if (this.temporizador) this.temporizador.paused = this.debePausarse();
+  }
+
+  // Panel de Markov (tecla M, botón MARKOV o clic derecho): no pausa la simulación.
+  alternarPanelMarkov(cadena = null) {
+    if (this.scene.isActive('PanelMarkov')) {
+      const panel = this.scene.get('PanelMarkov');
+      if (cadena && panel.cadena !== cadena) { panel.elegirCadena(cadena); return; }
+      this.scene.stop('PanelMarkov');
+    } else {
+      sonido.activar();
+      sonido.clic();
+      this.scene.launch('PanelMarkov', { cadena: cadena ?? 'oleada' });
+    }
+  }
+
+  // ---------- Fase 2: mapa de calor de las esperas (tecla H) ----------
+
+  crearCapaCalor() {
+    this.capaCalor = this.add.graphics().setDepth(-998).setVisible(false);
+    this.textosCalor = [];
+  }
+
+  alternarCalor() {
+    this.capaCalor.setVisible(!this.capaCalor.visible);
+    if (this.capaCalor.visible) this.pintarCalor(this.time.now);
+    else { this.textosCalor.forEach((t) => t.destroy()); this.textosCalor = []; }
+    this.alertar(this.capaCalor.visible ? 'Mapa de calor: espera acumulada por zona (H)' : 'Mapa de calor oculto');
+  }
+
+  // Colorea cada zona con la espera acumulada que calcula el registrador.
+  pintarCalor(ahora) {
+    this.calorPintado = ahora;
+    const e = this.registrador.esperas();
+    const zonas = [
+      ...MAPA.lineas.map((l, i) => ({ nombre: `Fila ${l.id}`, valor: e.fila[i], celdas: Array.from({ length: 8 }, (_, k) => ({ x: MAPA.cabezaFila - k, y: l.y })), rotulo: { x: 2, y: l.y } })),
+      ...MAPA.lineas.map((l, i) => ({ nombre: `Mostrador ${l.id}`, valor: e.mostrador[i], celdas: [{ x: 7, y: l.y }], rotulo: { x: 7, y: l.y } })),
+      { nombre: 'Esperan mesa', valor: e.mesa, celdas: [0, 1].flatMap((dx) => [0, 1].map((dy) => ({ x: MAPA.espera.x + dx, y: MAPA.espera.y + dy }))), rotulo: { x: MAPA.espera.x + 0.5, y: MAPA.espera.y + 0.5 } },
+      { nombre: 'Esperan carro', valor: e.carro, celdas: [{ x: MAPA.carro.x, y: MAPA.carro.y }, { x: MAPA.carro.x + 1, y: MAPA.carro.y }], rotulo: { x: MAPA.carro.x + 0.5, y: MAPA.carro.y } }
+    ];
+    const maximo = Math.max(1, ...zonas.map((z) => z.valor));
+    const g = this.capaCalor;
+    g.clear();
+    this.textosCalor.forEach((t) => t.destroy());
+    this.textosCalor = [];
+    for (const zona of zonas) {
+      if (zona.valor <= 0) continue;
+      const color = colorCalor(zona.valor / maximo);
+      for (const celda of zona.celdas) {
+        const p = aPantalla(celda.x, celda.y);
+        F.losa(g, p.x, p.y, color, 31, 15.5, 0.62);
+      }
+      const p = aPantalla(zona.rotulo.x, zona.rotulo.y);
+      this.textosCalor.push(this.add.text(p.x, p.y + 10, `${zona.nombre}: ${Math.round(zona.valor)} s`, estilo(8.5, TEXTO.claro, {
+        fontStyle: 'bold', backgroundColor: '#0f1524cc', padding: { x: 3, y: 1 }, resolution: RES_TEXTO_MUNDO
+      })).setOrigin(0.5).setDepth(9100));
+    }
   }
 
   alternarPausa() {
@@ -238,6 +362,7 @@ export class Planta extends Phaser.Scene {
   }
 
   cerrarPaneles() {
+    if (this.scene.isActive('PanelMarkov')) { this.scene.stop('PanelMarkov'); return; }
     if (this.inspectorAbierto) { this.alternarInspector(); return; }
     this.scene.stop('HUDMaquina');
     this.deseleccionar();
@@ -335,7 +460,29 @@ export class Planta extends Phaser.Scene {
       this.alertar('INTERBLOQUEO: ninguna transición habilitada', 'fallo');
       this.sincronizarTiempo();
     });
+    // Fase 2: cada paso k de la cadena Oleada.
+    c.on('markov', (e) => {
+      const { de, a } = e.oleada;
+      if (a !== de) {
+        if (a === 'Alta') {
+          sonido.oleadaAlta();
+          camara.shake(240, 0.004);   // estado crítico de la cadena: temblor leve
+          this.bloom.pulso(0.45, 650);
+          this.particulas.estallar(aPantalla(-0.5, 3).x, aPantalla(-0.5, 3).y - 20, PALETA.fallo, 14);
+        }
+        this.alertar(`Paso k = ${e.k}: oleada ${de} → ${a} (${this.comedor.llegadasDelPaso} llegan)`, a === 'Alta' ? 'fallo' : a === 'Media' ? 'aviso' : 'info');
+      }
+      if (e.mesas.a === '75-100%' && e.mesas.de !== '75-100%') sonido.mesasLlenas();
+      // Aviso amarillo del GDD: P(Alta en <= 3 pasos) supera el umbral.
+      const riesgo = e.riesgo >= UMBRAL_RIESGO && a !== 'Alta';
+      if (riesgo && !this.riesgoAvisado) {
+        sonido.riesgo();
+        this.alertar(`Riesgo ${Math.round(e.riesgo * 100)} %: oleada Alta en ≤ ${PASOS_RIESGO} pasos`, 'aviso');
+      }
+      this.riesgoAvisado = riesgo;
+    });
     c.on('restaurado', () => {
+      this.crearRelojDiscreto();
       this.cerrarPaneles();
       this.multitud.reconstruir();
       this.particulas.chispas.forEach((chispas, i) => {
@@ -348,12 +495,24 @@ export class Planta extends Phaser.Scene {
     });
     c.on('fin_turno', (resumen) => {
       sonido.finTurno();
+      this.sincronizarTiempo();
+      // Datos del registro para Resultados: casos cerrados y tiempo medio de ciclo.
+      resumen.log = { ...this.registrador.resumen(), tiempoCiclo: this.registrador.tiempoCicloMedio() };
       sesion.resultados.push(resumen);
-      this.time.delayedCall(resumen.interbloqueo ? 200 : 1300, () => {
-        camara.fadeOut(350, 29, 36, 51);
-        camara.once('camerafadeoutcomplete', () => this.scene.start('Resultados', { resumen }));
-      });
+      sesion.ultimoRegistro = this.registrador;
+      this.time.delayedCall(resumen.interbloqueo ? 200 : 1300, () => this.irAResultados(resumen));
     });
+  }
+
+  // Transición tipo barrido (wipe) hacia Resultados: la cortina la dibuja el HUD,
+  // cuya cámara no se mueve ni se acerca.
+  irAResultados(resumen) {
+    if (this.saliendo) return;
+    this.saliendo = true;
+    const ir = () => this.scene.start('Resultados', { resumen });
+    const hud = this.scene.get('HUDPartida');
+    if (hud?.barrido && this.scene.isActive('HUDPartida')) hud.barrido(ir);
+    else ir();
   }
 
   // Tras un interbloqueo: volver al último marcado verde o cerrar el turno.
@@ -388,6 +547,15 @@ export class Planta extends Phaser.Scene {
     const acercar = (factor) => camara.setZoom(limitar(camara.zoom * factor, 0.75 * FACTOR, 2.4 * FACTOR));
     this.input.addPointer(1); // segundo dedo para el pellizco
     this.input.on('pointerdown', (puntero, objetos) => {
+      // Clic derecho en el piso: panel de Markov de las mesas (zona de mesas) o de la oleada.
+      if (puntero.rightButtonDown()) {
+        this.arrastre = null;
+        if (objetos.length === 0) {
+          const p = camara.getWorldPoint(puntero.x, puntero.y);
+          entrada.markov(aCelda(p.x, p.y).x >= 9.5 ? 'mesas' : 'oleada');
+        }
+        return;
+      }
       this.arrastre = objetos.length === 0
         ? { x: puntero.x, y: puntero.y, sx: camara.scrollX - DESFASE.x, sy: camara.scrollY - DESFASE.y }
         : null;

@@ -136,6 +136,12 @@ export class FlujoComedor {
     this.oyentes.get(tipo).push(oyente);
   }
 
+  // Quita un oyente (las escenas superpuestas lo hacen al cerrarse).
+  off(tipo, oyente) {
+    const lista = this.oyentes.get(tipo);
+    if (lista) this.oyentes.set(tipo, lista.filter((o) => o !== oyente));
+  }
+
   emitir(tipo, datos = {}) {
     for (const oyente of this.oyentes.get(tipo) ?? []) oyente(datos);
     for (const oyente of this.oyentes.get('*') ?? []) oyente({ tipo, ...datos });

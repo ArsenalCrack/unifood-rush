@@ -10,6 +10,8 @@ import { HUDPartida } from './escenas/HUDPartida.js';
 import { HUDMaquina } from './escenas/HUDMaquina.js';
 import { Inspector } from './escenas/Inspector.js';
 import { Resultados } from './escenas/Resultados.js';
+import { PanelMarkov } from './escenas/PanelMarkov.js';
+import { GenerarLog } from './escenas/GenerarLog.js';
 
 const juego = new Phaser.Game({
   type: Phaser.WEBGL,
@@ -21,8 +23,8 @@ const juego = new Phaser.Game({
   backgroundColor: '#1d2433',
   scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
   input: { activePointers: 3 },
-  // Planta dibuja el mundo; HUDPartida, HUDMaquina e Inspector son escenas superpuestas.
-  scene: [Arranque, Titulo, Planta, HUDPartida, HUDMaquina, Inspector, Resultados]
+  // Planta dibuja el mundo; HUDPartida, HUDMaquina, Inspector y PanelMarkov son escenas superpuestas.
+  scene: [Arranque, Titulo, Planta, HUDPartida, HUDMaquina, Inspector, PanelMarkov, Resultados, GenerarLog]
 });
 
 // Referencia para depurar desde la consola del navegador (F12).

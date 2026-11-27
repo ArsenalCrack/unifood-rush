@@ -6,6 +6,7 @@
 // Núcleo formal: no depende del motor de juego ni del DOM.
 
 const TOLERANCIA_FILA = 1e-9;
+const coma = (v, d) => v.toFixed(d).replace('.', ','); // decimales con coma, como en la ficha
 const MAX_HISTORIAL = 1000; // los últimos pasos (los conteos n_ij guardan todo)
 
 // ---------- álgebra de matrices pequeñas ----------
@@ -414,8 +415,8 @@ export class CadenaMarkov {
     let conclusion;
     if (transiciones === 0) conclusion = 'Todavía no hay transiciones observadas.';
     else if (imposibles > 0) conclusion = `Se observaron ${imposibles} transiciones con p_ij = 0: el juego no respeta P.`;
-    else if (rechaza) conclusion = `Valor p ${valorP.toFixed(3)} < ${alfa}: se rechaza que los datos sigan P.`;
-    else conclusion = `Valor p ${valorP.toFixed(3)} ≥ ${alfa}: no se rechaza que los datos sigan P.`;
+    else if (rechaza) conclusion = `Valor p ${coma(valorP, 3)} < ${coma(alfa, 2)}: se rechaza que los datos sigan P.`;
+    else conclusion = `Valor p ${coma(valorP, 3)} ≥ ${coma(alfa, 2)}: no se rechaza que los datos sigan P.`;
     return { estadistico, gl, valorP, alfa, rechaza, transiciones, imposibles, conclusion };
   }
 

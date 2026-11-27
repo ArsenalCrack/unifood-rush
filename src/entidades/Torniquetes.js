@@ -18,13 +18,24 @@ export class Torniquetes {
       sprite.setInteractive({ useHandCursor: true });
       sprite.on('pointerdown', (puntero, lx, ly, evento) => {
         evento.stopPropagation();
-        if (this.alSeleccionar) this.alSeleccionar(sprite.idEntidad, sprite);
+        if (this.alSeleccionar) this.alSeleccionar(sprite.idEntidad, sprite, puntero);
       });
       return sprite;
     });
     comedor.on('torniquete', (e) => this.refrescar(e.linea, e.evento));
     comedor.on('restaurado', () => this.refrescarTodo());
+    comedor.on('linea3', () => this.pintarLinea3(true));
     this.refrescarTodo();
+    this.pintarLinea3(false);
+  }
+
+  // El torniquete T3 (Fase 2) se ve atenuado mientras la línea 3 está cerrada.
+  pintarLinea3(animar) {
+    const sprite = this.sprites[2];
+    sprite.setVisible(Boolean(this.comedor.markov));
+    const alfa = this.comedor.lineas[2].abierta ? 1 : 0.4;
+    if (animar) this.escena.tweens.add({ targets: sprite, alpha: alfa, duration: 300 });
+    else sprite.setAlpha(alfa);
   }
 
   sprite(idLinea) {
@@ -33,6 +44,7 @@ export class Torniquetes {
 
   refrescarTodo() {
     this.comedor.lineas.forEach((linea) => cambiar(this.sprites[linea.id - 1], `tor_${linea.torniquete.estado}`));
+    if (this.sprites.length > 2) this.pintarLinea3(false);
   }
 
   refrescar(idLinea, evento) {

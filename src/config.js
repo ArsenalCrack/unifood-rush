@@ -97,8 +97,11 @@ export const META_LOGRO_PICO = 0.9;
 export const MAPA = {
   lineas: [
     { id: 1, y: 1, torniquete: { x: 6, y: 1 }, mostrador: { x: 8, y: 1 } },
-    { id: 2, y: 3, torniquete: { x: 6, y: 3 }, mostrador: { x: 8, y: 3 } }
+    { id: 2, y: 3, torniquete: { x: 6, y: 3 }, mostrador: { x: 8, y: 3 } },
+    { id: 3, y: 5, torniquete: { x: 6, y: 5 }, mostrador: { x: 8, y: 5 } } // Fase 2: cerrada al empezar
   ],
+  refuerzoLinea3: { x: 8.6, y: 4.02 },  // persona de la línea 3 (pasillo detrás de su mostrador)
+  oleada: { x: 0.6, y: 4.1 },           // indicador de la cadena Oleada junto a la entrada
   cabezaFila: 5,                 // x de la primera posición de cada fila
   posicionesFila: 8,             // posiciones dibujadas por fila (2 x 8 = k de En_fila)
   pilaLimpias: { x: 8.6, y: -0.5, z: 0.9 }, // estante de Bandeja_limpia en el muro del fondo
@@ -108,7 +111,7 @@ export const MAPA = {
   carro: { x: 6, y: 8 },         // lugares Espacio_carro y Bandeja_sucia
   lavado: { x: 3, y: 9 },        // estación t_lavar
   personalLavado: [{ x: 2, y: 8.4 }, { x: 4, y: 8.4 }, { x: 2, y: 10 }, { x: 4, y: 10 }],
-  relevo: { x: 5.2, y: 5.7 },    // tablero de relevo (lugar Relevo)
+  relevo: { x: 3.5, y: 7.05 },   // tablero de relevo (lugar Relevo); en la Fase 1 estaba en (5,2; 5,7)
   entrada: { x: -1, y: 2 },
   salida: { x: 0, y: 6.5 }
 };
