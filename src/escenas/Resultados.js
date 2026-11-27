@@ -76,7 +76,9 @@ export class Resultados extends Phaser.Scene {
       leyenda(this, 510, 262, series);
       this.add.text(772, 116, 'Prueba χ² (α = 0,05)', estilo(10, TEXTO.claro, { fontStyle: 'bold' }));
       this.add.text(772, 134, `χ² ${numero(o.chi.estadistico, 2)} · ${o.chi.gl} gl\nvalor p ${o.chi.transiciones ? numero(o.chi.valorP, 3) : '–'}`, estiloMono(10, TEXTO.amarillo));
-      this.add.text(772, 168, o.chi.conclusion, estilo(9, o.chi.rechaza ? TEXTO.rojo : TEXTO.tenue, { wordWrap: { width: 140 } }));
+      const veredictoChi = o.chi.transiciones === 0 ? 'Sin transiciones todavía.'
+        : `${o.chi.rechaza ? 'Se rechaza' : 'No se rechaza'} P.${o.chi.confiable ? '' : ' Con tan pocos pasos la prueba no es confiable.'}`;
+      this.add.text(772, 168, veredictoChi, estilo(9, o.chi.rechaza && o.chi.confiable ? TEXTO.rojo : TEXTO.tenue, { wordWrap: { width: 140 } }));
     } else {
       this.add.text(510, 120, 'Turno con la ola fija de la Fase 1: no hubo cadena.\nEl log se exporta igual, con Markov_State = «-».', estilo(10.5, TEXTO.tenue));
     }

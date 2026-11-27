@@ -355,12 +355,12 @@ export class PanelMarkov extends Phaser.Scene {
       this.texto(xd, Y + 134 + i * 18, nombre, estilo(10, TEXTO.claro));
       this.texto(xd + 210, Y + 134 + i * 18, valor, estiloMono(10.5, TEXTO.amarillo)).setOrigin(1, 0);
     });
-    const color = chi.transiciones === 0 ? TEXTO.tenue : chi.rechaza ? TEXTO.rojo : TEXTO.verde;
-    this.texto(xd, Y + 230, chi.conclusion, estilo(10, color, { fontStyle: 'bold', wordWrap: { width: 216 } }));
+    const color = chi.transiciones === 0 ? TEXTO.tenue : chi.rechaza && chi.confiable ? TEXTO.rojo : chi.confiable ? TEXTO.verde : TEXTO.amarillo;
+    const conclusion = this.texto(xd, Y + 226, chi.conclusion, estilo(9.5, color, { fontStyle: 'bold', wordWrap: { width: 216 } }));
     const nota = json.referencia
       ? 'Aquí los datos salen de la red de Petri: un rechazo dice que la ocupación real no sigue la cadena de referencia.'
-      : total < 60 ? 'Con pocas transiciones la prueba tiene poca potencia: deja correr el turno 4 a ×8 (100 pasos o más).'
+      : !chi.confiable ? 'Deja correr el turno 4 a ×8 unos 100 pasos para que todos los esperados lleguen a 5.'
         : 'La oleada se sortea con P: la prueba no debería rechazarla.';
-    this.texto(xd, Y + 290, nota, estilo(9, TEXTO.tenue, { wordWrap: { width: 216 } }));
+    this.texto(xd, Math.max(Y + 300, conclusion.y + conclusion.height + 8), nota, estilo(9, TEXTO.tenue, { wordWrap: { width: 216 } }));
   }
 }
