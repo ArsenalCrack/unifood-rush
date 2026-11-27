@@ -79,6 +79,8 @@ Vista isométrica 2.5D, 960 × 540 px, en el navegador con Phaser 4.2.1.
 
 El turno termina cuando todos salieron o al llegar al cierre máximo. Las llegadas siguen una ola con su pico a mitad del turno. Semilla fija 96: la partida es reproducible y el primer bloqueo de torniquete del turno 1 ocurre cerca de los 39 s.
 
+Esta tabla es la del modo «Ola fija (Fase 1)». En la Fase 2 las llegadas las decide la cadena de Markov Oleada y cada turno dura un número de pasos k (sección 16.4).
+
 ## 8. Puntaje
 
 | Hecho | Puntos |
@@ -110,15 +112,15 @@ Balance. Con 2 y 2 nunca hay interbloqueo, pero en la hora pico la fila se desbo
 | Abrir el HUD de un torniquete o de un estudiante | Clic sobre él | – | Tocarlo |
 | Disparar un evento desde el HUD | Clic en el botón | – | Tocar el botón |
 | Escribir en la consola de reparación | Clic en los comandos | R, S, 1, 2, 3, K, Retroceso, Enter | Botones de comandos |
-| Relevo a la línea (t_a_linea) | Clic en la flecha LÍNEA → del tablero de relevo | L | Flecha del tablero o botón →LÍN |
-| Relevo al lavado (t_a_lavado) | Clic en la flecha ← LAVADO del tablero de relevo | V | Flecha del tablero o botón →LAV |
+| Relevo a la línea (t_a_linea) | Clic en la flecha LÍNEA → del tablero de relevo | → (en la Fase 1 era L) | Flecha del tablero o botón →LÍN |
+| Relevo al lavado (t_a_lavado) | Clic en la flecha ← LAVADO del tablero de relevo | ← o V | Flecha del tablero o botón →LAV |
 | Ver qué token le falta a una estación | Clic en el lavado, el carro o el estante de bandejas | – | Tocar |
 | Ver los conflictos (choice) del marcado | Clic en el tablero de relevo | – | Tocar |
 | Pausa | Botón ⏸ | P | Botón ⏸ |
 | Inspector de la red | Botón I | I | Botón I |
-| Velocidad ×1, ×2, ×4 | Botón de velocidad | 1, 2, 4 | Botón de velocidad |
+| Velocidad ×1, ×2, ×4, ×8 | Botón de velocidad | 1, 2, 4, 8 | Botón de velocidad |
 | Piloto automático de servir | Botón AUTO | A | Botón AUTO |
-| Regla de prevención (monitores) | Botón MON | M | Botón MON |
+| Regla de prevención (monitores) | Botón MON | N (en la Fase 1 era M) | Botón MON |
 | Mover y acercar la cámara | Arrastre y rueda | – | Arrastre y pellizco |
 | Cerrar el panel abierto | Botón ✕ | Esc | Botón ✕ |
 | Mostrar fps y tiempo de simulación | – | F1 | – |
@@ -176,3 +178,151 @@ Se comprueban jugando o con `npm test`.
 13. El HUD ocupa las zonas de la sección 11 y los 6 logros muestran un aviso animado.
 14. El turno 3 dura 5 min de llegadas con 120 estudiantes y se puede jugar con mouse, teclado y táctil.
 15. `npm test` pasa completo y `src/sed/` no menciona Phaser.
+
+---
+
+## 16. Fase 2: azar controlado y registro de la partida
+
+Agregada con las habilidades `ingeniero-estocastico` (cadenas, `docs/modelo/markov.md`), `analista-procesos` (registro, `docs/log.md`), `disenador-simuladores-sed` (este capítulo) y `director-arte-isometrico` (`docs/arte.md`, sección 9). Las secciones 1 a 15 siguen vigentes; esta solo agrega.
+
+### 16.1 Qué cambia
+
+En la Fase 1 los estudiantes llegaban con una ola fija. Ahora llegan por **oleadas** que decide una Cadena de Markov en tiempo discreto: en cada paso k (30 s de simulación) la oleada es Baja, Media o Alta y trae 4, 10 o 18 estudiantes. El jugador no sabe cuál viene, pero el **panel de Markov** le dice con qué probabilidad: con π^(n) puede abrir la **línea 3** antes de que llegue la oleada alta y cerrarla cuando ya no hace falta, porque cada paso abierta cuesta puntos. Además, cada partida deja un **Event Log** (un caso por estudiante) que se descarga en CSV y XES para analizarlo con minería de procesos.
+
+### 16.2 Ciclo de juego con incertidumbre
+
+| Ciclo | Duración | Qué hace el jugador | Elemento matemático |
+|---|---|---|---|
+| Corto: atender a un estudiante | 2 s a 6 s | Igual que en la Fase 1 | Autómatas, supervisor, t_servir |
+| Paso k: leer el pronóstico | 30 s | Mira la oleada nueva y el riesgo P(Alta en ≤ 3 pasos) del HUD | Fila activa de P, π^(n) |
+| Medio: dimensionar la línea | 1 a 3 min | Abre o cierra la línea 3 según el riesgo; compra un permiso de relevo si hace falta | Riesgo de llegar a Alta, π y la calculadora de dimensionamiento |
+| Largo: el turno | 7 a 13 pasos | Termina el turno con la fila bajo control y el menor gasto | Estado estacionario: la línea 3 debería estar abierta cerca del 29 % del tiempo (π_Alta) |
+| Después del turno | – | Descarga el Event Log y lo analiza | Minería de procesos |
+
+### 16.3 Mecánica y elemento matemático
+
+| Mecánica | Elemento matemático |
+|---|---|
+| Cada 30 s cambia la oleada de llegada | Paso k de la cadena Oleada: fila activa de P, u ~ U(0, 1) del generador con semilla, primer estado con acumulada ≥ u |
+| Llegan 4, 10 o 18 estudiantes en el paso | Efecto del estado: eventos externos `llegada` de la Fase 1 |
+| El indicador de Markov parpadea en amarillo | P(Alta en ≤ 3 pasos) ≥ 0,5: primera llegada a Alta, con Alta absorbente |
+| El panel anticipa la oleada en n pasos | π^(n) = e_actual · P^n (Chapman-Kolmogorov) |
+| La línea 3 debería abrirse cerca del 29 % del tiempo | π_Alta = 0,2890 del estado estacionario |
+| La oleada alta vuelve cada 3,46 pasos | Tiempo medio de retorno 1/π_Alta |
+| El juego respeta P | P estimada p̂_ij = n_ij / n_i y prueba χ² con α = 0,05 |
+| La ocupación de las mesas se compara con su modelo | Cadena Mesas: ocupación observada de Mesa_libre por cuartos contra P de Mesas |
+| Cada estudiante deja su traza | Event Log: Case_ID, Activity, Timestamp_Inicio, Timestamp_Fin, Resource_ID, Markov_State, Lifecycle |
+
+### 16.4 Turnos con llegadas por Markov
+
+La pantalla de título tiene la opción **Llegadas**: «Cadena de Markov (Fase 2)» (por omisión) u «Ola fija (Fase 1)», que deja el juego exactamente como en la Fase 1. Con Markov, cada turno dura un número de pasos con llegadas y después 90 s de cierre, como antes. El número de estudiantes depende de las oleadas; en promedio es el de la Fase 1:
+
+| Turno | Pasos con llegadas | Duración de las llegadas | Estudiantes esperados (Python) |
+|---|---|---|---|
+| 1 · Desayuno | 7 | 210 s | 60,3 |
+| 2 · Almuerzo | 10 | 300 s | 91,5 |
+| 3 · Hora pico (ficha) | 13 | 390 s | 122,7 |
+| 4 · Servicio continuo | sin fin | hasta que el jugador lo termina | 10,4 por paso |
+
+Todos empiezan en Baja (π^(0) de la ficha). El turno 4 sirve para dejar correr cientos de pasos a ×8 sin intervenir: el piloto sirve y repara los torniquetes con la política automática (16.7). La meta sigue siendo 75 % de los que llegaron en Salida.
+
+### 16.5 Línea 3 y compras
+
+| Decisión | Efecto | Costo |
+|---|---|---|
+| Abrir la línea 3 (tecla 3, botón LÍNEA 3 o la calculadora del panel) | Abre el torniquete T3 y su fila (y = 5). Los estudiantes nuevos eligen la fila más corta entre las abiertas | 20 puntos al abrirla y 3 por cada paso k que siga abierta |
+| Cerrar la línea 3 | Los estudiantes nuevos ya no la eligen; los que estaban en su fila se atienden | – |
+| Comprar un permiso de relevo (calculadora del panel) | +1 token en Relevo (evento externo, máximo k = 2) | 25 puntos |
+
+La línea 3 no está en la red de Petri: t_servir ya representa a cualquier mostrador. Lo que cambia es cuántos estudiantes se sirven al mismo tiempo. Con la línea 3 abierta la capacidad pasa de 12,5 a 18,75 estudiantes por paso: alcanza para la oleada alta (18).
+
+### 16.6 Puntaje de la Fase 2
+
+Se suma al de la sección 8:
+
+| Hecho | Puntos |
+|---|---|
+| Abrir la línea 3 | −20 |
+| Cada paso k con la línea 3 abierta | −3 |
+| Pronóstico acertado: empieza un paso de oleada Alta y la línea 3 ya estaba abierta desde antes | +15 |
+| Paso de oleada Alta que termina sin desborde de En_fila | +5 |
+| Permiso de relevo comprado | −25 |
+| Línea bien dimensionada: al cerrar el turno, la línea 3 estuvo abierta en todos los pasos Alta y cerrada en todos los Baja (al menos un paso Alta) | +30 |
+
+### 16.7 Política automática
+
+La usan la simulación acelerada («Generar log») y el turno 4. El piloto sirve en cuanto el supervisor y la red lo permiten (0,6 s de reacción); un torniquete bloqueado se repara 6 s después con `RS1S2K`; los monitores están activos y el personal queda 2 en la línea y 2 en el lavado.
+
+- Política **base**: la línea 3 nunca se abre.
+- Política **mejorada**: al empezar cada paso, si P(Alta en ≤ 3 pasos) ≥ 0,5 abre la línea 3; si la oleada es Baja y el riesgo es menor que 0,5, la cierra.
+
+Con la misma semilla las dos políticas reciben las mismas oleadas y las mismas llegadas: la diferencia entre sus logs es el efecto de la línea 3.
+
+### 16.8 Controles nuevos y cambiados
+
+| Acción | Mouse | Teclado | Táctil |
+|---|---|---|---|
+| Panel de Markov | Botón MARKOV; clic derecho sobre la entrada (Oleada) o sobre las mesas (Mesas) | M | Botón MARKOV |
+| Últimos 10 eventos del log | Botón LOG | L | Botón LOG |
+| Exportar el Event Log | Botón EXPORTAR | E | Botón EXPORTAR |
+| Abrir o cerrar la línea 3 | Botón LÍNEA 3 | 3 | Botón LÍNEA 3 |
+| Mapa de calor de las esperas | Botón CALOR | H | Botón CALOR |
+| Velocidad ×8 | Botón de velocidad | 8 | Botón de velocidad |
+| Terminar el turno 4 | Botón FIN | – | Botón FIN |
+| Regla de prevención (antes M) | Botón MON | N | Botón MON |
+| Relevo a la línea (antes L) | Flecha LÍNEA → | → | Botón →LÍN |
+| Relevo al lavado | Flecha ← LAVADO | ← o V | Botón →LAV |
+
+M y L eran de la Fase 1 (monitores y relevo a la línea). La guía del Laboratorio 2 asigna M al panel de Markov y L a la lista de eventos, así que esas dos acciones pasaron a N y →. Las demás teclas de la Fase 1 no cambian.
+
+### 16.9 HUD de la Fase 2
+
+| Zona | Contenido nuevo |
+|---|---|
+| Arriba a la izquierda, junto al reloj | Paso k (y el total del turno), estado de la oleada con su color e ícono, riesgo P(Alta en ≤ 3 pasos) que parpadea en amarillo desde 0,5 y la ocupación observada de las mesas |
+| Abajo a la derecha, junto a las alertas | «Casos: abiertos / cerrados · Eventos: n» |
+| Abajo al centro | Segunda fila de botones: MARKOV, LOG, EXPORTAR, LÍNEA 3, CALOR (y FIN en el turno 4) |
+
+El radar, los tokens por lugar, el puntaje y las alertas de la Fase 1 no se mueven.
+
+### 16.10 Panel de Markov
+
+Escena superpuesta de 640 × 400 que no pausa la simulación. Selector de cadena (Oleada o Mesas) y cinco pestañas:
+
+1. **Matriz**: mapa de calor de P con los valores a dos decimales y la fila del estado actual resaltada.
+2. **Transitorio**: barras de π^(n) desde el estado actual con un deslizador n = 0..10, la cuenta escrita debajo y, en grande, P(Alta en ≤ 1, 3 y 5 pasos).
+3. **Chapman-Kolmogorov**: P^(m+n) y P^m · P^n lado a lado para m y n elegidos, con la diferencia máxima.
+4. **Largo plazo**: clasificación de estados, π contra las frecuencias observadas, tiempo medio de retorno y la calculadora de dimensionamiento con sus dos compras.
+5. **Datos de la partida**: P estimada con n_ij, diferencia con P y la prueba χ² (estadístico, grados de libertad, valor p y conclusión).
+
+### 16.11 Logros nuevos
+
+| Logro | Condición verificable |
+|---|---|
+| Pronóstico certero | Un pronóstico acertado: la línea 3 ya estaba abierta cuando empezó una oleada Alta. |
+| Oleada contenida | 3 pasos seguidos de oleada Alta sin desborde de En_fila. |
+| Línea justa | Terminar un turno con la línea 3 abierta en todos los pasos Alta y cerrada en todos los Baja (al menos un paso Alta). |
+| Registro completo | Exportar un Event Log con 200 casos cerrados o más. |
+
+### 16.12 Resultados
+
+Además de lo de la sección 13: casos cerrados, tiempo medio de ciclo (de la llegada a Salida), frecuencias de cada estado de la oleada frente a π, pasos con la línea 3 abierta y el botón para exportar el log.
+
+### 16.13 Criterios de aceptación de la Fase 2
+
+Se comprueban jugando, con el log o con `npm test`.
+
+1. `npm test` pasa completo (pruebas de la Fase 1 y de la Fase 2) y no hay `Math.random()` en `src/`.
+2. En cada paso k el indicador de la oleada cambia de color e ícono con un tween de 300 ms y aparece una etiqueta flotante; en ese paso llegan 4, 10 o 18 estudiantes según el estado.
+3. La misma semilla produce la misma secuencia de oleadas y el mismo log.
+4. El panel muestra P, π^(n) y π iguales a `analisis/resultados_python.json` (π^(5) desde Baja = 0,3313; 0,3910; 0,2777).
+5. La pestaña Chapman-Kolmogorov muestra P^(m+n) = P^m · P^n.
+6. Con la oleada en Media el indicador de Markov parpadea en amarillo (riesgo 0,509).
+7. En el turno 4, tras 100 pasos o más, la P estimada de la oleada no se rechaza con χ² y α = 0,05.
+8. La línea 3 se abre y se cierra con la tecla 3 y cobra 20 + 3 por paso; el permiso de relevo comprado aparece en el tablero.
+9. El CSV abre en Excel con las 7 columnas y el XES carga en PM4Py; cada Case_ID es único, los tiempos crecen y ningún Timestamp_Fin es anterior a su Timestamp_Inicio.
+10. «Generar log» produce 300 casos cerrados y 1000 eventos o más.
+11. El HUD ocupa las zonas de 16.9 y los 4 logros nuevos muestran su aviso animado.
+12. Resultados muestra casos cerrados, tiempo medio de ciclo, frecuencias frente a π y el botón para exportar.
+13. H muestra el mapa de calor de las esperas; M, L, E, 3 y H funcionan con teclado, mouse y botones táctiles.
+14. Con el panel abierto el juego se mantiene cerca de 60 fps (F1).
