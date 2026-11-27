@@ -341,6 +341,7 @@ Pregunta de la ficha D.13, «¿cuánto tarda un estudiante desde el torniquete h
 | El CSV y el XES se descargan y cargan en PM4Py, ProM o Disco | Exportar y abrir | Sí | Se descargan en el build local; PM4Py lee el XES (3674 eventos, 300 casos) y `mineria.py` analiza el CSV. ☐ ProM o Disco, opcional |
 | El log tiene al menos 200 casos completos y 1000 eventos | Contar | Sí | 300 casos y 1837 eventos |
 | HUD completo en las zonas del GDD y 4 logros nuevos con aviso | Capturas | Sí | Paso k, oleada y riesgo junto al reloj; contador junto a las alertas |
+| La red de Petri se ve como grafo en vivo, igual que los autómatas | Tecla R y comparar con `modelos/capturas/pipe_red_monitor_M0.png` | Sí | Misma distribución y mismos arcos y pesos que PIPE2 (`test/grafoRed.test.js`); los tokens coinciden con «Tokens por lugar» y cada disparo parpadea |
 
 ### b) Validación estadística del motor estocástico (1000 pasos, semilla 96)
 
@@ -375,6 +376,7 @@ La cadena Mesas, observada en la red, sí se rechaza (χ² = 276,7): con 10,4 ll
 | Cambiar de pestaña y mover n | Clic y deslizador | Tocar y arrastrar | Sí (☐ en un celular) |
 | Ver los últimos eventos | L | Botón LOG | Sí (☐ en un celular) |
 | Exportar el log | E | Botón EXPORTAR | Sí (☐ en un celular) |
+| Ver la red de Petri en vivo | R o clic en «Tokens por lugar» | Tocar «Tokens por lugar» | Sí con teclado y mouse (☐ en un celular) |
 | Velocidad de simulación | 1, 2, 4, 8 | Botón de velocidad | Sí (☐ en un celular) |
 
 ### e) Rendimiento

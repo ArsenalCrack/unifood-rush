@@ -81,7 +81,7 @@ export class Planta extends Phaser.Scene {
 
     this.scene.launch('HUDPartida');
     this.events.once('shutdown', () => {
-      for (const clave of ['HUDPartida', 'HUDMaquina', 'Inspector', 'PanelMarkov']) this.scene.stop(clave);
+      for (const clave of ['HUDPartida', 'HUDMaquina', 'HUDRed', 'Inspector', 'PanelMarkov']) this.scene.stop(clave);
     });
     this.comedor.iniciar();
     this.crearRelojDiscreto();
@@ -226,6 +226,7 @@ export class Planta extends Phaser.Scene {
     // Fase 2
     entrada.on('markov', (cadena) => this.alternarPanelMarkov(cadena));
     entrada.on('calor', () => this.alternarCalor());
+    entrada.on('red', () => this.alternarRed());
     entrada.on('fin', () => { if (c.turno.continuo && !c.terminado) c.finTurno(); });
     entrada.on('linea3', () => {
       sonido.activar();
@@ -275,6 +276,17 @@ export class Planta extends Phaser.Scene {
       sonido.activar();
       sonido.clic();
       this.scene.launch('PanelMarkov', { cadena: cadena ?? 'oleada' });
+    }
+  }
+
+  // Red de Petri en vivo (tecla R o clic en «Tokens por lugar»): no pausa la simulación.
+  alternarRed() {
+    if (this.scene.isActive('HUDRed')) {
+      this.scene.stop('HUDRed');
+    } else {
+      sonido.activar();
+      sonido.clic();
+      this.scene.launch('HUDRed');
     }
   }
 
@@ -364,6 +376,7 @@ export class Planta extends Phaser.Scene {
   cerrarPaneles() {
     if (this.scene.isActive('PanelMarkov')) { this.scene.stop('PanelMarkov'); return; }
     if (this.inspectorAbierto) { this.alternarInspector(); return; }
+    if (this.scene.isActive('HUDRed')) { this.scene.stop('HUDRed'); return; }
     this.scene.stop('HUDMaquina');
     this.deseleccionar();
   }

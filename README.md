@@ -12,6 +12,7 @@ Simulador en línea (Fase 1): **https://dinamyt.org/unifood/** · Código: https
 - **Cadena de Markov Oleada** (ficha D.13): cada paso k (30 s de simulación) la oleada de llegada es Baja, Media o Alta y trae 4, 10 o 18 estudiantes. Un `Phaser.Time.TimerEvent` da el paso; el núcleo `src/sed/markov.js` sortea con la semilla y calcula π^(n), π, la clasificación, la absorción y la prueba χ². La **cadena Mesas** es el modelo de referencia que se compara con la ocupación real de la red de Petri.
 - **Línea 3**: el jugador la abre cuando el panel anticipa una oleada alta; cuesta puntos por paso.
 - **Panel de Markov** (tecla M): matriz P en mapa de calor, π^(n) con deslizador, Chapman-Kolmogorov, largo plazo con la calculadora de dimensionamiento y datos de la partida con χ².
+- **Red de Petri en vivo** (tecla R o clic en «Tokens por lugar»): la red de la Fase 1 dibujada como grafo desde su JSON, con la misma distribución que PIPE2, igual que el HUD de máquina dibuja cada autómata como en JFLAP. Muestra los tokens de cada lugar, las transiciones habilitadas y el último disparo, y no pausa la simulación.
 - **Event Log**: cada estudiante es un caso (EST-0001) con seis actividades, recurso y estado de Markov; se descarga en CSV y XES desde el navegador (tecla E) y la simulación acelerada «Generar log» produce 300 casos cerrados sin dibujar.
 - **Análisis** en `analisis/`: validación de las cadenas en Python y minería de procesos con PM4Py.
 
@@ -139,6 +140,7 @@ Reglas del proyecto: ninguna máquina cambia de estado si no es por δ (`Automat
 |---|---|---|
 | Servir al primero de una fila | Mostrador de la línea | Q y W (la línea 3, con clic en su mostrador) |
 | Ver el autómata de un torniquete o estudiante | Clic sobre él | – |
+| Ver la red de Petri en vivo | Clic o toque en «Tokens por lugar» | R |
 | Relevo a la línea o al lavado | Flechas del tablero de relevo o botones →LÍN y →LAV | → y ← (o V) |
 | Pausa, inspector, velocidad | Botones PAUSA, INSP y ×1 | P, I, 1 2 4 8 |
 | Piloto de servir, monitores | Botones AUTO y MON | A, N |

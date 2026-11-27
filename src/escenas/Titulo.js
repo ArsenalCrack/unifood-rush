@@ -13,6 +13,7 @@ import { sonido } from '../audio/sonido.js';
 const CONTROLES = [
   ['Clic en un mostrador · Q / W', 'servir al primero de la fila 1 / 2 (la 3, con clic)'],
   ['Clic en torniquete o estudiante', 'abre su autómata en vivo (HUD)'],
+  ['R · clic en «Tokens por lugar»', 'abre la red de Petri en vivo'],
   ['Flechas del tablero · → / ← (o V)', 'relevo a la línea / al lavado'],
   ['P · I · 1 2 4 8', 'pausa · inspector de la red · velocidad'],
   ['A · N · F1', 'piloto de servir · monitores · fps'],
@@ -39,8 +40,8 @@ export class Titulo extends Phaser.Scene {
     panel(this, 36, 104, 500, 186);
     this.add.text(50, 111, 'CONTROLES', estilo(11, TEXTO.amarillo, { fontStyle: 'bold' }));
     CONTROLES.forEach(([accion, efecto], i) => {
-      this.add.text(50, 130 + i * 19.5, accion, estilo(11.5, TEXTO.claro, { fontStyle: 'bold' }));
-      this.add.text(282, 130 + i * 19.5, efecto, estilo(11.5, TEXTO.tenue));
+      this.add.text(50, 129 + i * 17.4, accion, estilo(11.5, TEXTO.claro, { fontStyle: 'bold' }));
+      this.add.text(282, 129 + i * 17.4, efecto, estilo(11.5, TEXTO.tenue));
     });
 
     // --- Leyenda: un color e ícono por estado de cada autómata ---

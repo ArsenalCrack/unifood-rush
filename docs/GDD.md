@@ -267,6 +267,7 @@ Con la misma semilla las dos políticas reciben las mismas oleadas y las mismas 
 | Exportar el Event Log | Botón EXPORTAR | E | Botón EXPORTAR |
 | Abrir o cerrar la línea 3 | Botón LÍNEA 3 | 3 | Botón LÍNEA 3 |
 | Mapa de calor de las esperas | Botón CALOR | H | Botón CALOR |
+| Red de Petri en vivo | Clic en «Tokens por lugar» | R | Tocar «Tokens por lugar» |
 | Velocidad ×8 | Botón de velocidad | 8 | Botón de velocidad |
 | Terminar el turno 4 | Botón FIN | – | Botón FIN |
 | Regla de prevención (antes M) | Botón MON | N | Botón MON |
@@ -326,3 +327,4 @@ Se comprueban jugando, con el log o con `npm test`.
 12. Resultados muestra casos cerrados, tiempo medio de ciclo, frecuencias frente a π y el botón para exportar.
 13. H muestra el mapa de calor de las esperas; M, L, E, 3 y H funcionan con teclado, mouse y botones táctiles.
 14. Con el panel abierto el juego se mantiene cerca de 60 fps (F1).
+15. R muestra la red de Petri en vivo con la distribución de PIPE2, como el HUD de máquina muestra el autómata como en JFLAP: los tokens coinciden con «Tokens por lugar» y cada disparo parpadea.

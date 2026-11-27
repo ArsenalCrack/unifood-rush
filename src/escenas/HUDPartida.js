@@ -60,6 +60,9 @@ export class HUDPartida extends Phaser.Scene {
     this.add.text(16, 426, 'TOKENS POR LUGAR  m/k', estilo(9, TEXTO.amarillo, { fontStyle: 'bold' }));
     this.textosTokens = Array.from({ length: 14 }, (v, i) =>
       this.add.text(16 + Math.floor(i / 7) * 132, 440 + (i % 7) * 13, '', estiloMono(10, TEXTO.claro)));
+    // Un clic o toque en el panel (o la tecla R) abre la red de Petri en vivo.
+    this.add.text(264, 426, 'R · ver la red ▸', estilo(9, TEXTO.azul, { fontStyle: 'bold' })).setOrigin(1, 0);
+    this.add.zone(140, 477, 264, 110).setInteractive({ useHandCursor: true }).on('pointerdown', () => entrada.red());
 
     // --- Abajo a la derecha: alertas ---
     panel(this, 652, 422, 300, 110);

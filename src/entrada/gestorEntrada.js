@@ -5,7 +5,7 @@
 // Acciones: seleccionar(idEntidad), solicitarEvento(idEntidad, evento, extra),
 // solicitarDisparo(transicion), servirLinea(idLinea), pausa, inspector,
 // velocidad(1|2|4|8), cerrar, piloto, monitor, fps.
-// Fase 2: markov(cadena), log, exportar, linea3, comprarRelevo, calor, fin.
+// Fase 2: markov(cadena), log, exportar, linea3, comprarRelevo, calor, fin, red.
 
 class GestorEntrada extends Phaser.Events.EventEmitter {
   constructor() {
@@ -22,7 +22,8 @@ class GestorEntrada extends Phaser.Events.EventEmitter {
   // Teclado: P pausa, I inspector, 1-2-4-8 velocidad, Esc cerrar, Q/W servir,
   // → / ← (o V) relevo a la línea / al lavado, A piloto, N monitores, F1 fps.
   // Fase 2 (GDD 16.8): M panel de Markov, L últimos eventos, E exportar el log,
-  // 3 línea 3, H mapa de calor. En la Fase 1 M era monitores y L relevo a la línea.
+  // 3 línea 3, H mapa de calor, R red de Petri en vivo. En la Fase 1 M era monitores
+  // y L relevo a la línea.
   conectarTeclado(escena) {
     const atendidas = new WeakSet();
     escena.input.keyboard.on('keydown', (tecla) => {
@@ -50,6 +51,7 @@ class GestorEntrada extends Phaser.Events.EventEmitter {
         case 'e': this.exportar(); break;
         case '3': this.linea3(); break;
         case 'h': this.calor(); break;
+        case 'r': this.red(); break;
         default:
       }
     });
@@ -74,6 +76,7 @@ class GestorEntrada extends Phaser.Events.EventEmitter {
   comprarRelevo() { this.emit('comprarRelevo'); }
   calor() { this.emit('calor'); }
   fin() { this.emit('fin'); }
+  red() { this.emit('red'); }
 }
 
 export const entrada = new GestorEntrada();
