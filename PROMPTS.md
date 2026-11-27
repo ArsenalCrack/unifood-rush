@@ -95,6 +95,7 @@ Rama `fase2`. Agente: **Claude Code** (Anthropic), igual que en la Fase 1. Las d
 |---|---|---|
 | 1 | «ahora debemos actualizar el proyecto con las indicaciones que ha pedido el profesor, dime que cosas debo tener en cuenta y empieza a realizar lo que puedas», con la guía del Laboratorio 2 en PDF | Lectura de la guía y de la ficha D.13; los prompts 1 a 15 de la sección F; la lista de decisiones que el equipo debe revisar (sección G) |
 | 2 | «Sí, instálalos» (PM4Py y Graphviz) y «también puedes hacer el video» | Entorno `.venv` con PM4Py 2.7.23 (`analisis/requirements.txt`), Graphviz 16.1.2 oficial (ZIP de 9,3 MB con su suma SHA-256 verificada), descubrimiento y conformidad del prompt 15 y el video de la entrega |
+| 3 | «Sí, súbela» (la rama `fase2` a GitHub) | La rama `fase2` en `origin`, sin integrar a `master` |
 
 ## F. Los 16 prompts de la guía con los datos de la ficha D.13
 
@@ -150,5 +151,5 @@ La guía pide aceptar o rechazar de forma explícita lo que propone el agente. *
 - Instalar Jupyter (opcional: el análisis está en `mineria.py`, no en un cuaderno) y repetir el análisis en ProM o Disco.
 - Medir los fps con F1 en una pantalla real (el navegador sin ventana usa WebGL por software).
 - Probar en un celular, el playtest con otro equipo y subir el ZIP y el video al aula virtual.
-- Publicar la Fase 2 en Internet, integrar `fase2` a `master` y subir la rama a GitHub: esperan la decisión del equipo.
+- Publicar la Fase 2 en Internet e integrar `fase2` a `master`: esperan la decisión del equipo (la rama `fase2` ya está en GitHub).
 - Responder con sus palabras el postmortem (`docs/informe.md` trae un borrador) y marcar las decisiones de la sección G.
