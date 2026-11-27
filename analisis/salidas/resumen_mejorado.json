@@ -1,0 +1,115 @@
+{
+  "log": "analisis/logs/entrega/mejorado.csv",
+  "casos": 300,
+  "eventos": 1838,
+  "casos_quitados": 0,
+  "variantes": {
+    "Esperar_fila -> Pasar_torniquete -> Recibir_bandeja -> Buscar_mesa -> Almorzar -> Entregar_menaje": 266,
+    "Esperar_fila -> Pasar_torniquete -> Pasar_torniquete -> Recibir_bandeja -> Buscar_mesa -> Almorzar -> Entregar_menaje": 30,
+    "Esperar_fila -> Pasar_torniquete -> Pasar_torniquete -> Pasar_torniquete -> Recibir_bandeja -> Buscar_mesa -> Almorzar -> Entregar_menaje": 4
+  },
+  "casos_normativos": 266,
+  "desempeno": {
+    "Esperar_fila": {
+      "filas": 300.0,
+      "casos": 300.0,
+      "servicio_medio_s": 3.5727800000000003,
+      "espera_media_s": 3.5727800000000003,
+      "espera_total_s": 1071.834
+    },
+    "Recibir_bandeja": {
+      "filas": 300.0,
+      "casos": 300.0,
+      "servicio_medio_s": 3.0,
+      "espera_media_s": 0.6454633333333333,
+      "espera_total_s": 193.63899999999998
+    },
+    "Pasar_torniquete": {
+      "filas": 338.0,
+      "casos": 300.0,
+      "servicio_medio_s": 0.8000000000000002,
+      "espera_media_s": 0.3218934911242604,
+      "espera_total_s": 108.80000000000001
+    },
+    "Buscar_mesa": {
+      "filas": 300.0,
+      "casos": 300.0,
+      "servicio_medio_s": 0.09106,
+      "espera_media_s": 0.09106,
+      "espera_total_s": 27.318
+    },
+    "Entregar_menaje": {
+      "filas": 300.0,
+      "casos": 300.0,
+      "servicio_medio_s": 3.0,
+      "espera_media_s": 0.04983,
+      "espera_total_s": 14.949
+    },
+    "Almorzar": {
+      "filas": 300.0,
+      "casos": 300.0,
+      "servicio_medio_s": 35.81672666666667,
+      "espera_media_s": 0.0,
+      "espera_total_s": 0.0
+    }
+  },
+  "cuello_de_botella": "Esperar_fila",
+  "espera_total_cuello_min": 17.8639,
+  "ciclo_medio_min": 0.7906643333333333,
+  "ciclo_maximo_min": 1.1990166666666666,
+  "recurso_mas_cargado": "Lavado",
+  "uso_recurso_mas_cargado_min": 15.0,
+  "uso_recursos_min": {
+    "Lavado": 15.0,
+    "Mesa_07": 10.95755,
+    "Mesa_02": 10.187000000000001,
+    "Mesa_12": 10.077816666666667,
+    "Mesa_19": 9.719433333333335,
+    "Mesa_11": 9.70945,
+    "Mesa_05": 9.543583333333334,
+    "Mesa_10": 9.537616666666667,
+    "Mesa_13": 9.42085,
+    "Mesa_01": 9.102966666666667,
+    "Mesa_16": 9.025833333333333,
+    "Mesa_20": 8.822833333333334,
+    "Mesa_17": 8.58265,
+    "Mesa_18": 8.38715,
+    "Mesa_08": 8.288166666666665,
+    "Mesa_09": 8.242733333333334,
+    "Mesa_06": 8.199499999999999,
+    "Mesa_04": 8.110066666666667,
+    "Mesa_14": 8.026950000000001,
+    "Mesa_15": 7.9298,
+    "Mesa_03": 7.211683333333334,
+    "Linea_1": 5.35,
+    "Linea_2": 5.1,
+    "Linea_3": 4.55,
+    "Torniquete_1": 1.6266666666666667,
+    "Torniquete_2": 1.5466666666666669,
+    "Torniquete_3": 1.3333333333333333
+  },
+  "tiempo_a_bandeja_por_oleada": {
+    "Baja": {
+      "casos": 40.0,
+      "llegada_a_bandeja_media_s": 3.239325,
+      "llegada_a_bandeja_mediana_s": 1.8,
+      "llegada_a_bandeja_p90_s": 6.6031,
+      "torniquete_a_bandeja_media_s": 1.8676749999999998
+    },
+    "Media": {
+      "casos": 70.0,
+      "llegada_a_bandeja_media_s": 3.191942857142857,
+      "llegada_a_bandeja_mediana_s": 1.8,
+      "llegada_a_bandeja_p90_s": 6.507600000000001,
+      "torniquete_a_bandeja_media_s": 1.9428571428571428
+    },
+    "Alta": {
+      "casos": 190.0,
+      "llegada_a_bandeja_media_s": 6.798231578947369,
+      "llegada_a_bandeja_mediana_s": 5.541,
+      "llegada_a_bandeja_p90_s": 13.798,
+      "torniquete_a_bandeja_media_s": 1.905957894736842
+    }
+  },
+  "pm4py": null
+}

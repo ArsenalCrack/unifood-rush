@@ -1,0 +1,44 @@
+[
+  {
+    "indicador": "Tiempo de ciclo medio (min)",
+    "base": 1.2445112222222223,
+    "mejorado": 0.7906643333333333,
+    "cambio": "-36.5 %"
+  },
+  {
+    "indicador": "Espera total en el cuello de botella, Esperar_fila (min)",
+    "base": 153.78383333333335,
+    "mejorado": 17.8639,
+    "cambio": "-88.4 %"
+  },
+  {
+    "indicador": "Casos cerrados",
+    "base": 300,
+    "mejorado": 300,
+    "cambio": "+0.0 %"
+  },
+  {
+    "indicador": "Uso del recurso más cargado (min)",
+    "base": 15.0,
+    "mejorado": 15.0,
+    "cambio": "+0.0 %"
+  },
+  {
+    "indicador": "Llegada a bandeja en oleada Baja (s, media)",
+    "base": 16.331575,
+    "mejorado": 3.239325,
+    "cambio": "-80.2 %"
+  },
+  {
+    "indicador": "Llegada a bandeja en oleada Media (s, media)",
+    "base": 38.63464285714286,
+    "mejorado": 3.191942857142857,
+    "cambio": "-91.7 %"
+  },
+  {
+    "indicador": "Llegada a bandeja en oleada Alta (s, media)",
+    "base": 33.793905263157896,
+    "mejorado": 6.798231578947369,
+    "cambio": "-79.9 %"
+  }
+]

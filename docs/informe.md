@@ -235,3 +235,178 @@ Pendiente del equipo: se hace con otro grupo antes de la entrega o en la jornada
      - Un generador con semilla que repite una corrida.
      - Medidas de desempeño: espera en la fila (de `tLlegada` a `tServido`), estudiantes atendidos por turno y desbordes.
    - Es un sistema de colas con dos servidores. Con tasas en las transiciones, la misma red sería una red de Petri estocástica, y PIPE 4.3 ya trae los módulos GSPN Analysis y Steady State Analysis para ella.
+
+---
+
+# Fase 2 · Laboratorio 2: Cadenas de Markov y minería de procesos
+
+Proyecto 13 · UniFood Rush · Grupo 3. Rama `fase2`. Fecha de sustentación: ☐ (la escribe el equipo).
+
+**Cómo leer esta parte.** Los números de Markov salen de `analisis/markov_validacion.py` (`analisis/resultados_python.json`) y el núcleo JavaScript los reproduce con tolerancia 1e-6 (`npm test`, 93 pruebas). Los logs son los de `analisis/logs/entrega/` (semilla 96, turno 4 continuo, 300 casos cerrados) y el desempeño sale de `analisis/mineria.py`. Quedan en ☐ el descubrimiento y la conformidad con PM4Py (falta instalarlo con Graphviz), lo que el equipo hace en persona y las decisiones de `PROMPTS.md`, sección G.
+
+## Sección 5.2 e) Registro del modelo validado
+
+| Cadena | Estados | Paso k (tiempo de juego) | π^(0) | ¿Ergódica o absorbente? | Clases y periodo | Archivo |
+|---|---|---|---|---|---|---|
+| Oleada | Baja, Media, Alta (4, 10 y 18 llegadas por paso) | 30 s de simulación (2 min del comedor) | (1; 0; 0): 11:30 en Baja | Ergódica | Una clase recurrente, periodo 1 | `src/sed/modelos/markov/oleada.json` |
+| Mesas | 0-25%, 25-50%, 50-75%, 75-100% de las 20 mesas | 30 s de simulación | (1; 0; 0; 0): mesas libres al abrir | Ergódica | Una clase recurrente, periodo 1 | `src/sed/modelos/markov/mesas.json` |
+
+| Resultado | Valor en Python | Interpretación en el juego |
+|---|---|---|
+| π^(5) desde π^(0) | Oleada (0,3313; 0,3910; 0,2777) · Mesas (0,2019; 0,3612; 0,3048; 0,1321) | A los 2 min 30 s la apertura en Baja ya casi no pesa |
+| π (estado estacionario) | Oleada (0,3179; 0,3931; 0,2890) · Mesas (1/6; 1/3; 1/3; 1/6) | El 28,9 % del tiempo la oleada es Alta |
+| Tiempo medio de retorno | Oleada (3,15; 2,54; 3,46) pasos · Mesas (6; 3; 3; 6) | Una oleada Alta vuelve cada 3,46 pasos (1 min 44 s) |
+| Frecuencias empíricas en 10 000 pasos (semilla 2026) | Oleada (0,3068; 0,3975; 0,2957) · Mesas (0,1545; 0,3321; 0,3371; 0,1763) | El muestreo con semilla sigue a π |
+| Diferencia máxima entre frecuencias y π | Oleada 0,0111 · Mesas 0,0122 | Menor que 0,02 |
+| Riesgo de llegar a Alta en ≤ 3 pasos | 0,361 desde Baja · 0,509 desde Media · 1 desde Alta | Umbral del GDD 0,5: el HUD avisa en Media |
+| Chapman-Kolmogorov | Diferencia máxima entre P^(m+n) y P^m · P^n, m, n = 1..5: 1,1 · 10^−16 | Iguales salvo redondeo |
+| χ² de la P estimada en 10 000 pasos | Oleada 4,845 con 6 gl, p = 0,564 · Mesas 12,376 con 10 gl, p = 0,261 | No se rechaza P (α = 0,05) |
+
+**Dimensionamiento (5.2 c.3).** Demanda media π · (4; 10; 18) = 10,40 estudiantes por paso. Con 2 líneas y 2 personas se sirven 12,5 por paso (utilización 0,83, pero 1,44 en Alta: la fila crece unos 5,5 estudiantes por paso Alta). Con 3 líneas, 18,75 por paso (0,96 en Alta). La oleada Alta dura en promedio 1/(1 − 0,55) = 2,2 pasos, así que con 2 líneas cada episodio deja unos 12 estudiantes de más en la fila. Conclusión: abrir la línea 3 solo cuando se anticipa Alta; abierta solo en Alta cuesta 0,289 × 3 = 0,87 puntos por paso en promedio.
+
+| Elemento del log | Definición en el proyecto |
+|---|---|
+| Case_ID | Un estudiante, `EST-0001`, de la llegada a la fila hasta Salida |
+| Actividades (en orden normativo) | `Esperar_fila` → `Pasar_torniquete` → `Recibir_bandeja` → `Buscar_mesa` → `Almorzar` → `Entregar_menaje` |
+| Resource_ID | `Linea_1` a `Linea_3`, `Torniquete_1` a `Torniquete_3`, `Mesa_01` a `Mesa_20`, `Lavado` |
+| Markov_State que se registra | Estado de la cadena Oleada al empezar la actividad |
+| Modelo normativo | Workflow Net secuencial de 7 lugares y 6 transiciones (`analisis/modelo_normativo.pnml`), del autómata Estudiante y de Registro_Acceso |
+
+## Sección 5.4 Recursos de arte
+
+La tabla de recursos está en `docs/arte.md`, sección 9, y se revisa en `hoja-arte-fase2.html`.
+
+## Sección 5.9 Minería de procesos
+
+### a) Logs
+
+| Log | Política | Casos cerrados | Eventos | Casos incompletos fuera del log | Pasos k | Tiempo de simulación |
+|---|---|---|---|---|---|---|
+| `base.csv` y `.xes` | Base: línea 3 cerrada | 300 | 1837 | 31 | 30 | 923 s |
+| `mejorado.csv` y `.xes` | Mejorada: línea 3 cuando P(Alta en ≤ 3) ≥ 0,5 | 300 | 1838 | 18 | 29 | 877 s |
+
+Los dos usan la semilla 96: reciben las mismas oleadas y las mismas llegadas. El CSV abre con las 7 columnas y el XES es XML válido con 300 trazas y 3674 eventos (start y complete).
+
+### c) Descubrimiento
+
+| Algoritmo | Herramienta | N.º de actividades y de arcos | ¿Aparece el retrabajo o el desvío esperado? | Observación |
+|---|---|---|---|---|
+| DFG | Contado del log (igual al de PM4Py o Disco) | 6 actividades, 6 arcos | Sí: autolazo `Pasar_torniquete → Pasar_torniquete` (37 veces) | Los otros 5 arcos tienen 300 casos cada uno |
+| Alpha Miner | PM4Py | ☐ | ☐ | Se espera que falle con el autolazo de longitud 1 |
+| Heuristic Miner (Causal Net) | PM4Py | ☐ | ☐ | |
+| Inductive Miner (Process Tree y BPMN) | PM4Py | ☐ | ☐ | Se espera un lazo sobre `Pasar_torniquete` dentro de una secuencia |
+
+### d) Conformidad
+
+| Métrica | Valor | Interpretación |
+|---|---|---|
+| Fitness por replay de tokens | ☐ (PM4Py) | |
+| Fitness por alineamientos | ☐ (PM4Py) | |
+| Precisión | ☐ (PM4Py) | |
+| Casos con desvío (n y %) | 35 de 300 (11,7 %), contados como trazas distintas de la normativa | 265 casos (88,3 %) siguen exactamente el modelo |
+| Desvío más frecuente y su causa | `Pasar_torniquete` repetido: 33 casos una vez y 2 casos dos veces | Rechazo del carné (evento no controlable, probabilidad 0,10 por lectura) y bloqueo al tercer rechazo del torniquete hasta la reparación. Lo permite el modelo de la Fase 1: no es un error del juego |
+
+### e) Desempeño y mejora
+
+Cuello de botella (mayor espera total) en el log base: **`Esperar_fila`**, 153,8 min de espera acumulada en 300 casos (30,8 s por estudiante). Las demás esperas son pequeñas: 3,0 min antes de `Recibir_bandeja` (reacción del piloto y falta de bandejas) y 1,7 min entre lecturas del torniquete.
+
+Relación con la cadena: en Alta llegan 18 estudiantes por paso y 2 líneas sirven 12,5, así que la fila crece en los pasos Alta (π = 0,289, 2,2 pasos seguidos en promedio). La espera media hasta la bandeja en el log base es 16,3 s en Baja, 38,6 s en Media y 33,8 s en Alta: los que llegan en Media esperan más porque heredan la fila que dejó la oleada Alta anterior (la cadena tiene memoria de un paso, la fila no se vacía en un paso).
+
+| Indicador | Log base | Log mejorado | Cambio (%) |
+|---|---|---|---|
+| Tiempo de ciclo medio (min) | 1,24 | 0,79 | −36,5 % |
+| Espera total en el cuello de botella, `Esperar_fila` (min) | 153,78 | 17,86 | −88,4 % |
+| Casos cerrados (en el tiempo de simulación) | 300 (923 s) | 300 (877 s) | 0 % (5 % menos tiempo) |
+| Desbordes de En_fila | 146 | 0 | −100 % |
+| Fitness contra el modelo normativo | ☐ | ☐ | ☐ |
+| Uso del recurso más cargado (min) | `Lavado` 15,0 | `Lavado` 15,0 | 0 % (3 s por estudiante, no depende de la línea 3) |
+| Llegada a la bandeja en oleada Baja (s) | 16,3 | 3,2 | −80,2 % |
+| Llegada a la bandeja en oleada Media (s) | 38,6 | 3,2 | −91,7 % |
+| Llegada a la bandeja en oleada Alta (s) | 33,8 | 6,8 | −79,9 % |
+
+Pregunta de la ficha D.13, «¿cuánto tarda un estudiante desde el torniquete hasta la bandeja en cada oleada?»: como el torniquete está en la cabeza de la fila, de la primera lectura a la bandeja tarda 1,4 s, 1,7 s y 2,0 s en Baja, Media y Alta (base); lo que cambia con la oleada es la espera en la fila antes del torniquete, de 16 a 39 s. Con la línea 3 anticipada esa espera baja a 3 a 7 s. La mejora se pagó con 19 pasos de línea 3 (20 + 19 × 3 = 77 puntos).
+
+## Sección 5.10 Pruebas y ajuste
+
+### a) Criterios del GDD
+
+| Criterio de aceptación | Cómo se prueba | ¿Cumple? | Observación |
+|---|---|---|---|
+| La Fase 1 sigue funcionando: autómatas, red de Petri, radar y `npm test` | Las 52 pruebas de la Fase 1 y el modo «Ola fija (Fase 1)» | Sí | 93 de 93 pruebas |
+| Cada entidad cambia de estado de Markov en cada paso k y se ve en el mapa | Observar 20 pasos | Sí | Chip de oleada y tapete con tween de 300 ms; etiqueta flotante en cada cambio |
+| Los estados de Markov disparan los eventos de la Fase 1 | Llegadas por paso | Sí | 4, 10 o 18 eventos `llegada` por paso (`test/fase2.test.js`) |
+| El panel muestra P, π^(n), π iguales a Python | Comparar con `resultados_python.json` | Sí | π^(5) desde π^(0) = (0,3313; 0,3910; 0,2777) |
+| La P estimada pasa la prueba χ² | Datos de la partida tras 1000 pasos | Sí | χ² = 4,227 con 6 gl, p = 0,646 (tabla b) |
+| La misma semilla produce la misma partida y el mismo log | Generar dos logs y compararlos | Sí | Prueba automática; el log del navegador y el de Node son idénticos byte a byte |
+| El CSV y el XES se descargan y cargan en PM4Py, ProM o Disco | Exportar y abrir | En parte | Se descargan en el build local y abren en pandas y en un lector XML; ☐ abrirlos en PM4Py, ProM o Disco |
+| El log tiene al menos 200 casos completos y 1000 eventos | Contar | Sí | 300 casos y 1837 eventos |
+| HUD completo en las zonas del GDD y 4 logros nuevos con aviso | Capturas | Sí | Paso k, oleada y riesgo junto al reloj; contador junto a las alertas |
+
+### b) Validación estadística del motor estocástico (1000 pasos, semilla 96)
+
+| Estado | π teórico | Frecuencia observada en el juego | Diferencia | ¿Dentro de 0,02? |
+|---|---|---|---|---|
+| Baja | 0,3179 | 0,3090 | 0,0089 | Sí |
+| Media | 0,3931 | 0,3810 | 0,0121 | Sí |
+| Alta | 0,2890 | 0,3100 | 0,0210 | No, por 0,001 (con 10 000 pasos la diferencia máxima es 0,0111) |
+
+| Prueba χ² | Valor |
+|---|---|
+| Transiciones observadas | 1000: (184, 94, 31) · (98, 174, 109) · (27, 113, 170) |
+| Estadístico χ² y grados de libertad | 4,227 con 6 gl |
+| Valor p | 0,646 |
+| Conclusión (α = 0,05) | No se rechaza que el juego siga P |
+
+La cadena Mesas, observada en la red, sí se rechaza (χ² = 276,7): con 10,4 llegadas por paso y 20 mesas la ocupación real pasa el 62,5 % del tiempo en 50-75 % y no sigue la cadena de referencia de la ficha. Es un hallazgo del análisis, no un error.
+
+### c) Fidelidad del log
+
+| Case_ID | Traza en el log | Lo que pasó en el núcleo | ¿Coincide? |
+|---|---|---|---|
+| EST-0001 | Esperar_fila (0,4 s) → Pasar_torniquete (0,8 s) → Recibir_bandeja (3 s) → Buscar_mesa (0 s) → Almorzar (38,6 s) → Entregar_menaje (3 s) | llegada, leer, acceso_ok, servir, buscar_mesa, sentarse en la mesa 7, fin del almuerzo, terminar, entregar | Sí |
+| EST-0013 | Esperar_fila (12,7 s) → Pasar_torniquete → Pasar_torniquete → Recibir_bandeja → … | llegada, leer, **rechazo**, leer 1 s después, acceso_ok, servir… | Sí: la lectura repetida es el rechazo |
+| EST-0034 | Esperar_fila → Pasar_torniquete → (6,9 s sin actividad) → Pasar_torniquete → Recibir_bandeja → … | leer, rechazo, **bloqueo de T1**, reparación 6 s después, leer, acceso_ok, servir… | Sí: el hueco es la espera de la reparación |
+
+### d) Controles alternos
+
+| Acción | Mouse y teclado | Táctil | ¿Funciona? |
+|---|---|---|---|
+| Abrir el panel de Markov | M o clic derecho | Botón MARKOV | Sí con teclado, mouse y botón (☐ en un celular) |
+| Cambiar de pestaña y mover n | Clic y deslizador | Tocar y arrastrar | Sí (☐ en un celular) |
+| Ver los últimos eventos | L | Botón LOG | Sí (☐ en un celular) |
+| Exportar el log | E | Botón EXPORTAR | Sí (☐ en un celular) |
+| Velocidad de simulación | 1, 2, 4, 8 | Botón de velocidad | Sí (☐ en un celular) |
+
+### e) Rendimiento
+
+| Momento | fps sin panel | fps con panel abierto | Equipo y navegador |
+|---|---|---|---|
+| Inicio del turno | ☐ | ☐ | ☐ |
+| Velocidad ×8 con 300 casos en el log | ☐ | ☐ | ☐ |
+| Exportación del log | ☐ | ☐ | ☐ |
+
+### f) Playtest con otro equipo
+
+| Observación del otro equipo | Cambio realizado | Sección a la que se regresó |
+|---|---|---|
+| ☐ | ☐ | ☐ |
+
+## Sección 5.11 Entrega en el aula virtual
+
+| Dato | Valor |
+|---|---|
+| Nombre del archivo ZIP | `Grupo3_UniFoodRush_Fase2.zip` (`npm run zip -- 3`) |
+| Tamaño del archivo ZIP (MB) | 0,06 |
+| Enlace de previsualización del aula virtual | ☐ |
+| Resultado de `npm test` (pruebas aprobadas / total) | 93 / 93 |
+| ¿El log se descarga desde la previsualización? | En el build local (`npm run preview`) sí; ☐ en la previsualización del aula virtual |
+
+## Postmortem de la Fase 2 (borrador para el equipo)
+
+Borrador escrito por el agente con los datos de esta fase. ☐ Cada integrante lo revisa y lo reescribe con sus palabras.
+
+1. **Qué funcionó bien.** Validar primero en Python: el núcleo JavaScript se probó número a número contra `resultados_python.json`, y los errores aparecieron en las pruebas y no en el juego. Registrar el log desde los eventos del núcleo hizo que cada traza coincidiera con lo que pasó, incluidos rechazos y bloqueos. Con la misma semilla, el log del navegador y el de Node son idénticos.
+2. **Diferencias entre Python y el juego.** Ninguna en los valores teóricos (diferencias menores que 1e-12). Las frecuencias no se pueden comparar número a número porque NumPy y el generador del juego son distintos; se comparan con π (0,02 en 10 000 pasos) y con χ². Con solo 30 pasos, χ² rechazó por azar; el juego ahora avisa cuando la aproximación no es confiable.
+3. **Qué mostró el log que no se veía jugando.** Que los estudiantes que llegan en oleada Media esperan más que los de Alta: heredan la fila. Y que el desvío del proceso es solo la lectura repetida del carné.
+4. **Prompts.** Los de núcleo y registro salieron casi a la primera; hubo que reescribir el del reloj discreto (el `TimerEvent` suelto rompía la reproducibilidad) y el de la línea 3 (la ficha no dice dónde va en el mapa). Lo que el agente decidió sin estar en la ficha está en `PROMPTS.md`, sección G. ☐
+5. **¿La mejora funcionó?** Sí: con la línea 3 anticipada por π^(n) el ciclo medio bajó 36,5 % y la espera en la fila 88,4 %, con la misma semilla. Con una semana más: una matriz de pico por franja, medir fps en celulares y comparar la cadena Mesas con una cadena estimada desde el log. ☐

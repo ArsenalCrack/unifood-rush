@@ -12,7 +12,8 @@
     "simular": "node scripts/simular.mjs",
     "desplegar": "node scripts/desplegar.mjs",
     "zip": "vite build && node scripts/empaquetar.mjs",
-    "log": "node scripts/generar-log.mjs"
+    "log": "node scripts/generar-log.mjs",
+    "normativo": "node scripts/modelo-normativo.mjs"
   },
   "keywords": [],
   "author": "",

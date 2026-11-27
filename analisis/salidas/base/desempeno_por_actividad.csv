@@ -1,0 +1,7 @@
+Activity,filas,casos,servicio_medio_min,espera_media_min,espera_total_min
+Esperar_fila,300,300,0.513,0.513,153.784
+Recibir_bandeja,300,300,0.05,0.01,3.0
+Pasar_torniquete,337,300,0.013,0.005,1.698
+Entregar_menaje,300,300,0.05,0.0,0.021
+Buscar_mesa,300,300,0.0,0.0,0.0
+Almorzar,300,300,0.601,0.0,0.0
