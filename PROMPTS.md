@@ -94,6 +94,7 @@ Rama `fase2`. Agente: **Claude Code** (Anthropic), igual que en la Fase 1. Las d
 | N.º | Mensaje | Qué produjo |
 |---|---|---|
 | 1 | «ahora debemos actualizar el proyecto con las indicaciones que ha pedido el profesor, dime que cosas debo tener en cuenta y empieza a realizar lo que puedas», con la guía del Laboratorio 2 en PDF | Lectura de la guía y de la ficha D.13; los prompts 1 a 15 de la sección F; la lista de decisiones que el equipo debe revisar (sección G) |
+| 2 | «Sí, instálalos» (PM4Py y Graphviz) y «también puedes hacer el video» | Entorno `.venv` con PM4Py 2.7.23 (`analisis/requirements.txt`), Graphviz 16.1.2 oficial (ZIP de 9,3 MB con su suma SHA-256 verificada), descubrimiento y conformidad del prompt 15 y el video de la entrega |
 
 ## F. Los 16 prompts de la guía con los datos de la ficha D.13
 
@@ -115,7 +116,7 @@ Estado: **Funcionó** (a la primera) o **Corregido** (hubo que ajustar; se expli
 | 12 | Exportación CSV y XES, descarga con Blob, menú con «Solo casos cerrados», simulación acelerada de 300 casos, prueba de 5 trazas | `exportarCSV.js`, `exportarXES.js`, `descarga.js`, `src/simulacion/acelerada.js`, `npm run log` y la escena GenerarLog | Corregido: la regla `entrega/` del `.gitignore` de la Fase 1 ocultaba `analisis/logs/entrega/`; ahora es `/entrega/` | Exportacion CSV y XES y simulacion acelerada |
 | 13 | HUD, puntaje, 4 logros, Resultados con ciclo y frecuencias, táctil y sonido | Segunda fila de botones, puntaje de la Fase 2, Resultados y sonidos de oleada alta, riesgo y mesas llenas | Corregido: el letrero de la línea 3, el chip de Mesas y los botones de Resultados quedaban encima de otros rótulos | Reloj discreto, linea 3, panel de Markov, HUD y resultados |
 | 14 | Pulido con Phaser 4: tweens de color, destello, bloom y temblor en Alta, barras animadas, mapa de calor (H), barrido a Resultados; pruebas y 60 fps | Efectos de `docs/arte.md`, sección 9 | Corregido: el barrido no se puede dibujar en la cámara de la planta (se acerca y se mueve); se dibuja en el HUD. Falta medir los fps en una pantalla real (sección H) | ídem |
-| 15 | Analizar el registro: `analisis/mineria.py`, descubrimiento, conformidad, desempeño y mejora con dos logs | `mineria.py` adaptado a `docs/log.md`, `modelo_normativo.pnml`, logs base y mejorado | Pendiente en parte: el desempeño y la mejora ya se calcularon con pandas; el descubrimiento y la conformidad esperan PM4Py y Graphviz (sección H) | Analisis de mineria de procesos |
+| 15 | Analizar el registro: `analisis/mineria.py`, descubrimiento, conformidad, desempeño y mejora con dos logs | `mineria.py` adaptado a `docs/log.md`, `modelo_normativo.pnml`, logs base y mejorado; con PM4Py 2.7.23: Inductive Miner `→(Esperar_fila, ⟲(Pasar_torniquete, τ), …)`, fitness 0,983 (tokens) y 0,990 (alineamientos), precisión 1,000; Alpha Miner falla con el lazo de longitud 1 | Corregido: Graphviz quedó fuera del PATH (instalado sin administrador en `%LOCALAPPDATA%\Programs\Graphviz`); `mineria.py` ahora lo busca en las carpetas usuales | Analisis de mineria de procesos; Analisis con PM4Py |
 | 16 | Publicar en Netlify o Vercel (opcional) | – | No se hizo: decide el equipo | – |
 | – | Prompt de verificación de la sección 5.11 | `npm test` 93 de 93, `dist/` de 184 KB, `Grupo3_UniFoodRush_Fase2.zip` de 59 KB y la vista previa sin errores; el log se descarga desde el build | Corregido: el navegador pedía `favicon.ico` (404); ahora el ícono va en línea | Analisis de mineria de procesos |
 
@@ -145,10 +146,8 @@ La guía pide aceptar o rechazar de forma explícita lo que propone el agente. *
 
 ## H. Lo que el agente no hizo
 
-- Instalar PM4Py, Jupyter y Graphviz: necesitan descargas y el permiso del equipo. Sin ellos no se ejecutó el descubrimiento ni la conformidad de `mineria.py`, ni se dibujaron las figuras de `analisis/salidas/`.
-- Repetir el análisis en ProM o Disco.
+- Instalar Jupyter (opcional: el análisis está en `mineria.py`, no en un cuaderno) y repetir el análisis en ProM o Disco.
 - Medir los fps con F1 en una pantalla real (el navegador sin ventana usa WebGL por software).
 - Probar en un celular, el playtest con otro equipo y subir el ZIP al aula virtual.
-- Grabar el video de la Fase 2.
 - Publicar la Fase 2 en Internet, integrar `fase2` a `master` y subir la rama a GitHub: esperan la decisión del equipo.
 - Responder con sus palabras el postmortem (`docs/informe.md` trae un borrador) y marcar las decisiones de la sección G.

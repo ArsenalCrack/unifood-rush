@@ -47,7 +47,9 @@ pip install -r analisis/requirements.txt
    python analisis/mineria.py analisis/logs/entrega/base.csv analisis/logs/entrega/mejorado.csv
    ```
 
-   El desempeño y la pregunta de la ficha (tiempo hasta la bandeja por oleada) solo necesitan pandas. El descubrimiento (DFG, Alpha, Heuristic e Inductive Miner, BPMN) y la conformidad (replay de tokens, alineamientos y precisión contra `modelo_normativo.pnml`) necesitan PM4Py; sus figuras, además, Graphviz instalado en el sistema (`dot -V`).
+   El desempeño y la pregunta de la ficha (tiempo hasta la bandeja por oleada) solo necesitan pandas. El descubrimiento (DFG, Alpha, Heuristic e Inductive Miner, BPMN) y la conformidad (replay de tokens, alineamientos y precisión contra `modelo_normativo.pnml`) necesitan PM4Py; sus figuras, además, Graphviz (`dot -V`). Si `dot` no está en el PATH, `mineria.py` lo busca en `%LOCALAPPDATA%\Programs\Graphvizin` y en `%ProgramFiles%\Graphvizin`.
+
+   Resultado con los logs de la entrega: el Inductive Miner descubre `→(Esperar_fila, ⟲(Pasar_torniquete, τ), Recibir_bandeja, Buscar_mesa, Almorzar, Entregar_menaje)`, el Alpha Miner falla con el lazo de longitud 1, la conformidad da fitness 0,983 por tokens y 0,990 por alineamientos con precisión 1,000, y el cuello de botella es `Esperar_fila`. Las figuras están en `salidas/base/` y `salidas/mejorado/`.
 
 ## ProM y Disco
 

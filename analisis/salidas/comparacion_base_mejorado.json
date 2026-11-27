@@ -24,6 +24,12 @@
     "cambio": "+0.0 %"
   },
   {
+    "indicador": "Fitness contra el modelo normativo (alineamientos)",
+    "base": 0.9898267803134452,
+    "mejorado": 0.9895547003848268,
+    "cambio": "-0.0 %"
+  },
+  {
     "indicador": "Llegada a bandeja en oleada Baja (s, media)",
     "base": 16.331575,
     "mejorado": 3.239325,

@@ -1,5 +1,5 @@
 {
-  "log": "analisis/logs/entrega/base.csv",
+  "log": "analisis\\logs\\entrega\\base.csv",
   "casos": 300,
   "eventos": 1837,
   "casos_quitados": 0,
@@ -109,5 +109,44 @@
       "torniquete_a_bandeja_media_s": 1.9542105263157896
     }
   },
-  "pm4py": null
+  "pm4py": {
+    "dfg": {
+      "actividades": 6,
+      "arcos": 6,
+      "autolazo_torniquete": 37
+    },
+    "alpha": {
+      "lugares": 5,
+      "transiciones": 6,
+      "arcos": 8
+    },
+    "heuristic": {
+      "actividades": 6,
+      "arcos": 6
+    },
+    "inductive": {
+      "arbol": "->( 'Esperar_fila', *( 'Pasar_torniquete', tau ), 'Recibir_bandeja', 'Buscar_mesa', 'Almorzar', 'Entregar_menaje' )",
+      "lugares": 7,
+      "transiciones": 7
+    },
+    "conformidad": {
+      "fitness_tokens": 0.9826860084230229,
+      "trazas_que_ajustan_pct": 88.33333333333333,
+      "fitness_alineamientos": 0.9898267803134452,
+      "precision": 1.0,
+      "casos_con_desvio": 35,
+      "casos": 300,
+      "desvios_mas_frecuentes": {
+        "en el log Pasar_torniquete / en el modelo >>": 37
+      }
+    },
+    "figuras": [
+      "dfg.png",
+      "alpha.png",
+      "heuristic_causal_net.png",
+      "process_tree.png",
+      "bpmn.png",
+      "performance_dfg.png"
+    ]
+  }
 }

@@ -1,13 +1,29 @@
-# Librerías del análisis de la Fase 2 (secciones 5.2 y 5.9 de la guía).
-# Al crear el entorno, regenerar con las versiones exactas:
+# Librerías del análisis de la Fase 2 (secciones 5.2 y 5.9 de la guía), con las versiones
+# exactas del entorno en que se ejecutó analisis/mineria.py (pip freeze, Python 3.12.10):
 #   python -m venv .venv
 #   .venv\Scripts\activate        (macOS y Linux: source .venv/bin/activate)
 #   pip install -r analisis/requirements.txt
-#   pip freeze > analisis/requirements.txt
-# PM4Py necesita además Graphviz instalado en el sistema (comando dot) para dibujar los modelos.
-numpy>=2.0
-scipy>=1.13
-pandas>=2.2
-matplotlib>=3.9
-pm4py>=2.7
-jupyter
+# PM4Py necesita además Graphviz en el sistema (comando dot). Se usó Graphviz 16.1.2; mineria.py
+# lo busca en el PATH, en %LOCALAPPDATA%\Programs\Graphviz\bin y en %ProgramFiles%\Graphviz\bin.
+# Jupyter es opcional (solo para convertir mineria.py en cuaderno): pip install jupyter
+colorama==0.4.6
+contourpy==1.4.0
+cvxopt==1.3.3
+cycler==0.12.1
+fonttools==4.69.1
+graphviz==0.21
+kiwisolver==1.5.1
+lxml==6.2.0
+matplotlib==3.11.2
+networkx==3.7
+numpy==2.5.5
+packaging==26.4
+pandas==3.1.1
+pillow==13.0.0
+pm4py==2.7.23.15
+pyparsing==3.3.3
+python-dateutil==4.0.0
+pytz==2026.6
+scipy==1.18.1
+tqdm==4.70.1
+tzdata==2026.6

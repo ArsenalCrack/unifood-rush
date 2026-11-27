@@ -10,10 +10,27 @@
 # conformidad necesitan PM4Py, y sus figuras, Graphviz (pip install -r analisis/requirements.txt).
 # Todo se guarda en analisis/salidas/<log>/ y en analisis/salidas/resumen_<log>.json.
 import json
+import os
+import shutil
 import sys
 from pathlib import Path
 
 import pandas as pd
+
+
+def graphviz_en_path():
+    """En Windows Graphviz suele quedar instalado sin agregarse al PATH: se busca en las carpetas usuales."""
+    if shutil.which("dot"):
+        return shutil.which("dot")
+    for carpeta in (Path(os.environ.get("LOCALAPPDATA", "")) / "Programs" / "Graphviz" / "bin",
+                    Path(os.environ.get("ProgramFiles", "C:/Program Files")) / "Graphviz" / "bin"):
+        if (carpeta / "dot.exe").exists():
+            os.environ["PATH"] = str(carpeta) + os.pathsep + os.environ.get("PATH", "")
+            return str(carpeta / "dot.exe")
+    return None
+
+
+DOT = graphviz_en_path()
 
 try:
     import pm4py

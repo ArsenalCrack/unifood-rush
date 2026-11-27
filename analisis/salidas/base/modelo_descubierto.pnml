@@ -1,0 +1,105 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<pnml>
+  <net id="imdf_net_1795798377.2396781" type="http://www.pnml.org/version-2009/grammar/pnmlcoremodel">
+    <name>
+      <text>imdf_net_1795798377.2396781</text>
+    </name>
+    <page id="n0">
+      <place id="p_5">
+        <name>
+          <text>p_5</text>
+        </name>
+      </place>
+      <place id="p_6">
+        <name>
+          <text>p_6</text>
+        </name>
+      </place>
+      <place id="p_9">
+        <name>
+          <text>p_9</text>
+        </name>
+      </place>
+      <place id="source">
+        <name>
+          <text>source</text>
+        </name>
+        <initialMarking>
+          <text>1</text>
+        </initialMarking>
+      </place>
+      <place id="sink">
+        <name>
+          <text>sink</text>
+        </name>
+      </place>
+      <place id="p_8">
+        <name>
+          <text>p_8</text>
+        </name>
+      </place>
+      <place id="p_10">
+        <name>
+          <text>p_10</text>
+        </name>
+      </place>
+      <transition id="e6ef43b1-a5dc-4cfa-9657-cac865aa7471">
+        <name>
+          <text>Esperar_fila</text>
+        </name>
+      </transition>
+      <transition id="skip_3">
+        <name>
+          <text>skip_3</text>
+        </name>
+        <toolspecific tool="ProM" version="6.4" activity="$invisible$" localNodeID="1627c623-bf21-4e39-924f-b69de17b3eef"/>
+      </transition>
+      <transition id="712dba92-7f99-40bd-b630-17847549bc3d">
+        <name>
+          <text>Pasar_torniquete</text>
+        </name>
+      </transition>
+      <transition id="d1b73c30-1835-4d94-bdb7-6aea41548a19">
+        <name>
+          <text>Almorzar</text>
+        </name>
+      </transition>
+      <transition id="d6be1c00-d75f-4857-a13e-3b65ad75b537">
+        <name>
+          <text>Recibir_bandeja</text>
+        </name>
+      </transition>
+      <transition id="9d662e17-6d20-4fb3-89f1-1feca60683fe">
+        <name>
+          <text>Buscar_mesa</text>
+        </name>
+      </transition>
+      <transition id="6d7f4d51-2f63-4dfd-9fc2-cb21316d024c">
+        <name>
+          <text>Entregar_menaje</text>
+        </name>
+      </transition>
+      <arc id="2065786885120" source="p_5" target="712dba92-7f99-40bd-b630-17847549bc3d"/>
+      <arc id="2065787350016" source="d1b73c30-1835-4d94-bdb7-6aea41548a19" target="p_10"/>
+      <arc id="2065787351696" source="p_8" target="9d662e17-6d20-4fb3-89f1-1feca60683fe"/>
+      <arc id="2065787354384" source="e6ef43b1-a5dc-4cfa-9657-cac865aa7471" target="p_5"/>
+      <arc id="2065787352080" source="skip_3" target="p_5"/>
+      <arc id="2065787353376" source="d6be1c00-d75f-4857-a13e-3b65ad75b537" target="p_8"/>
+      <arc id="2065787343296" source="p_10" target="6d7f4d51-2f63-4dfd-9fc2-cb21316d024c"/>
+      <arc id="2065787351744" source="p_9" target="d1b73c30-1835-4d94-bdb7-6aea41548a19"/>
+      <arc id="2065787280976" source="source" target="e6ef43b1-a5dc-4cfa-9657-cac865aa7471"/>
+      <arc id="2065786882144" source="712dba92-7f99-40bd-b630-17847549bc3d" target="p_6"/>
+      <arc id="2065787343200" source="p_6" target="skip_3"/>
+      <arc id="2065787352032" source="9d662e17-6d20-4fb3-89f1-1feca60683fe" target="p_9"/>
+      <arc id="2065787354480" source="6d7f4d51-2f63-4dfd-9fc2-cb21316d024c" target="sink"/>
+      <arc id="2065787354864" source="p_6" target="d6be1c00-d75f-4857-a13e-3b65ad75b537"/>
+    </page>
+    <finalmarkings>
+      <marking>
+        <place idref="sink">
+          <text>1</text>
+        </place>
+      </marking>
+    </finalmarkings>
+  </net>
+</pnml>

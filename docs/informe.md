@@ -242,7 +242,7 @@ Pendiente del equipo: se hace con otro grupo antes de la entrega o en la jornada
 
 Proyecto 13 · UniFood Rush · Grupo 3. Rama `fase2`. Fecha de sustentación: ☐ (la escribe el equipo).
 
-**Cómo leer esta parte.** Los números de Markov salen de `analisis/markov_validacion.py` (`analisis/resultados_python.json`) y el núcleo JavaScript los reproduce con tolerancia 1e-6 (`npm test`, 93 pruebas). Los logs son los de `analisis/logs/entrega/` (semilla 96, turno 4 continuo, 300 casos cerrados) y el desempeño sale de `analisis/mineria.py`. Quedan en ☐ el descubrimiento y la conformidad con PM4Py (falta instalarlo con Graphviz), lo que el equipo hace en persona y las decisiones de `PROMPTS.md`, sección G.
+**Cómo leer esta parte.** Los números de Markov salen de `analisis/markov_validacion.py` (`analisis/resultados_python.json`) y el núcleo JavaScript los reproduce con tolerancia 1e-6 (`npm test`, 93 pruebas). Los logs son los de `analisis/logs/entrega/` (semilla 96, turno 4 continuo, 300 casos cerrados) y el desempeño sale de `analisis/mineria.py`. El descubrimiento y la conformidad se hicieron con PM4Py 2.7.23 y Graphviz 16.1.2 (`analisis/salidas/`). Quedan en ☐ lo que el equipo hace en persona y las decisiones de `PROMPTS.md`, sección G.
 
 ## Sección 5.2 e) Registro del modelo validado
 
@@ -291,20 +291,20 @@ Los dos usan la semilla 96: reciben las mismas oleadas y las mismas llegadas. El
 
 | Algoritmo | Herramienta | N.º de actividades y de arcos | ¿Aparece el retrabajo o el desvío esperado? | Observación |
 |---|---|---|---|---|
-| DFG | Contado del log (igual al de PM4Py o Disco) | 6 actividades, 6 arcos | Sí: autolazo `Pasar_torniquete → Pasar_torniquete` (37 veces) | Los otros 5 arcos tienen 300 casos cada uno |
-| Alpha Miner | PM4Py | ☐ | ☐ | Se espera que falle con el autolazo de longitud 1 |
-| Heuristic Miner (Causal Net) | PM4Py | ☐ | ☐ | |
-| Inductive Miner (Process Tree y BPMN) | PM4Py | ☐ | ☐ | Se espera un lazo sobre `Pasar_torniquete` dentro de una secuencia |
+| DFG | PM4Py (`dfg.png`) | 6 actividades, 6 arcos | Sí: autolazo `Pasar_torniquete → Pasar_torniquete` (37 veces; 337 lecturas en 300 casos) | Los otros 5 arcos tienen 300 casos cada uno |
+| Alpha Miner | PM4Py (`alpha.png`) | 6 transiciones, 5 lugares, 8 arcos | No | Falla con el lazo de longitud 1: deja `Pasar_torniquete` suelto y `Esperar_fila` sin salida. No es un modelo correcto |
+| Heuristic Miner (Causal Net) | PM4Py (`heuristic_causal_net.png`, umbral 0,9) | 6 actividades, 6 relaciones | Sí: autolazo con frecuencia 37 | Robusto al lazo: la red causal es la secuencia normativa más el autolazo |
+| Inductive Miner (Process Tree y BPMN) | PM4Py (`process_tree.png`, `bpmn.png`, umbral de ruido 0,2) | Árbol `→(Esperar_fila, ⟲(Pasar_torniquete, τ), Recibir_bandeja, Buscar_mesa, Almorzar, Entregar_menaje)`; Workflow Net de 7 lugares y 7 transiciones | Sí: lazo XOR sobre `Pasar_torniquete` | Es el modelo normativo más la repetición de la lectura; se convierte a una Workflow Net correcta (`modelo_descubierto.pnml`) |
 
 ### d) Conformidad
 
 | Métrica | Valor | Interpretación |
 |---|---|---|
-| Fitness por replay de tokens | ☐ (PM4Py) | |
-| Fitness por alineamientos | ☐ (PM4Py) | |
-| Precisión | ☐ (PM4Py) | |
-| Casos con desvío (n y %) | 35 de 300 (11,7 %), contados como trazas distintas de la normativa | 265 casos (88,3 %) siguen exactamente el modelo |
-| Desvío más frecuente y su causa | `Pasar_torniquete` repetido: 33 casos una vez y 2 casos dos veces | Rechazo del carné (evento no controlable, probabilidad 0,10 por lectura) y bloqueo al tercer rechazo del torniquete hasta la reparación. Lo permite el modelo de la Fase 1: no es un error del juego |
+| Fitness por replay de tokens | 0,983 (88,3 % de las trazas ajustan) | Cada lectura repetida deja un token faltante y uno sobrante en el replay |
+| Fitness por alineamientos | 0,990 | El modelo normativo explica el 99 % del comportamiento: el costo es un movimiento solo en el log por cada lectura repetida |
+| Precisión | 1,000 | El modelo no permite nada que no aparezca en el log: es una secuencia estricta |
+| Casos con desvío (n y %) | 35 de 300 (11,7 %), con fitness de alineamiento menor que 1 | 265 casos (88,3 %) siguen exactamente el modelo |
+| Desvío más frecuente y su causa | `Pasar_torniquete` repetido: 37 movimientos solo en el log (33 casos una vez y 2 casos dos veces) | Rechazo del carné (evento no controlable, probabilidad 0,10 por lectura) y bloqueo al tercer rechazo del torniquete hasta la reparación. Lo permite el modelo de la Fase 1: no es un error del juego |
 
 ### e) Desempeño y mejora
 
@@ -318,7 +318,7 @@ Relación con la cadena: en Alta llegan 18 estudiantes por paso y 2 líneas sirv
 | Espera total en el cuello de botella, `Esperar_fila` (min) | 153,78 | 17,86 | −88,4 % |
 | Casos cerrados (en el tiempo de simulación) | 300 (923 s) | 300 (877 s) | 0 % (5 % menos tiempo) |
 | Desbordes de En_fila | 146 | 0 | −100 % |
-| Fitness contra el modelo normativo | ☐ | ☐ | ☐ |
+| Fitness contra el modelo normativo (alineamientos) | 0,990 | 0,990 | 0 % (el desvío es el rechazo del carné, que la línea 3 no cambia) |
 | Uso del recurso más cargado (min) | `Lavado` 15,0 | `Lavado` 15,0 | 0 % (3 s por estudiante, no depende de la línea 3) |
 | Llegada a la bandeja en oleada Baja (s) | 16,3 | 3,2 | −80,2 % |
 | Llegada a la bandeja en oleada Media (s) | 38,6 | 3,2 | −91,7 % |
@@ -338,7 +338,7 @@ Pregunta de la ficha D.13, «¿cuánto tarda un estudiante desde el torniquete h
 | El panel muestra P, π^(n), π iguales a Python | Comparar con `resultados_python.json` | Sí | π^(5) desde π^(0) = (0,3313; 0,3910; 0,2777) |
 | La P estimada pasa la prueba χ² | Datos de la partida tras 1000 pasos | Sí | χ² = 4,227 con 6 gl, p = 0,646 (tabla b) |
 | La misma semilla produce la misma partida y el mismo log | Generar dos logs y compararlos | Sí | Prueba automática; el log del navegador y el de Node son idénticos byte a byte |
-| El CSV y el XES se descargan y cargan en PM4Py, ProM o Disco | Exportar y abrir | En parte | Se descargan en el build local y abren en pandas y en un lector XML; ☐ abrirlos en PM4Py, ProM o Disco |
+| El CSV y el XES se descargan y cargan en PM4Py, ProM o Disco | Exportar y abrir | Sí | Se descargan en el build local; PM4Py lee el XES (3674 eventos, 300 casos) y `mineria.py` analiza el CSV. ☐ ProM o Disco, opcional |
 | El log tiene al menos 200 casos completos y 1000 eventos | Contar | Sí | 300 casos y 1837 eventos |
 | HUD completo en las zonas del GDD y 4 logros nuevos con aviso | Capturas | Sí | Paso k, oleada y riesgo junto al reloj; contador junto a las alertas |
 

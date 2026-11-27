@@ -1,5 +1,5 @@
 {
-  "log": "analisis/logs/entrega/mejorado.csv",
+  "log": "analisis\\logs\\entrega\\mejorado.csv",
   "casos": 300,
   "eventos": 1838,
   "casos_quitados": 0,
@@ -34,9 +34,9 @@
     "Buscar_mesa": {
       "filas": 300.0,
       "casos": 300.0,
-      "servicio_medio_s": 0.09106,
-      "espera_media_s": 0.09106,
-      "espera_total_s": 27.318
+      "servicio_medio_s": 0.09105999999999999,
+      "espera_media_s": 0.09105999999999999,
+      "espera_total_s": 27.317999999999998
     },
     "Entregar_menaje": {
       "filas": 300.0,
@@ -111,5 +111,44 @@
       "torniquete_a_bandeja_media_s": 1.905957894736842
     }
   },
-  "pm4py": null
+  "pm4py": {
+    "dfg": {
+      "actividades": 6,
+      "arcos": 6,
+      "autolazo_torniquete": 38
+    },
+    "alpha": {
+      "lugares": 5,
+      "transiciones": 6,
+      "arcos": 8
+    },
+    "heuristic": {
+      "actividades": 6,
+      "arcos": 6
+    },
+    "inductive": {
+      "arbol": "->( 'Esperar_fila', *( 'Pasar_torniquete', tau ), 'Recibir_bandeja', 'Buscar_mesa', 'Almorzar', 'Entregar_menaje' )",
+      "lugares": 7,
+      "transiciones": 7
+    },
+    "conformidad": {
+      "fitness_tokens": 0.9822263797942001,
+      "trazas_que_ajustan_pct": 88.66666666666667,
+      "fitness_alineamientos": 0.9895547003848268,
+      "precision": 1.0,
+      "casos_con_desvio": 34,
+      "casos": 300,
+      "desvios_mas_frecuentes": {
+        "en el log Pasar_torniquete / en el modelo >>": 38
+      }
+    },
+    "figuras": [
+      "dfg.png",
+      "alpha.png",
+      "heuristic_causal_net.png",
+      "process_tree.png",
+      "bpmn.png",
+      "performance_dfg.png"
+    ]
+  }
 }
