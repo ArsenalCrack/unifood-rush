@@ -123,3 +123,70 @@ Cada lugar lleva un rótulo con su contador m/k. El rótulo pasa a rojo cuando e
 3. El contador m/k de cada lugar coincide con los tokens dibujados.
 4. El HUD ocupa sus zonas y no tapa el radar.
 5. El estado iluminado en el grafo es el mismo que muestra el sprite.
+
+## 9. Fase 2: estados de Markov, panel analítico y Event Log
+
+Escrita con la habilidad `director-arte-isometrico`. Se revisa en `hoja-arte-fase2.html` (`npm run dev` y abrir `/hoja-arte-fase2.html`). Las funciones de dibujo están en `src/arte/markov.js`.
+
+### Escala de color por estado (de menor a mayor riesgo)
+
+**Oleada** (entidad estocástica global): chip junto a la entrada y tapete del color del estado en las baldosas de la entrada.
+
+| Estado | Color | Ícono | Efecto |
+|---|---|---|---|
+| Baja | operacion `#2e9e5b` | 1 persona | 4 llegadas por paso |
+| Media | espera `#e0b21b` | 2 personas | 10 llegadas por paso |
+| Alta | fallo `#d64545` | 3 personas | 18 llegadas por paso; temblor leve de cámara y destello |
+
+**Mesas** (cadena de referencia, observada en la red): chip debajo del rótulo de Mesa_libre.
+
+| Estado | Color | Ícono |
+|---|---|---|
+| 0-25% | mantenimiento `#3b7dd8` | círculo con 1 cuarto lleno |
+| 25-50% | operacion `#2e9e5b` | 2 cuartos |
+| 50-75% | espera `#e0b21b` | 3 cuartos |
+| 75-100% | fallo `#d64545` | círculo lleno |
+
+Al cambiar de estado, el chip cambia de color con un tween de 300 ms, crece y vuelve (300 ms) y aparece una etiqueta flotante con «Oleada X → Y».
+
+### Línea 3
+
+Cerrada: carril, mostrador y torniquete T3 al 25 %, 40 % y 40 % de opacidad, y el letrero «LÍNEA 3 CERRADA · tecla 3». Abierta: todo al 100 %, una persona de refuerzo detrás del mostrador y el letrero en verde.
+
+### Colores del panel analítico
+
+| Uso | Color |
+|---|---|
+| Fondo del panel | `#0f1524` |
+| Borde del panel y pestaña elegida | mantenimiento `#3b7dd8` |
+| Fila del estado actual en el mapa de calor | `#f0c53a` |
+| Mapa de calor de P | de `#fbfaf6` (0) a fallo `#d64545` (1), valores con dos decimales; texto oscuro sobre celdas claras y claro sobre oscuras |
+| π teórico | `#7fb0f5` |
+| Frecuencia observada en la partida | relevo `#f08a24` |
+| Barras de π^(n) | el color de cada estado |
+
+### Recursos creados
+
+| Recurso | Archivo o función | Tamaño (px) | Estados o variantes |
+|---|---|---|---|
+| Entidad estocástica 1: Oleada | `chipEstado()` en `src/arte/markov.js`, tapete en `Escenario.pintarMarkov()`; íconos `personas1` a `personas3` en `formas.js` | 92 × 20 (mapa), 78 × 20 (HUD) | Baja, Media, Alta |
+| Entidad estocástica 2: Mesas | `chipEstado()`; íconos `cuarto1` a `cuarto4` | 86 × 20 | 0-25%, 25-50%, 50-75%, 75-100% |
+| Mapa de calor de P | `mapaCalor()` y `colorCalor()` | celdas de 72 × 40 (3 estados) o 62 × 34 (4) | fila del estado actual resaltada |
+| Barras de π^(n) y de π contra frecuencias | `barras()` y `leyenda()` | 270 × 140 y 250 × 104 | 1 o 2 series, crecen con un tween de 380 ms |
+| Indicador de Markov y contador del log | `HUDPartida.crearIndicadorMarkov()` y `textoLog` | 142 × 58 y una línea de 9 px | parpadeo amarillo con riesgo ≥ 0,5 |
+| Botón de exportación | `botonExportar()` | 150 × 30 | reposo, al pasar el mouse, descargando |
+| Mapa de calor de las esperas (H) | `Planta.pintarCalor()` | baldosas de 62 × 31 | de blanco a rojo según la espera |
+
+### Efectos de Phaser 4 de la Fase 2
+
+| Efecto | Dónde | Qué comunica |
+|---|---|---|
+| Tween de color de 300 ms | Chips de Oleada y Mesas, tapete de la entrada | Cambio de estado de la cadena en el paso k |
+| Temblor leve de cámara y bloom | Entrada a oleada Alta | Estado peligroso de la cadena |
+| Partículas rojas en la entrada | Entrada a oleada Alta | Llegada de una oleada grande |
+| Barras animadas | Panel de Markov y Resultados | Datos nuevos al cambiar n o en cada paso |
+| Parpadeo | Indicador de Markov del HUD | Riesgo de oleada Alta en 3 pasos ≥ 0,5 |
+| Barrido (wipe) | Paso a Resultados | Fin del turno |
+| Mapa de calor sobre el piso | Filas, mostradores, zona de espera de mesa y carro | Dónde se forman las colas, según el registrador |
+
+La cadena Oleada es ergódica y la de Mesas también: no hay estados absorbentes, así que no se usan las partículas de absorción de la guía.

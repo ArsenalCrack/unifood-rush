@@ -69,6 +69,24 @@ export function icono(g, tipo, cx, cy, color = 0xffffff, conInsignia = true) {
     case 'cucharon':
       g.fillCircle(cx - 1.5, cy + 2, 2.6); g.lineBetween(cx, cy + 0.5, cx + 4, cy - 4); break;
     case 'admiracion': g.lineBetween(cx, cy - 4, cx, cy + 1); g.fillCircle(cx, cy + 3.8, 1.2); break;
+    // Fase 2: oleada de llegada (1, 2 o 3 personas) y ocupación de mesas (1 a 4 cuartos).
+    case 'personas1': case 'personas2': case 'personas3': {
+      const n = Number(tipo.slice(-1));
+      const xs = [[0], [-2.4, 2.4], [-3.6, 0, 3.6]][n - 1];
+      for (const dx of xs) { g.fillCircle(cx + dx, cy - 2.2, 1.5); g.fillRoundedRect(cx + dx - 1.5, cy - 0.2, 3, 3.8, 1); }
+      break;
+    }
+    case 'cuarto1': case 'cuarto2': case 'cuarto3': case 'cuarto4': {
+      const n = Number(tipo.slice(-1));
+      g.lineStyle(1.1, color, 1);
+      g.strokeCircle(cx, cy, 4.3);
+      g.beginPath();
+      g.moveTo(cx, cy);
+      g.arc(cx, cy, 4.3, -Math.PI / 2, -Math.PI / 2 + (n * Math.PI) / 2, false);
+      g.closePath();
+      g.fillPath();
+      break;
+    }
     default: g.fillCircle(cx, cy, 2);
   }
 }
