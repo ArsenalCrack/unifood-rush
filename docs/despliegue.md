@@ -108,27 +108,40 @@ Se valida con `sudo nginx -t` y solo después se recarga con `sudo systemctl rel
 
 Si el servidor no está disponible, la carpeta `dist/` se puede arrastrar a https://app.netlify.com/drop y Netlify entrega un enlace con HTTPS.
 
-## 6. Fase 2 (opcional, guía 5.12)
+## 6. Fase 2: actualización del mismo enlace
 
-La Fase 2 se publica en una subcarpeta de la misma carpeta, sin tocar la Fase 1 ni la configuración de Caddy: el bloque `handle_path /unifood/*` ya sirve todo lo que hay dentro de `/var/www/unifood-rush`, y el juego usa rutas relativas. La dirección lleva la barra final: https://dinamyt.org/unifood/fase2/
+La Fase 2 reemplaza a la Fase 1 en https://dinamyt.org/unifood/: se publica en la misma carpeta, como una versión nueva, y Caddy no cambia. La Fase 1 sigue disponible dentro del juego con la opción «Ola fija (Fase 1)» del título, igual que en su sustentación.
 
 Desde la carpeta del proyecto, en la rama `fase2`, en PowerShell y con la misma clave SSH de la Fase 1:
 
 ```powershell
-npm run desplegar -- usuario@servidor /var/www/unifood-rush/fase2
+git switch fase2
+git pull
+npm run desplegar -- usuario@servidor /var/www/unifood-rush
 ```
 
-Las carpetas dentro de `/var/www/unifood-rush` son del usuario del equipo, así que no hace falta `sudo`. Para comprobarlo:
+El comando corre las pruebas, compila, borra el bundle viejo (`assets/index-*.js`) y copia `index.html` y `assets/`. No hace falta `sudo`. Para comprobarlo:
 
 ```powershell
-curl.exe -sI https://dinamyt.org/unifood/fase2/
+curl.exe -sI https://dinamyt.org/unifood/
 ```
 
-Debe responder `HTTP/2 200`. Después se juega un turno en el enlace, se abre el panel de Markov y se descarga el log.
+Debe responder `HTTP/2 200`. Después se recarga el enlace con Ctrl + F5, se juega un turno, se abre el panel de Markov (M) y la red de Petri (R) y se descarga el log.
 
-Si el equipo decide que la Fase 2 reemplace a la Fase 1 en https://dinamyt.org/unifood/, se usa la ruta de siempre, `/var/www/unifood-rush`. La Fase 1 sigue disponible con la opción «Ola fija (Fase 1)» del título.
+Si lo publica alguien sin el repositorio, sirve el ZIP de la entrega (`Grupo3_UniFoodRush_Fase2.zip`, el contenido de `dist/`). Se copia al servidor:
+
+```powershell
+scp Grupo3_UniFoodRush_Fase2.zip usuario@servidor:~/
+```
+
+Y en el servidor se borra el bundle viejo y se descomprime encima:
+
+```bash
+rm -f /var/www/unifood-rush/assets/index-*.js
+python3 -m zipfile -e ~/Grupo3_UniFoodRush_Fase2.zip /var/www/unifood-rush/
+```
 
 | Dato | Valor |
 |---|---|
-| Dirección pública de la Fase 2 | https://dinamyt.org/unifood/fase2/ (☐ cuando se publique) |
-| Carpeta en el servidor | `/var/www/unifood-rush/fase2` |
+| Dirección pública | https://dinamyt.org/unifood/ (☐ Fase 2 publicada) |
+| Carpeta en el servidor | `/var/www/unifood-rush` |

@@ -98,6 +98,7 @@ Rama `fase2`. Agente: **Claude Code** (Anthropic), igual que en la Fase 1. Las d
 | 3 | «Sí, súbela» (la rama `fase2` a GitHub) | La rama `fase2` en `origin`, sin integrar a `master` |
 | 4 | «dime que es lo que deben saber mis compañeros, donde encontrarlo y que deben hacer», después del botón «Abrir PR» | El pull request de `fase2` a `master` y un documento para el equipo con lo que debe saber, dónde está cada cosa y las tareas pendientes |
 | 5 | «dos cosas, al igual que se muestra los automatas de esa manera grafica, los apartados de red de petri también debemos mostrarlos, sube la actualización a git, vuelve hacer el video y dame los comandos para la vps» | La red de Petri en vivo (tecla R), el commit y el push, el video otra vez y los comandos para publicar la Fase 2 en la VPS |
+| 6 | «pero yo quiero que quede todo como una actualización, no en /fase2, corrige eso, dame el archivo para mi compañero con los cambios y cambiame los comandos de la vps» | La Fase 2 se publica como actualización de https://dinamyt.org/unifood/ (antes se había propuesto la subcarpeta /fase2/); la guía para el equipo con los cambios, en PDF; los comandos nuevos |
 
 ## F. Los 16 prompts de la guía con los datos de la ficha D.13
 
@@ -155,5 +156,6 @@ La guía pide aceptar o rechazar de forma explícita lo que propone el agente. *
 - Instalar Jupyter (opcional: el análisis está en `mineria.py`, no en un cuaderno) y repetir el análisis en ProM o Disco.
 - Medir los fps con F1 en una pantalla real (el navegador sin ventana usa WebGL por software).
 - Probar en un celular, el playtest con otro equipo y subir el ZIP y el video al aula virtual.
-- Publicar la Fase 2 en Internet e integrar `fase2` a `master`: esperan la decisión del equipo (la rama `fase2` ya está en GitHub).
+- Integrar `fase2` a `master`: espera la decisión del equipo (la rama `fase2` ya está en GitHub).
+- Publicar la Fase 2 en la VPS: la hace el equipo con su clave SSH, como actualización de https://dinamyt.org/unifood/ (`docs/despliegue.md`, sección 6).
 - Responder con sus palabras el postmortem (`docs/informe.md` trae un borrador) y marcar las decisiones de la sección G.

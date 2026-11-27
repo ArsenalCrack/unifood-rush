@@ -408,8 +408,8 @@ La cadena Mesas, observada en la red, sí se rechaza (χ² = 276,7): con 10,4 ll
 
 | Dato | Valor |
 |---|---|
-| Servicio usado | Servidor propio de la Fase 1 (VPS con Caddy), en una subcarpeta: `docs/despliegue.md`, sección 6 |
-| Dirección pública del simulador | https://dinamyt.org/unifood/fase2/ (☐ cuando el equipo la publique) |
+| Servicio usado | Servidor propio de la Fase 1 (VPS con Caddy): la Fase 2 se publica como actualización del mismo enlace (`docs/despliegue.md`, sección 6) |
+| Dirección pública del simulador | https://dinamyt.org/unifood/ (☐ cuando el equipo publique la Fase 2; la Fase 1 queda con «Ola fija (Fase 1)») |
 
 ## Postmortem de la Fase 2 (borrador para el equipo)
 

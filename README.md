@@ -87,7 +87,7 @@ La Fase 1 está publicada en **https://dinamyt.org/unifood/**. El simulador es e
 npm run desplegar -- usuario@servidor /var/www/unifood-rush
 ```
 
-El comando ejecuta las pruebas, compila y copia los archivos por SSH. La configuración del servidor web se hace una sola vez con `despliegue/instalar-en-caddy.sh`; los pasos están en `docs/despliegue.md`. La Fase 2 se publica igual cuando el equipo lo decida (en la Fase 2 el despliegue es opcional).
+El comando ejecuta las pruebas, compila y copia los archivos por SSH. La configuración del servidor web se hace una sola vez con `despliegue/instalar-en-caddy.sh`; los pasos están en `docs/despliegue.md`. La Fase 2 se publica como actualización del mismo enlace, https://dinamyt.org/unifood/, con `npm run desplegar -- usuario@servidor /var/www/unifood-rush` (`docs/despliegue.md`, sección 6); la Fase 1 sigue disponible con «Ola fija (Fase 1)».
 
 ## Otros comandos
 
