@@ -122,7 +122,8 @@ export class GenerarLog extends Phaser.Scene {
       ['Tiempo medio de ciclo', `${numero(r.tiempoCicloMedio, 1)} s`],
       ['Desbordes de En_fila', String(r.desbordes)],
       ['Pasos con la línea 3 abierta', String(r.pasosLinea3)],
-      ['χ² de la oleada (gl, valor p)', `${numero(r.chi.estadistico, 2)} (${r.chi.gl}, ${numero(r.chi.valorP, 3)})`]
+      // Como en el panel y en Resultados: con valores esperados menores que 5 la prueba no es confiable.
+      ['χ² de la oleada (gl, valor p)', `${numero(r.chi.estadistico, 2)} (${r.chi.gl}, ${numero(r.chi.valorP, 3)})${r.chi.confiable ? '' : ' · no confiable'}`]
     ];
     filas.forEach(([nombre, valor], i) => {
       t(496, 186 + i * 19, nombre, estilo(11, TEXTO.claro));
