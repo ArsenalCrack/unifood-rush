@@ -1,0 +1,13 @@
+# Librerías del análisis de la Fase 2 (secciones 5.2 y 5.9 de la guía).
+# Al crear el entorno, regenerar con las versiones exactas:
+#   python -m venv .venv
+#   .venv\Scripts\activate        (macOS y Linux: source .venv/bin/activate)
+#   pip install -r analisis/requirements.txt
+#   pip freeze > analisis/requirements.txt
+# PM4Py necesita además Graphviz instalado en el sistema (comando dot) para dibujar los modelos.
+numpy>=2.0
+scipy>=1.13
+pandas>=2.2
+matplotlib>=3.9
+pm4py>=2.7
+jupyter

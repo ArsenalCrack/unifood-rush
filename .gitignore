@@ -1,5 +1,11 @@
 node_modules
 dist
 *.zip
-entrega/
+/entrega/
 .claude/
+
+# Fase 2: entorno de Python y logs de pruebas (los de la entrega van en analisis/logs/entrega/)
+.venv/
+__pycache__/
+.ipynb_checkpoints/
+analisis/logs/*.xes
