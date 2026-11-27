@@ -3,11 +3,13 @@
 // avanza de evento en evento. Entre eventos el estado del sistema no cambia.
 // Núcleo formal: no depende del motor de juego ni del DOM.
 
+import { VELOCIDADES } from '../config.js';
+
 export class Reloj {
   // manejador(evento, reloj): función que recibe los eventos que son objetos.
   constructor(manejador = null) {
     this.tiempo = 0;        // tiempo de simulación en segundos
-    this.velocidad = 1;     // 1, 2 o 4
+    this.velocidad = 1;     // 1, 2, 4 u 8
     this.pausado = false;
     this.cola = [];         // calendario ordenado por (t, sec)
     this.sec = 0;           // desempata eventos con el mismo tiempo (orden de llegada)
@@ -45,9 +47,15 @@ export class Reloj {
 
   // Avanza dt segundos reales (multiplicados por la velocidad) y dispara, en
   // orden de tiempo, todos los eventos vencidos. Devuelve cuántos disparó.
-  avanzar(dt) {
+  // limite: instante de simulación que no se pasa (el borde del paso k de la Fase 2).
+  avanzar(dt, limite = Infinity) {
     if (this.pausado || dt <= 0) return 0;
-    const fin = this.tiempo + dt * this.velocidad;
+    return this.avanzarHasta(Math.min(this.tiempo + dt * this.velocidad, limite));
+  }
+
+  // Avanza hasta el instante absoluto fin disparando los eventos con t <= fin.
+  avanzarHasta(fin) {
+    if (this.pausado || fin <= this.tiempo) return 0;
     let disparados = 0;
     while (this.cola.length > 0 && this.cola[0].t <= fin) {
       const item = this.cola.shift();
@@ -67,7 +75,7 @@ export class Reloj {
   alternarPausa() { this.pausado = !this.pausado; return this.pausado; }
 
   cambiarVelocidad(v) {
-    if (![1, 2, 4].includes(v)) throw new Error(`Velocidad no válida: ${v}`);
+    if (!VELOCIDADES.includes(v)) throw new Error(`Velocidad no válida: ${v}`);
     this.velocidad = v;
   }
 

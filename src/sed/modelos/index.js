@@ -8,6 +8,14 @@ import registroAcceso from './registro_acceso.json' with { type: 'json' };
 import reparacion from './reparacion.json' with { type: 'json' };
 import comedor from './comedor.json' with { type: 'json' };
 import comedorMonitor from './comedor_monitor.json' with { type: 'json' };
+import oleada from './markov/oleada.json' with { type: 'json' };
+import mesas from './markov/mesas.json' with { type: 'json' };
+
+// Cadenas de Markov de la Fase 2 (docs/modelo/markov.md, ficha D.13).
+export const MARKOV = {
+  oleada,  // gobierna las llegadas (se sortea en cada paso k)
+  mesas    // modelo de referencia (se observa desde la red de Petri)
+};
 
 export const MODELOS = {
   estudiante,        // autómata de la ficha (uno por estudiante)

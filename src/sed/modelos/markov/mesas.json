@@ -1,0 +1,16 @@
+{
+  "nombre": "Mesas",
+  "descripcion": "Ocupación de las 20 mesas en cuartos (ficha D.13). Modelo de referencia: en el juego no se sortea; al final de cada paso k se observa M(Almorzando) = 20 − M(Mesa_libre) de la red de Petri y se compara con esta cadena.",
+  "estados": ["0-25%", "25-50%", "50-75%", "75-100%"],
+  "pi0": [1, 0, 0, 0],
+  "P": [[0.50, 0.40, 0.10, 0.00],
+        [0.20, 0.50, 0.25, 0.05],
+        [0.05, 0.25, 0.50, 0.20],
+        [0.00, 0.10, 0.40, 0.50]],
+  "absorbentes": [],
+  "pasoMs": 30000,
+  "peligrosos": ["75-100%"],
+  "referencia": true,
+  "observa": { "lugar": "Almorzando", "total": 20, "cortes": [5, 10, 15] },
+  "eventosFase1": {}
+}

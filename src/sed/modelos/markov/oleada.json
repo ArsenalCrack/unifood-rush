@@ -1,0 +1,14 @@
+{
+  "nombre": "Oleada",
+  "descripcion": "Oleada de llegada de estudiantes al comedor (ficha D.13). Cada estado trae un número fijo de estudiantes durante el paso k; cada llegada es el evento externo llegada de la Fase 1 (+1 token en En_fila).",
+  "estados": ["Baja", "Media", "Alta"],
+  "pi0": [1, 0, 0],
+  "P": [[0.60, 0.30, 0.10],
+        [0.25, 0.50, 0.25],
+        [0.10, 0.35, 0.55]],
+  "absorbentes": [],
+  "pasoMs": 30000,
+  "peligrosos": ["Alta"],
+  "llegadasPorPaso": { "Baja": 4, "Media": 10, "Alta": 18 },
+  "eventosFase1": { "Baja": "llegada", "Media": "llegada", "Alta": "llegada" }
+}

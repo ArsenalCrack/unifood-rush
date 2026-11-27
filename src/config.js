@@ -10,7 +10,7 @@ export const PLANTA = { columnas: 16, filas: 12 }; // celdas del comedor (x, y)
 export const ORIGEN = { x: 416, y: 62 };           // píxel de la celda (0, 0)
 
 // --- Simulación ---
-export const VELOCIDADES = [1, 2, 4];
+export const VELOCIDADES = [1, 2, 4, 8]; // la Fase 2 agrega ×8
 export const SEMILLA = 96;              // semilla fija: primer bloqueo de torniquete a los ~39 s del turno 1
 export const RADAR_PROFUNDIDAD = 3;     // disparos que mira el radar hacia adelante
 export const ARBOL_PROFUNDIDAD = 4;     // profundidad del árbol local del inspector
@@ -50,11 +50,30 @@ export const PUNTOS = {
 // --- Turnos con dificultad creciente (GDD, sección "Turnos") ---
 // estudiantes llegan durante "llegadas" s; pRechazo es la probabilidad de rechazo
 // de una lectura; meta es la fracción mínima en Salida para aprobar el turno.
+// pasos: pasos k con llegadas cuando las decide la cadena Oleada (Fase 2, GDD 16.4);
+// en promedio traen 60, 91 y 123 estudiantes (analisis/resultados_python.json).
 export const TURNOS = [
-  { id: 1, nombre: 'Desayuno',  estudiantes: 60,  llegadas: 240, pRechazo: 0.10, meta: 0.75 },
-  { id: 2, nombre: 'Almuerzo',  estudiantes: 90,  llegadas: 300, pRechazo: 0.10, meta: 0.75 },
-  { id: 3, nombre: 'Hora pico', estudiantes: 120, llegadas: 300, pRechazo: 0.10, meta: 0.75 }
+  { id: 1, nombre: 'Desayuno',  estudiantes: 60,  llegadas: 240, pasos: 7,  pRechazo: 0.10, meta: 0.75 },
+  { id: 2, nombre: 'Almuerzo',  estudiantes: 90,  llegadas: 300, pasos: 10, pRechazo: 0.10, meta: 0.75 },
+  { id: 3, nombre: 'Hora pico', estudiantes: 120, llegadas: 300, pasos: 13, pRechazo: 0.10, meta: 0.75 }
 ];
+// Turno 4 de la Fase 2: llegadas por Markov sin fin, con la política automática.
+export const TURNO_CONTINUO = {
+  id: 4, nombre: 'Servicio continuo', estudiantes: null, llegadas: null, pasos: Infinity,
+  pRechazo: 0.10, meta: 0.75, continuo: true
+};
+
+// --- Fase 2: cadenas de Markov y registro de eventos (docs/modelo/markov.md, docs/log.md) ---
+export const PASO_K_MS = 30000;                       // 1 paso k = 30 s de simulación (2 min del comedor)
+export const SEMILLA_MARKOV = 2026;                   // la de analisis/markov_validacion.py
+export const FECHA_BASE_LOG = '2026-01-01T11:30:00Z'; // el comedor abre a las 11:30 (ficha D.13)
+export const UMBRAL_RIESGO = 0.5;                     // P(oleada Alta en <= 3 pasos) que enciende el aviso
+export const PASOS_RIESGO = 3;
+export const COSTOS = { linea3Apertura: 20, linea3Paso: 3, relevoExtra: 25 };
+export const PUNTOS_FASE2 = { pronostico: 15, altaSinDesborde: 5, lineaJusta: 30 };
+export const META_LOGRO_OLEADA = 3;                   // pasos Alta seguidos sin desborde
+export const META_LOGRO_REGISTRO = 200;               // casos cerrados en un log exportado
+export const PROYECTO_LOG = 'UniFoodRush';
 
 // --- Logros (GDD, sección "Logros") ---
 export const LOGROS = [
@@ -63,7 +82,12 @@ export const LOGROS = [
   { id: 'fila_legal',      nombre: 'Fila legal',             condicion: '15 servir seguidos sin intentos bloqueados por el supervisor.' },
   { id: 'ciclo_cerrado',   nombre: 'Ciclo cerrado',          condicion: '6 disparos de t_lavar en un turno (30 bandejas recicladas).' },
   { id: 'sin_red',         nombre: 'Sin red de seguridad',   condicion: 'Terminar un turno con los monitores desactivados y sin interbloqueo.' },
-  { id: 'hora_pico',       nombre: 'Hora pico superada',     condicion: 'Terminar un turno sin interbloqueo con 90 % o más en Salida.' }
+  { id: 'hora_pico',       nombre: 'Hora pico superada',     condicion: 'Terminar un turno sin interbloqueo con 90 % o más en Salida.' },
+  // Fase 2 (GDD 16.11)
+  { id: 'pronostico',        nombre: 'Pronóstico certero', condicion: 'La línea 3 ya estaba abierta cuando empezó una oleada Alta.' },
+  { id: 'oleada_contenida',  nombre: 'Oleada contenida',   condicion: '3 pasos seguidos de oleada Alta sin desborde de En_fila.' },
+  { id: 'linea_justa',       nombre: 'Línea justa',        condicion: 'Turno con la línea 3 abierta en cada paso Alta y cerrada en cada paso Baja.' },
+  { id: 'registro_completo', nombre: 'Registro completo',  condicion: 'Exportar un Event Log con 200 casos cerrados o más.' }
 ];
 export const META_LOGRO_FILA = 15;
 export const META_LOGRO_LAVADOS = 6;
