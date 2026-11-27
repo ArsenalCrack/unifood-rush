@@ -3,8 +3,8 @@
 // sistema. Compress-Archive de Windows PowerShell 5.1 las escribe con "\" y, al
 // descomprimir en el aula virtual (Linux), no aparece la carpeta assets/.
 //
-// Uso:  npm run zip -- 7   (compila y crea Grupo7_UniFoodRush.zip)
-//       npm run zip        (crea GrupoN_UniFoodRush.zip)
+// Uso:  npm run zip -- 7   (compila y crea Grupo7_UniFoodRush_Fase2.zip)
+//       npm run zip        (crea GrupoN_UniFoodRush_Fase2.zip)
 
 import { readdirSync, readFileSync, writeFileSync, statSync, existsSync } from 'node:fs';
 import { join, relative, sep } from 'node:path';
@@ -12,7 +12,7 @@ import { deflateRawSync } from 'node:zlib';
 
 const RAIZ = 'dist';
 const grupo = process.argv[2] ?? 'N';
-const salida = `Grupo${grupo}_UniFoodRush.zip`;
+const salida = `Grupo${grupo}_UniFoodRush_Fase2.zip`; // entrega de la Fase 2 (guía 5.11)
 const LIMITE = 25 * 1024 * 1024; // tamaño máximo que acepta el aula virtual
 
 if (!existsSync(join(RAIZ, 'index.html'))) {

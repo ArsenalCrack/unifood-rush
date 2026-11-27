@@ -391,6 +391,7 @@ export class CadenaMarkov {
     let gl = 0;
     let imposibles = 0;
     let transiciones = 0;
+    let esperadoMinimo = Infinity;
     this.conteos.forEach((conteo, f) => {
       const P = this.franjas ? this.franjas[f].P : this.P;
       conteo.forEach((fila, i) => {
@@ -401,6 +402,7 @@ export class CadenaMarkov {
         fila.forEach((nij, j) => {
           if (P[i][j] > 0) {
             const esperado = ni * P[i][j];
+            esperadoMinimo = Math.min(esperadoMinimo, esperado);
             estadistico += (nij - esperado) ** 2 / esperado;
             posibles += 1;
           } else if (nij > 0) {
@@ -412,12 +414,20 @@ export class CadenaMarkov {
     });
     const valorP = imposibles > 0 ? 0 : chi2Supervivencia(estadistico, gl);
     const rechaza = transiciones > 0 && valorP < alfa;
+    // Regla de Cochran: la aproximación chi-cuadrado vale si todos los esperados son >= 5.
+    const confiable = transiciones > 0 && esperadoMinimo >= 5;
     let conclusion;
     if (transiciones === 0) conclusion = 'Todavía no hay transiciones observadas.';
     else if (imposibles > 0) conclusion = `Se observaron ${imposibles} transiciones con p_ij = 0: el juego no respeta P.`;
     else if (rechaza) conclusion = `Valor p ${coma(valorP, 3)} < ${coma(alfa, 2)}: se rechaza que los datos sigan P.`;
     else conclusion = `Valor p ${coma(valorP, 3)} ≥ ${coma(alfa, 2)}: no se rechaza que los datos sigan P.`;
-    return { estadistico, gl, valorP, alfa, rechaza, transiciones, imposibles, conclusion };
+    if (transiciones > 0 && imposibles === 0 && !confiable) {
+      conclusion += ` Ojo: con ${transiciones} transiciones hay valores esperados menores que 5 y la aproximación χ² no es confiable.`;
+    }
+    return {
+      estadistico, gl, valorP, alfa, rechaza, transiciones, imposibles, conclusion,
+      confiable, esperadoMinimo: Number.isFinite(esperadoMinimo) ? esperadoMinimo : 0
+    };
   }
 
   // ---------- guardar y restaurar ----------

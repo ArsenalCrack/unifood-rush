@@ -11,7 +11,7 @@ La cadena no reemplaza a los autómatas ni a la red de Petri de la Fase 1: decid
 | Oleada | Baja, Media, Alta | 1 paso = 30 s de simulación (2 min del comedor) | (1; 0; 0): el comedor abre a las 11:30 en Baja | Ergódica | Una clase recurrente {Baja, Media, Alta}, periodo 1 | `src/sed/modelos/markov/oleada.json` |
 | Mesas | 0-25%, 25-50%, 50-75%, 75-100% | 1 paso = 30 s de simulación | (1; 0; 0; 0): al abrir, las 20 mesas están libres | Ergódica | Una clase recurrente con los 4 estados, periodo 1 | `src/sed/modelos/markov/mesas.json` |
 
-Semilla de las cadenas: `SEMILLA_MARKOV = 2026` en `src/config.js`, la misma de la simulación de Python. En una partida, el generador de la cadena se inicia con `SEMILLA_MARKOV · 1000 + semilla de la partida`: con la semilla 96 del GDD la secuencia de oleadas es siempre la misma, haga lo que haga el jugador.
+Semilla de las cadenas: `SEMILLA_MARKOV = 2026` en `src/config.js`, la misma de la simulación de Python. En una partida, el generador de la cadena se inicia con `SEMILLA_MARKOV · 100000 + semilla · 10 + turno`: con la semilla 96 del GDD cada turno tiene siempre la misma secuencia de oleadas, haga lo que haga el jugador.
 
 ## 2. Paso k
 

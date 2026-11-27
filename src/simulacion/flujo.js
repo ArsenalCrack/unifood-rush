@@ -25,8 +25,9 @@ export const RAZON_SUPERVISOR =
 export const PASO_K_S = PASO_K_MS / 1000;
 
 // Semilla del generador de las cadenas en una partida: depende solo de la semilla de la
-// partida, así que la secuencia de oleadas no cambia con lo que haga el jugador.
-export const semillaMarkov = (semilla) => (SEMILLA_MARKOV * 1000 + semilla) >>> 0;
+// partida y del turno (cada turno tiene sus oleadas), así que la secuencia de oleadas no
+// cambia con lo que haga el jugador.
+export const semillaMarkov = (semilla, turno = 1) => (SEMILLA_MARKOV * 100000 + semilla * 10 + turno) >>> 0;
 
 export class FlujoComedor {
   // llegadas: 'fase1' (ola fija de la Fase 1) o 'markov' (las decide la cadena Oleada).
@@ -107,7 +108,7 @@ export class FlujoComedor {
       desbordesAlEmpezarPaso: 0
     };
     if (this.modoMarkov) {
-      const base = semillaMarkov(semilla);
+      const base = semillaMarkov(semilla, turno.id);
       this.azarMarkov = new Aleatorio(base);        // sorteo de la oleada en cada paso
       this.azarLlegadas = new Aleatorio(base + 1);  // instantes de las llegadas dentro del paso
       this.markov = {

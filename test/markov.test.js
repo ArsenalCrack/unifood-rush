@@ -170,6 +170,7 @@ test('matrizEstimada() y chiCuadrado() no rechazan P con alfa = 0,05 en 10 000 p
     assert.equal(chi.gl, PYTHON.cadenas[nombre].chi_cuadrado.gl, `${nombre} grados de libertad`);
     assert.equal(chi.rechaza, false, `${nombre}: ${chi.conclusion}`);
     assert.ok(chi.valorP > 0.05);
+    assert.equal(chi.confiable, true, 'con 10 000 pasos todos los esperados son >= 5');
   }
 });
 
@@ -181,6 +182,11 @@ test('el valor p de chi-cuadrado coincide con SciPy', () => {
   }
   cerca(chi2Supervivencia(3.841458820694124, 1), 0.05, 1e-9, 'cuantil 0,95 con 1 gl');
   cerca(chi2Supervivencia(12.591587243743977, 6), 0.05, 1e-9, 'cuantil 0,95 con 6 gl');
+  // Con pocas transiciones la conclusión avisa que la aproximación no es confiable.
+  const corta = new CadenaMarkov(MARKOV.oleada, (() => { const g = new Aleatorio(5); return () => g.siguiente(); })());
+  for (let i = 0; i < 20; i++) corta.paso();
+  assert.equal(corta.chiCuadrado().confiable, false);
+  assert.match(corta.chiCuadrado().conclusion, /no es confiable/);
   // Una transición imposible rechaza siempre.
   const cadena = new CadenaMarkov(MARKOV.mesas);
   cadena.observar('75-100%'); // de 0-25% a 75-100%: p = 0
