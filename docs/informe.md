@@ -397,6 +397,7 @@ La cadena Mesas, observada en la red, sí se rechaza (χ² = 276,7): con 10,4 ll
 |---|---|
 | Nombre del archivo ZIP | `Grupo3_UniFoodRush_Fase2.zip` (`npm run zip -- 3`) |
 | Tamaño del archivo ZIP (MB) | 0,06 |
+| Video (guía 5.13) | `Grupo3_UniFoodRush_Fase2_video.mp4` (en `entrega/`, fuera de git): 3 min 32 s, 1920 × 1080, H.264, 33 MB, sin voz y con subtítulos. Turno 4 con la semilla 96: matriz P (0:21), Transitorio (0:31), reparación automática de los torniquetes (0:41), aviso del paso 12 con riesgo 51 % (1:16), riesgo 25, 51 y 66 % en el panel (1:23), línea 3 abierta (1:31) y oleada Alta del paso 13 con pronóstico acertado (1:41); lista L y exportación en CSV y XES (1:49), «Generar log» (2:11); en PM4Py, la salida de `mineria.py` (2:25), descubrimiento (2:34), Alpha y Heuristic Miner (2:45), conformidad (2:54), desempeño (3:05) y mejora (3:15) |
 | Enlace de previsualización del aula virtual | ☐ |
 | Resultado de `npm test` (pruebas aprobadas / total) | 93 / 93 |
 | ¿El log se descarga desde la previsualización? | En el build local (`npm run preview`) sí; ☐ en la previsualización del aula virtual |

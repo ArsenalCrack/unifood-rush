@@ -155,11 +155,11 @@ En la Fase 2, M y L pasaron al panel de Markov y a la lista de eventos, como pid
 
 ## Guion para la sustentación de la Fase 2
 
-La semilla es fija (96) y cada turno tiene su propia secuencia de oleadas. En el turno 3, después de los pasos 1 a 13, la oleada es siempre: Baja, Alta, Alta, Media, Media, Media, Media, Media, Baja, Media, Media, Alta y Alta.
+La semilla es fija (96) y cada turno tiene su propia secuencia de oleadas. En el turno 3, después de los pasos 1 a 13, la oleada es siempre: Baja, Alta, Alta, Media, Media, Media, Media, Media, Baja, Media, Media, Alta y Alta. En el turno 4 (el del video): Alta, Baja, Baja, Alta, Alta, Alta, Baja, Baja, Baja, Baja, Baja, Media y Alta.
 
 1. **La cadena.** Abre el panel (M) en la pestaña Matriz: P de la ficha, fila activa resaltada. En Largo plazo: clase única recurrente de periodo 1, ergódica, π = (0,3179; 0,3931; 0,2890).
 2. **π^(n) que pida el docente.** Pestaña Transitorio: mueve n con el deslizador. Con «Desde: π^(0) ficha» y n = 5 sale (0,3313; 0,3910; 0,2777), igual a `analisis/resultados_python.json`. Chapman-Kolmogorov: P^(m+n) = P^m · P^n con diferencia del orden de 10^−16.
-3. **Anticipar un fallo.** Turno 3 con piloto: en el paso 10 la oleada pasa de Baja a Media y el indicador del HUD parpadea en amarillo (riesgo 0,509 de Alta en 3 pasos). Abre la línea 3 (tecla 3): en el paso 12 llega la oleada Alta con la línea ya abierta (pronóstico acertado, +15).
+3. **Anticipar un fallo.** Turno 4, donde el piloto sirve y repara los torniquetes: en el paso 12 la oleada pasa de Baja a Media y el indicador del HUD parpadea en amarillo (riesgo 0,509 de Alta en 3 pasos). Abre la línea 3 (tecla 3) antes de los 390 s: en el paso 13 llega la oleada Alta con la línea ya abierta (pronóstico acertado, +15). En el turno 3 con piloto pasa lo mismo en los pasos 10 y 12, pero ahí el piloto solo sirve: si no se reparan los torniquetes bloqueados (desde 1:40), la fila crece sin control.
 4. **Dimensionamiento.** Largo plazo, calculadora: demanda media 10,40 por paso; con 2 líneas la utilización en Alta es 1,44 y con 3 líneas 0,96.
 5. **χ².** Turno 4 a ×8 durante 100 pasos o más: Datos de la partida muestra la P estimada y que χ² no rechaza P. Sin esperar: `npm run log -- --pasos 1000` (χ² = 4,23 con 6 gl, valor p 0,646). Con pocos pasos el panel avisa que la aproximación no es confiable.
 6. **Event Log.** E y «Descargar CSV» o «Descargar XES»; o «Generar log» en el título. Se importa en PM4Py (`analisis/mineria.py`), ProM o Disco.
