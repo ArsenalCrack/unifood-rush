@@ -1,7 +1,7 @@
 {
   "name": "unifood-rush",
   "version": "1.0.0",
-  "description": "UniFood Rush: simulador isometrico 2.5D de un comedor universitario (automatas y redes de Petri)",
+  "description": "UniFood Rush: simulador isometrico 2.5D de un comedor universitario (automatas, redes de Petri, cadenas de Markov y Event Log)",
   "main": "index.js",
   "scripts": {
     "test": "node --test",
@@ -11,7 +11,8 @@
     "modelos": "node scripts/exportar-modelos.mjs",
     "simular": "node scripts/simular.mjs",
     "desplegar": "node scripts/desplegar.mjs",
-    "zip": "vite build && node scripts/empaquetar.mjs"
+    "zip": "vite build && node scripts/empaquetar.mjs",
+    "log": "node scripts/generar-log.mjs"
   },
   "keywords": [],
   "author": "",

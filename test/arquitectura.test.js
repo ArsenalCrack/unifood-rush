@@ -23,6 +23,23 @@ test('el núcleo formal no menciona el motor de juego ni usa el DOM', () => {
   }
 });
 
+test('Fase 2: la telemetría no usa el motor de juego y solo descarga.js usa el DOM', () => {
+  const telemetria = archivosDe('src/telemetria');
+  assert.deepEqual(telemetria.map((a) => a.split(/[\\/]/).pop()).sort(),
+    ['descarga.js', 'exportarCSV.js', 'exportarXES.js', 'registrador.js']);
+  for (const archivo of telemetria) {
+    const texto = leer(archivo);
+    assert.equal(/phaser/i.test(texto), false, `${archivo} menciona el motor de juego`);
+    if (!archivo.endsWith('descarga.js')) assert.equal(/\b(window|document)\./.test(texto), false, `${archivo} usa el DOM`);
+  }
+});
+
+test('Fase 2: todo el azar sale del generador con semilla: no hay Math.random() en src/', () => {
+  for (const archivo of archivosDe('src')) {
+    assert.equal(/Math\.random\s*\(/.test(leer(archivo)), false, `${archivo} usa Math.random()`);
+  }
+});
+
 test('Phaser 4.2.1 llega por CDN: no se importa ni se instala por npm', () => {
   for (const archivo of archivosDe('src')) {
     assert.equal(/from\s+['"]phaser['"]/.test(leer(archivo)), false, `${archivo} importa phaser`);
