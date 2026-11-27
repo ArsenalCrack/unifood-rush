@@ -107,3 +107,28 @@ location /unifood/ {
 Se valida con `sudo nginx -t` y solo después se recarga con `sudo systemctl reload nginx`.
 
 Si el servidor no está disponible, la carpeta `dist/` se puede arrastrar a https://app.netlify.com/drop y Netlify entrega un enlace con HTTPS.
+
+## 6. Fase 2 (opcional, guía 5.12)
+
+La Fase 2 se publica en una subcarpeta de la misma carpeta, sin tocar la Fase 1 ni la configuración de Caddy: el bloque `handle_path /unifood/*` ya sirve todo lo que hay dentro de `/var/www/unifood-rush`, y el juego usa rutas relativas. La dirección lleva la barra final: https://dinamyt.org/unifood/fase2/
+
+Desde la carpeta del proyecto, en la rama `fase2`, en PowerShell y con la misma clave SSH de la Fase 1:
+
+```powershell
+npm run desplegar -- usuario@servidor /var/www/unifood-rush/fase2
+```
+
+Las carpetas dentro de `/var/www/unifood-rush` son del usuario del equipo, así que no hace falta `sudo`. Para comprobarlo:
+
+```powershell
+curl.exe -sI https://dinamyt.org/unifood/fase2/
+```
+
+Debe responder `HTTP/2 200`. Después se juega un turno en el enlace, se abre el panel de Markov y se descarga el log.
+
+Si el equipo decide que la Fase 2 reemplace a la Fase 1 en https://dinamyt.org/unifood/, se usa la ruta de siempre, `/var/www/unifood-rush`. La Fase 1 sigue disponible con la opción «Ola fija (Fase 1)» del título.
+
+| Dato | Valor |
+|---|---|
+| Dirección pública de la Fase 2 | https://dinamyt.org/unifood/fase2/ (☐ cuando se publique) |
+| Carpeta en el servidor | `/var/www/unifood-rush/fase2` |
