@@ -7,7 +7,7 @@
 import { FlujoComedor } from './flujo.js';
 import { nombreCompuesto, componer, componerVarios, ejecutarConjunto } from '../sed/composicion.js';
 import { MODELOS } from '../sed/modelos/index.js';
-import { TIEMPOS, PUNTOS, META_LOGRO_FILA, META_LOGRO_PICO } from '../config.js';
+import { TIEMPOS, PUNTOS, META_LOGRO_FILA, META_LOGRO_PICO, COSTOS, PUNTOS_FASE2 } from '../config.js';
 
 export class Comedor extends FlujoComedor {
   // ---------- consultas de solo lectura para la vista ----------
@@ -169,7 +169,8 @@ export class Comedor extends FlujoComedor {
     linea.torniquete.ejecutar(MODELOS.reparacion.eventoReparacion);
     this.stats.reparaciones++;
     this.sumar(PUNTOS.reparacion, 'reparación');
-    if (linea.intentosReparacion === 1 && !linea.ayudaUsada) this.otorgar('tecnico');
+    // El logro es del jugador: la reparación de la política automática no lo gana.
+    if (linea.intentosReparacion === 1 && !linea.ayudaUsada && !this.politica?.reparar) this.otorgar('tecnico');
     this.emitir('reparacion', { linea: idLinea, ok: true, palabra });
     this.emitir('torniquete', { linea: idLinea, evento: 'reiniciar' });
     this.programarLectura(linea);
@@ -206,6 +207,51 @@ export class Comedor extends FlujoComedor {
     this.revisarLavado();
     this.cerrarAccion();
     return { ok: true };
+  }
+
+  // ---------- Fase 2: decisiones de dimensionamiento (GDD 16.5) ----------
+
+  // Abre o cierra la línea 3. Abrirla cuesta puntos; cada paso abierta cuesta más
+  // (se cobra en pasoMarkov). Al cerrarla, los que ya estaban en su fila se atienden.
+  alternarLinea3({ origen = 'jugador' } = {}) {
+    const linea = this.lineas[2];
+    let resultado;
+    if (!this.modoMarkov) {
+      resultado = { ok: false, motivo: 'modo', detalle: 'La línea 3 es de la Fase 2: elige llegadas por cadena de Markov.' };
+    } else if (this.terminado || this.gameOver) {
+      resultado = { ok: false, motivo: 'fin' };
+    } else {
+      linea.abierta = !linea.abierta;
+      if (linea.abierta) {
+        this.fase2.aperturasLinea3++;
+        this.sumar(-COSTOS.linea3Apertura, 'apertura de la línea 3');
+      }
+      this.emitir('linea3', { abierta: linea.abierta, origen, k: this.k });
+      resultado = { ok: true, abierta: linea.abierta };
+    }
+    if (origen === 'jugador') this.cerrarAccion();
+    return resultado;
+  }
+
+  // Compra de un permiso de relevo: +1 token en Relevo (evento externo, respeta k = 2).
+  comprarRelevo() {
+    let resultado;
+    const lugar = this.red.lugares[this.red.iP('Relevo')];
+    if (!this.modoMarkov) {
+      resultado = { ok: false, motivo: 'modo', detalle: 'La compra es de la Fase 2.' };
+    } else if (this.terminado || this.gameOver) {
+      resultado = { ok: false, motivo: 'fin' };
+    } else if (this.red.tokens('Relevo') >= lugar.k) {
+      resultado = { ok: false, motivo: 'capacidad', detalle: `Relevo ya tiene ${lugar.k} permisos (k = ${lugar.k}).` };
+    } else {
+      this.red.agregarTokens('Relevo', 1);
+      this.fase2.relevosComprados++;
+      this.sumar(-COSTOS.relevoExtra, 'permiso de relevo comprado');
+      this.emitir('relevo_comprado', { disponibles: this.red.tokens('Relevo') });
+      resultado = { ok: true, disponibles: this.red.tokens('Relevo') };
+    }
+    this.cerrarAccion();
+    return resultado;
   }
 
   // ---------- piloto automático (solo solicita servir cuando está permitido) ----------
@@ -247,19 +293,26 @@ export class Comedor extends FlujoComedor {
   reintentar(desdeInicio = false) {
     const instantanea = desdeInicio ? this.instantaneaInicio : this.instantaneaVerde;
     if (!instantanea) return { ok: false };
-    this.restaurar(instantanea);
+    this.restaurar(instantanea, desdeInicio ? 'inicio' : 'verde');
     return { ok: true };
   }
 
   finTurno() {
     if (this.terminado) return;
     this.terminado = true;
-    const total = this.turno.estudiantes;
-    const fraccion = this.stats.completados / total;
+    // Con Markov el total son los que llegaron (depende de las oleadas).
+    const total = this.modoMarkov ? this.stats.llegadas : this.turno.estudiantes;
+    const fraccion = total > 0 ? this.stats.completados / total : 0;
     const sinBloqueo = !this.gameOver;
     let bono = 0;
     if (sinBloqueo) {
       this.sumar(PUNTOS.turnoSinDeadlock, 'turno sin interbloqueo');
+      // Línea bien dimensionada (GDD 16.6): abierta en cada paso Alta y cerrada en cada Baja.
+      const f = this.fase2;
+      if (this.modoMarkov && f.pasosAlta > 0 && f.altaSinLinea === 0 && f.bajaConLinea === 0) {
+        this.sumar(PUNTOS_FASE2.lineaJusta, 'línea bien dimensionada');
+        this.otorgar('linea_justa');
+      }
       if (this.sinMonitor) {
         bono = Math.max(0, Math.round(this.puntaje * PUNTOS.bonoRiesgo));
         this.sumar(bono, 'bono de riesgo');
@@ -271,9 +324,24 @@ export class Comedor extends FlujoComedor {
       turno: this.turno.id, nombre: this.turno.nombre, completados: this.stats.completados, total,
       fraccion, victoria: sinBloqueo && fraccion >= this.turno.meta, interbloqueo: !sinBloqueo,
       puntaje: this.puntaje, bono, monitor: !this.sinMonitor, tiempo: this.reloj.tiempo,
-      stats: { ...this.stats }
+      stats: { ...this.stats },
+      modoMarkov: this.modoMarkov,
+      fase2: { ...this.fase2, k: this.k },
+      markov: this.markov ? this.resumenMarkov() : null
     };
     this.reloj.pausar();
     this.emitir('fin_turno', this.resumen);
+  }
+
+  // Frecuencias observadas frente a pi y prueba chi-cuadrado de cada cadena.
+  resumenMarkov() {
+    const resumen = {};
+    for (const [clave, cadena] of Object.entries(this.markov)) {
+      resumen[clave] = {
+        nombre: cadena.nombre, estados: cadena.estados, k: cadena.k, estado: cadena.estado,
+        frecuencias: cadena.frecuencias(), pi: cadena.estacionaria(), chi: cadena.chiCuadrado()
+      };
+    }
+    return resumen;
   }
 }

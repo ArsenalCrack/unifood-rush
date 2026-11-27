@@ -11,18 +11,38 @@ import { RedPetri } from '../sed/redPetri.js';
 import { Lenguaje } from '../sed/lenguaje.js';
 import { componerVarios, supervisor, puedeConjunto, ejecutarConjunto } from '../sed/composicion.js';
 import { explorar } from '../sed/cobertura.js';
-import { MODELOS } from '../sed/modelos/index.js';
-import { TIEMPOS, PUNTOS, TURNOS, SEMILLA, RADAR_PROFUNDIDAD, META_LOGRO_LAVADOS } from '../config.js';
+import { CadenaMarkov } from '../sed/markov.js';
+import { MODELOS, MARKOV } from '../sed/modelos/index.js';
+import { decidirLinea3 } from './politica.js';
+import {
+  TIEMPOS, PUNTOS, TURNOS, SEMILLA, RADAR_PROFUNDIDAD, META_LOGRO_LAVADOS,
+  PASO_K_MS, SEMILLA_MARKOV, PASOS_RIESGO, COSTOS, PUNTOS_FASE2, META_LOGRO_OLEADA
+} from '../config.js';
 
 export const RAZON_SUPERVISOR =
   '¬(servir ∧ Registro = Sin_acceso): el torniquete no registró acceso_ok para este estudiante';
 
+export const PASO_K_S = PASO_K_MS / 1000;
+
+// Semilla del generador de las cadenas en una partida: depende solo de la semilla de la
+// partida, así que la secuencia de oleadas no cambia con lo que haga el jugador.
+export const semillaMarkov = (semilla) => (SEMILLA_MARKOV * 1000 + semilla) >>> 0;
+
 export class FlujoComedor {
-  constructor({ turno = TURNOS[0], semilla = SEMILLA, monitor = true, piloto = false, logros = [] } = {}) {
+  // llegadas: 'fase1' (ola fija de la Fase 1) o 'markov' (las decide la cadena Oleada).
+  // relojExterno: en el juego, el paso k lo da el temporizador de la escena Planta, que
+  //   llama a pasoMarkov(); sin él (Node), avanzar() da los pasos en el borde de cada paso.
+  // politica: política automática (src/simulacion/politica.js) o null.
+  constructor({
+    turno = TURNOS[0], semilla = SEMILLA, monitor = true, piloto = false, logros = [],
+    llegadas = 'fase1', relojExterno = false, politica = null
+  } = {}) {
     this.turno = turno;
     this.semilla = semilla;
     this.azar = new Aleatorio(semilla * 1000 + turno.id);
     this.reloj = new Reloj((evento) => this.manejar(evento));
+    this.politica = politica;
+    if (politica?.piloto) piloto = true;
     this.piloto = piloto;
     this.sinMonitor = !monitor; // verdadero mientras todo el turno se juegue sin monitores
     this.lenguaje = new Lenguaje(MODELOS.reparacion);
@@ -34,8 +54,10 @@ export class FlujoComedor {
     this.supervisor = supervisor(this.composicion, (tupla) => tupla[2] === 'Violacion', RAZON_SUPERVISOR);
 
     // Cada línea tiene su torniquete compuesto con su contador de rechazos.
-    this.lineas = [1, 2].map((id) => ({
+    // La línea 3 (Fase 2) empieza cerrada: los estudiantes solo eligen líneas abiertas.
+    this.lineas = [1, 2, 3].map((id) => ({
       id,
+      abierta: id <= 2,
       torniquete: new Automata(MODELOS.torniquete, `T${id}`),
       contador: new Automata(MODELOS.contadorRechazos, `C${id}`),
       // Generador propio de la línea: el resultado de su n-ésima lectura es
@@ -72,6 +94,28 @@ export class FlujoComedor {
     this.resumen = null;
     this.instantaneaVerde = null;
     this.crearRed(monitor);
+
+    // --- Fase 2: cadenas de Markov y paso k (docs/modelo/markov.md) ---
+    this.modoMarkov = llegadas === 'markov';
+    this.relojExterno = relojExterno;
+    this.k = 0;
+    this.markov = null;
+    this.pasosTurno = 0;
+    this.fase2 = {
+      aperturasLinea3: 0, pasosLinea3: 0, relevosComprados: 0, pronosticos: 0,
+      pasosAlta: 0, altasSinDesborde: 0, rachaAltaSinDesborde: 0, altaSinLinea: 0, bajaConLinea: 0,
+      desbordesAlEmpezarPaso: 0
+    };
+    if (this.modoMarkov) {
+      const base = semillaMarkov(semilla);
+      this.azarMarkov = new Aleatorio(base);        // sorteo de la oleada en cada paso
+      this.azarLlegadas = new Aleatorio(base + 1);  // instantes de las llegadas dentro del paso
+      this.markov = {
+        oleada: new CadenaMarkov(MARKOV.oleada, () => this.azarMarkov.siguiente()),
+        mesas: new CadenaMarkov(MARKOV.mesas)         // referencia: se observa, no se sortea
+      };
+      this.pasosTurno = turno.pasos ?? Math.ceil(turno.llegadas / PASO_K_S);
+    }
   }
 
   // ---------- infraestructura ----------
@@ -153,20 +197,30 @@ export class FlujoComedor {
   // ---------- arranque y bucle ----------
 
   iniciar() {
-    const { estudiantes, llegadas } = this.turno;
-    // Llegadas externas: mezcla de uniforme y triangular (ola en la mitad del turno).
-    const tiempos = [];
-    for (let i = 0; i < estudiantes; i++) {
-      const u = this.azar.ocurre(0.5) ? this.azar.siguiente() : (this.azar.siguiente() + this.azar.siguiente()) / 2;
-      tiempos.push(1 + (llegadas - 1) * u);
+    if (this.modoMarkov) {
+      // Fase 2: las llegadas las decide la cadena Oleada, paso a paso. El paso 0 usa pi^(0).
+      this.programarLlegadasDelPaso();
+      this.reloj.programar(TIEMPOS.relevo, { tipo: 'relevo' });
+      if (Number.isFinite(this.pasosTurno)) {
+        this.reloj.programar(this.pasosTurno * PASO_K_S + TIEMPOS.margenFinal, { tipo: 'fin_turno' });
+      }
+    } else {
+      const { estudiantes, llegadas } = this.turno;
+      // Llegadas externas: mezcla de uniforme y triangular (ola en la mitad del turno).
+      const tiempos = [];
+      for (let i = 0; i < estudiantes; i++) {
+        const u = this.azar.ocurre(0.5) ? this.azar.siguiente() : (this.azar.siguiente() + this.azar.siguiente()) / 2;
+        tiempos.push(1 + (llegadas - 1) * u);
+      }
+      tiempos.sort((a, b) => a - b);
+      for (const t of tiempos) this.reloj.programar(t, { tipo: 'llegada' });
+      this.reloj.programar(TIEMPOS.relevo, { tipo: 'relevo' });
+      this.reloj.programar(llegadas + TIEMPOS.margenFinal, { tipo: 'fin_turno' });
     }
-    tiempos.sort((a, b) => a - b);
-    for (const t of tiempos) this.reloj.programar(t, { tipo: 'llegada' });
-    this.reloj.programar(TIEMPOS.relevo, { tipo: 'relevo' });
-    this.reloj.programar(llegadas + TIEMPOS.margenFinal, { tipo: 'fin_turno' });
     this.trasCambioRed({ tipo: 'inicio', etiqueta: 'M0' });
     this.guardarVerde();
     this.instantaneaInicio = this.instantaneaVerde; // comienzo del turno, antes de toda decisión
+    this.emitir('instantanea', { cual: 'inicio' });
     this.cerrarAccion();
     this.emitir('inicio', {});
   }
@@ -174,7 +228,106 @@ export class FlujoComedor {
   // Lo único que hace el bucle del juego: avanzar el reloj.
   avanzar(dt) {
     if (this.terminado || this.gameOver) return 0;
-    return this.reloj.avanzar(dt);
+    if (!this.modoMarkov) return this.reloj.avanzar(dt);
+    // En el juego el paso k lo da el TimerEvent: el reloj espera en el borde del paso.
+    if (this.relojExterno) return this.reloj.avanzar(dt, this.proximoBorde());
+    // En Node el núcleo da los pasos en el borde, en el mismo orden que en el juego.
+    if (this.reloj.pausado || dt <= 0) return 0;
+    const objetivo = this.reloj.tiempo + dt * this.reloj.velocidad;
+    let disparados = 0;
+    while (!this.terminado && !this.gameOver && !this.reloj.pausado) {
+      const borde = this.proximoBorde();
+      if (borde > objetivo) { disparados += this.reloj.avanzarHasta(objetivo); break; }
+      disparados += this.reloj.avanzarHasta(borde);
+      if (this.reloj.tiempo < borde) break; // un evento detuvo el reloj
+      this.pasoMarkov();
+    }
+    return disparados;
+  }
+
+  // ---------- Fase 2: reloj discreto y cadenas de Markov ----------
+
+  // Instante de simulación del siguiente paso k (Infinity si ya no hay más pasos).
+  proximoBorde() {
+    return this.modoMarkov && this.k < this.pasosTurno ? (this.k + 1) * PASO_K_S : Infinity;
+  }
+
+  // Paso k: lo llama el temporizador de la escena Planta (o avanzar() en Node).
+  // Avanza las cadenas en un orden fijo y devuelve los cambios. Primero lleva el reloj
+  // exactamente al borde del paso, así el paso ocurre siempre en el mismo instante.
+  pasoMarkov() {
+    if (!this.modoMarkov || this.terminado || this.gameOver || this.k >= this.pasosTurno) return null;
+    const borde = (this.k + 1) * PASO_K_S;
+    if (this.reloj.tiempo < borde) this.reloj.avanzarHasta(borde);
+    if (this.reloj.tiempo < borde || this.terminado || this.gameOver) return null;
+    // 1) Oleada: fila activa de P y u = rng().
+    const oleada = this.markov.oleada.paso();
+    // 2) Mesas: ocupación observada en la red de Petri, por cuartos.
+    const mesas = this.markov.mesas.observar(this.cuartoMesas());
+    this.k = oleada.k;
+    // 3) Puntaje del paso que terminó y decisión de la política automática.
+    this.revisarPasoFase2(oleada);
+    if (this.politica) decidirLinea3(this, this.politica);
+    // 4) Llegadas del paso que empieza.
+    this.programarLlegadasDelPaso();
+    const cambio = { k: this.k, oleada, mesas, riesgo: this.riesgo() };
+    this.emitir('markov', cambio);
+    this.cerrarAccion();
+    return cambio;
+  }
+
+  // Llegadas del paso k actual: 4, 10 o 18 según la oleada, en instantes al azar del paso.
+  programarLlegadasDelPaso() {
+    if (this.k >= this.pasosTurno) { this.llegadasDelPaso = 0; return; }
+    const cuantas = MARKOV.oleada.llegadasPorPaso[this.markov.oleada.estado];
+    const inicio = this.k * PASO_K_S;
+    const tiempos = Array.from({ length: cuantas }, () => inicio + PASO_K_S * this.azarLlegadas.siguiente());
+    tiempos.sort((a, b) => a - b);
+    for (const t of tiempos) this.reloj.programar(t, { tipo: 'llegada' });
+    this.llegadasDelPaso = cuantas;
+  }
+
+  // Estado observado de la cadena Mesas: M(Almorzando) por cuartos de las 20 mesas.
+  cuartoMesas() {
+    const { lugar, cortes } = MARKOV.mesas.observa;
+    const ocupadas = this.red.tokens(lugar);
+    const i = cortes.filter((c) => ocupadas >= c).length;
+    return MARKOV.mesas.estados[i];
+  }
+
+  // P(oleada Alta al menos una vez en los próximos "pasos" pasos), desde el estado actual.
+  riesgo(pasos = PASOS_RIESGO) {
+    return this.markov ? this.markov.oleada.riesgo(pasos) : 0;
+  }
+
+  // Puntaje de la Fase 2 (GDD 16.6) al cerrar el paso que acaba de terminar.
+  revisarPasoFase2({ de, a }) {
+    const f = this.fase2;
+    const linea3 = this.lineas[2].abierta;
+    if (linea3) {
+      f.pasosLinea3++;
+      this.sumar(-COSTOS.linea3Paso, 'línea 3 abierta');
+    }
+    if (de === 'Alta') {
+      f.pasosAlta++;
+      if (!linea3) f.altaSinLinea++;
+      if (this.stats.desbordes === f.desbordesAlEmpezarPaso) {
+        f.altasSinDesborde++;
+        f.rachaAltaSinDesborde++;
+        this.sumar(PUNTOS_FASE2.altaSinDesborde, 'oleada alta sin desborde');
+        if (f.rachaAltaSinDesborde >= META_LOGRO_OLEADA) this.otorgar('oleada_contenida');
+      } else {
+        f.rachaAltaSinDesborde = 0;
+      }
+    }
+    if (de === 'Baja' && linea3) f.bajaConLinea++;
+    // Pronóstico acertado: empieza una oleada Alta y la línea 3 ya estaba abierta.
+    if (a === 'Alta' && de !== 'Alta' && linea3) {
+      f.pronosticos++;
+      this.sumar(PUNTOS_FASE2.pronostico, 'pronóstico acertado');
+      this.otorgar('pronostico');
+    }
+    f.desbordesAlEmpezarPaso = this.stats.desbordes;
   }
 
   // Despacha un evento del calendario.
@@ -190,6 +343,7 @@ export class FlujoComedor {
       case 'fin_lavado': this.finLavado(evento); break;
       case 'relevo': this.relevo(); break;
       case 'piloto': this.turnoPiloto(evento); break;
+      case 'reparacion_auto': this.reparacionAutomatica(evento); break;
       case 'fin_turno': this.finTurno(); break;
       default: throw new Error(`Evento desconocido: ${evento.tipo}`);
     }
@@ -219,10 +373,11 @@ export class FlujoComedor {
     this.programarLectura(linea);
   }
 
-  // El estudiante elige la fila más corta entre las que no están bloqueadas.
+  // El estudiante elige la fila más corta entre las líneas abiertas que no están bloqueadas.
   elegirLinea() {
-    const abiertas = this.lineas.filter((l) => !l.torniquete.puede('reiniciar'));
-    const candidatas = abiertas.length > 0 ? abiertas : this.lineas;
+    const disponibles = this.lineas.filter((l) => l.abierta);
+    const sinBloqueo = disponibles.filter((l) => !l.torniquete.puede('reiniciar'));
+    const candidatas = sinBloqueo.length > 0 ? sinBloqueo : disponibles;
     const carga = (l) => l.fila.length + (l.mostrador ? 1 : 0);
     const minimo = Math.min(...candidatas.map(carga));
     return this.azar.elegir(candidatas.filter((l) => carga(l) === minimo));
@@ -246,7 +401,7 @@ export class FlujoComedor {
       return;
     }
     ejecutarConjunto('leer', [linea.torniquete, linea.contador]);
-    this.emitir('torniquete', { linea: idLinea, evento: 'leer' });
+    this.emitir('torniquete', { linea: idLinea, evento: 'leer', estudiante: linea.fila[0] });
     this.reloj.programarEn(TIEMPOS.lectura, { tipo: 'resultado_lectura', linea: idLinea });
   }
 
@@ -281,6 +436,12 @@ export class FlujoComedor {
     this.stats.bloqueos++;
     this.emitir('torniquete', { linea: idLinea, evento: 'bloqueo' });
     this.emitir('alerta', { nivel: 'fallo', texto: `Torniquete ${idLinea} bloqueado` });
+    // Política automática: la reparación ocurre en un instante fijo de simulación.
+    if (this.politica?.reparar) this.reloj.programarEn(this.politica.reparar.demora, { tipo: 'reparacion_auto', linea: idLinea });
+  }
+
+  reparacionAutomatica({ linea: idLinea }) {
+    if (this.lineas[idLinea - 1].torniquete.puede('reiniciar')) this.reparar(idLinea, this.politica.reparar.palabra);
   }
 
   // ---------- mesas, menaje y lavado ----------
@@ -343,7 +504,13 @@ export class FlujoComedor {
     this.otorgar('primera_bandeja');
     this.emitir('estudiante', { id: est.id, evento: 'entregar', palabra: est.automata.palabra() });
     this.estudiantes.delete(est.id);
-    if (this.stats.completados === this.turno.estudiantes) this.finTurno();
+    if (this.todosSalieron()) this.finTurno();
+  }
+
+  // El turno puede cerrar antes del margen final cuando ya no llegará nadie y todos salieron.
+  todosSalieron() {
+    if (!this.modoMarkov) return this.stats.completados === this.turno.estudiantes;
+    return this.k >= this.pasosTurno && this.stats.completados === this.stats.llegadas;
   }
 
   // t_lavar (automática, varios servidores): hay tantos lavados en curso como
@@ -386,7 +553,9 @@ export class FlujoComedor {
 
   // Guarda el estado en un punto de decisión si el radar está en verde.
   guardarVerde() {
-    if (this.radar.estado === 'verde') this.instantaneaVerde = this.instantanea();
+    if (this.radar.estado !== 'verde') return;
+    this.instantaneaVerde = this.instantanea();
+    this.emitir('instantanea', { cual: 'verde' });
   }
 
   instantanea() {
@@ -394,10 +563,16 @@ export class FlujoComedor {
       reloj: this.reloj.exportar(), azar: this.azar.estado, monitor: this.monitor,
       sinMonitor: this.sinMonitor, red: this.red.exportar(),
       lineas: this.lineas.map((l) => ({
+        abierta: l.abierta,
         torniquete: l.torniquete.exportar(), contador: l.contador.exportar(), azar: l.azar.estado, fila: l.fila,
         mostrador: l.mostrador, lecturaPendiente: l.lecturaPendiente, pilotoPendiente: l.pilotoPendiente,
         intentosReparacion: l.intentosReparacion, ayudaUsada: l.ayudaUsada
       })),
+      k: this.k, fase2: this.fase2, llegadasDelPaso: this.llegadasDelPaso ?? 0,
+      markov: this.markov ? {
+        oleada: this.markov.oleada.exportar(), mesas: this.markov.mesas.exportar(),
+        azarMarkov: this.azarMarkov.estado, azarLlegadas: this.azarLlegadas.estado
+      } : null,
       estudiantes: [...this.estudiantes.values()].map((e) => ({
         id: e.id, linea: e.linea, mesa: e.mesa, tLlegada: e.tLlegada, tServido: e.tServido,
         automata: e.automata.exportar(), registro: e.registro.exportar()
@@ -409,7 +584,8 @@ export class FlujoComedor {
     });
   }
 
-  restaurar(dato) {
+  // cual: 'verde' (último marcado verde) o 'inicio' (comienzo del turno), para el registrador.
+  restaurar(dato, cual = 'verde') {
     const d = structuredClone(dato);
     this.crearRed(d.monitor);
     this.red.importar(d.red);
@@ -423,10 +599,20 @@ export class FlujoComedor {
       linea.contador.importar(l.contador);
       linea.azar.estado = l.azar;
       Object.assign(linea, {
+        abierta: l.abierta ?? linea.id <= 2,
         fila: l.fila, mostrador: l.mostrador, lecturaPendiente: l.lecturaPendiente,
         pilotoPendiente: l.pilotoPendiente, intentosReparacion: l.intentosReparacion, ayudaUsada: l.ayudaUsada
       });
     });
+    this.k = d.k ?? 0;
+    if (d.fase2) this.fase2 = d.fase2;
+    this.llegadasDelPaso = d.llegadasDelPaso;
+    if (this.markov && d.markov) {
+      this.markov.oleada.importar(d.markov.oleada);
+      this.markov.mesas.importar(d.markov.mesas);
+      this.azarMarkov.estado = d.markov.azarMarkov;
+      this.azarLlegadas.estado = d.markov.azarLlegadas;
+    }
     this.estudiantes = new Map(d.estudiantes.map((e) => {
       const automata = new Automata(MODELOS.estudiante, e.id);
       const registro = new Automata(MODELOS.registroAcceso, `${e.id}.registro`);
@@ -441,7 +627,7 @@ export class FlujoComedor {
       decisionEnAmarillo: d.decisionEnAmarillo,
       gameOver: null, terminado: false, radarEmitido: null
     });
-    this.emitir('restaurado', {});
+    this.emitir('restaurado', { cual });
     this.cerrarAccion();
   }
 }
